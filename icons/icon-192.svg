@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <!-- Full Slate Canvas for PWA Maskable Safe Area -->
+  <rect width="192" height="192" fill="#0f172a"/>
+
+  <!-- Inner Badge Container -->
+  <circle cx="96" cy="96" r="72" fill="#1e293b" fill-opacity="0.6" stroke="#334155" stroke-width="2"/>
+
+  <!-- Cap Base / Underneath Shadow -->
+  <path d="M 68 80 L 68 98 C 68 108 96 114 96 114 C 96 114 124 108 124 98 L 124 80 Z" fill="#059669"/>
+
+  <!-- Graduation Cap Rhombus (Mint) -->
+  <polygon points="96,48 142,70 96,92 50,70" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+
+  <!-- Cap Button & Tassel -->
+  <circle cx="96" cy="70" r="3" fill="#f8fafc"/>
+  <path d="M 96 70 Q 56 78 52 98" stroke="#f8fafc" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <rect x="49" y="98" width="6" height="12" rx="2" fill="#38bdf8"/>
+
+  <!-- Open Study Book Base -->
+  <path d="M 64 128 C 79 122 92 126 96 130 L 96 150 C 92 146 79 142 64 148 Z" fill="#f8fafc"/>
+  <path d="M 128 128 C 113 122 100 126 96 130 L 96 150 C 100 146 113 142 128 148 Z" fill="#e2e8f0"/>
+
+  <!-- Mint Bookmark Ribbon -->
+  <polygon points="94.5,130 97.5,130 97.5,156 96,153.5 94.5,156" fill="#10b981"/>
+</svg>
