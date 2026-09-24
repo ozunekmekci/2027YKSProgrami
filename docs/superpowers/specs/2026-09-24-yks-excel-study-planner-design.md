@@ -19,29 +19,29 @@ This project delivers an interactive, automated Excel workbook (`YKS_2027_Calism
 
 ---
 
-## 2. Curriculum Data & Mathematical Feasibility
+## 2. Curriculum Data & Mathematical Feasibility (Verified Instructors & Channels)
 
 The 9 curated YouTube playlists comprise **746 videos** and **443.8 hours** of high-yield instructional content:
 
-| Subject | Instructor / Series | Video Count | Total Hours | Avg Video (Min) | Weekly Allocation | Completion Timeline |
+| Subject | Instructor & Channel | Video Count | Total Hours | Avg Video (Min) | Weekly Allocation | Completion Timeline |
 |---|---|---|---|---|---|---|
-| **TYT Türkçe** | Aker Kartal | 71 | 23.1 h | 19.5 min | 2 videos / week (Pzt) | ~35.5 Weeks |
-| **TYT-AYT Tarih** | Sadettin Akyuva | 166 | 101.6 h | 36.7 min | 4 videos / week (Salı, Cmt) | ~41.5 Weeks |
-| **TYT Matematik** | Mert Hoca | 118 | 88.1 h | 44.8 min | 4 videos / week (Salı, Per) | ~29.5 Weeks |
-| **TYT Coğrafya** | Coğrafyanın Kodları | 60 | 36.0 h | 36.0 min | 2 videos / week (Pzt) | ~30.0 Weeks |
-| **AYT Coğrafya** | Coğrafyanın Kodları | 54 | 32.9 h | 36.5 min | 2 videos / week (Cuma - 2. devre) | ~27.0 Weeks |
-| **TYT Biyoloji** | Dr. Biyoloji | 80 | 41.8 h | 31.3 min | 4 videos / week (Çar, Cmt) | ~20.0 Weeks |
-| **TYT Fizik** | VIP Fizik | 76 | 51.7 h | 40.8 min | 2 videos / week (Cuma) | ~38.0 Weeks |
-| **TYT Kimya** | Görkem Şahin | 79 | 32.3 h | 24.6 min | 2 videos / week (Per) | ~39.5 Weeks |
-| **AYT Edebiyat** | Kadir Gümüş | 62 | 36.3 h | 35.2 min | 4 videos / week (Çar, Cuma - 1. devre) | ~15.5 Weeks |
+| **TYT Türkçe** | Aker Kartal *(Retro Yayıncılık)* | 71 | 23.1 h | 19.5 min | 2 videos / week (Pzt) | ~35.5 Weeks |
+| **TYT-AYT Tarih** | Mehmet Celal Özyıldız *(Retro Yayıncılık)* | 166 | 101.6 h | 36.7 min | 4 videos / week (Salı, Cmt) | ~41.5 Weeks |
+| **TYT Matematik** | Selim Yüksel *(Bıyıklı Matematik)* | 118 | 88.1 h | 44.8 min | 4 videos / week (Salı, Per) | ~29.5 Weeks |
+| **TYT Coğrafya** | Yunus Hoca *(Coğrafyanın Kodları)* | 60 | 36.0 h | 36.0 min | 2 videos / week (Pzt) | ~30.0 Weeks |
+| **AYT Coğrafya** | Yunus Hoca *(Coğrafyanın Kodları)* | 54 | 32.9 h | 36.5 min | 2 videos / week (Cuma - 2. devre) | ~27.0 Weeks |
+| **TYT Biyoloji** | Semih Hoca *(Biosem)* | 80 | 41.8 h | 31.3 min | 4 videos / week (Çar, Cmt) | ~20.0 Weeks |
+| **TYT Fizik** | Altuğ Güneş *(Fizikfinito)* | 76 | 51.7 h | 40.8 min | 2 videos / week (Cuma) | ~38.0 Weeks |
+| **TYT Kimya** | Mesut Hoca *(Meschemy Kimya)* | 79 | 32.3 h | 24.6 min | 2 videos / week (Per) | ~39.5 Weeks |
+| **AYT Edebiyat** | Deniz Hoca *(Deniz Hoca)* | 62 | 36.3 h | 35.2 min | 4 videos / week (Çar, Cuma - 1. devre) | ~15.5 Weeks |
 
 ### Weekly Day Distribution (4 Blocks / Day)
-- **Pazartesi**: TYT Türkçe (2 video) + TYT Coğrafya (2 video)
-- **Salı**: TYT Matematik (2 video) + TYT-AYT Tarih (2 video)
-- **Çarşamba**: TYT Biyoloji (2 video) + AYT Edebiyat (2 video)
-- **Perşembe**: TYT Matematik (2 video) + TYT Kimya (2 video)
-- **Cuma**: TYT Fizik (2 video) + AYT Edebiyat (2 video - 16. haftadan sonra AYT Coğrafya 2 video)
-- **Cumartesi**: TYT-AYT Tarih (2 video) + TYT Biyoloji (2 video - 21. haftadan sonra soru/tekrar)
+- **Pazartesi**: TYT Türkçe (Aker Kartal - 2 video) + TYT Coğrafya (Yunus Hoca - 2 video)
+- **Salı**: TYT Matematik (Bıyıklı Matematik - 2 video) + TYT-AYT Tarih (Mehmet Celal Özyıldız - 2 video)
+- **Çarşamba**: TYT Biyoloji (Biosem - 2 video) + AYT Edebiyat (Deniz Hoca - 2 video)
+- **Perşembe**: TYT Matematik (Bıyıklı Matematik - 2 video) + TYT Kimya (Meschemy Kimya - 2 video)
+- **Cuma**: TYT Fizik (Fizikfinito - 2 video) + AYT Edebiyat (Deniz Hoca - 2 video / 16. haftadan sonra AYT Coğrafya 2 video)
+- **Cumartesi**: TYT-AYT Tarih (Mehmet Celal Özyıldız - 2 video) + TYT Biyoloji (Biosem - 2 video / 21. haftadan sonra tekrar/soru)
 - **Pazar**: **DİNLENME GÜNÜ - ÇALIŞMAK KESİNLİKLE YASAK!**
 
 ---
@@ -54,13 +54,13 @@ The workbook consists of three purpose-built worksheets:
 - Pre-populated chronologically from Week 1 to Week 42.
 - Each study day contains:
   1. Header with Week No and Day name.
-  2. Block 1 (Subject 1, Video N, Title, Duration in Minutes, Clickable YouTube link, Checkbox `[ ]`).
+  2. Block 1 (Subject 1, Video N, Instructor, Title, Duration in Minutes, Clickable YouTube link, Checkbox `[ ]`).
   3. Mola 1 (`☕ 20 Dakika Mola - Zihni Dinlendir`).
-  4. Block 2 (Subject 1, Video N+1, Title, Duration, Link, Checkbox).
+  4. Block 2 (Subject 1, Video N+1, Instructor, Title, Duration, Link, Checkbox).
   5. Mola 2 (`☕ 20 Dakika Mola`).
-  6. Block 3 (Subject 2, Video M, Title, Duration, Link, Checkbox).
+  6. Block 3 (Subject 2, Video M, Instructor, Title, Duration, Link, Checkbox).
   7. Mola 3 (`☕ 20 Dakika Mola`).
-  8. Block 4 (Subject 2, Video M+1, Title, Duration, Link, Checkbox).
+  8. Block 4 (Subject 2, Video M+1, Instructor, Title, Duration, Link, Checkbox).
   9. Daily summary row: Total Study Time (Dk / Saat), Total Break Time (60 dk).
 - Sundays formatted across merged cells with an explicit resting banner (`⛔ PAZAR: ÇALIŞMAK KESİNLİKLE YASAK`).
 - Top dashboard summary: Total Videos Watched, Remaining Videos, Total Hours Studied, Progress %.
@@ -80,6 +80,7 @@ The workbook consists of three purpose-built worksheets:
 - Complete tabular database of all 746 videos.
 - Columns:
   - `Ders`
+  - `Eğitmen & Kanal`
   - `Video No`
   - `Video Başlığı`
   - `Süre (Dk)`
@@ -106,7 +107,7 @@ The workbook consists of three purpose-built worksheets:
 ## 5. Technical Implementation & Automation
 
 1. **Extractor / Data Engine**:
-   - `extract_playlists.py`: Scrapes and caches full metadata (titles, durations, URLs) via `yt-dlp` into `playlists_data.json`.
+   - `extract_playlists.py`: Scrapes and caches full metadata (titles, durations, URLs, instructors) via `yt-dlp` with `--extractor-args "youtube:lang=tr"` into `playlists_data_tr.json`.
 2. **Excel Builder**:
    - `build_excel.js` (Node.js with `exceljs`): Assembles all 3 worksheets with proper cell formats, formulas, conditional formatting rules, widths, and styling.
 3. **Verification**:

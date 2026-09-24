@@ -26,7 +26,7 @@ An interactive, automated Excel workbook and study planner that structures 746 Y
 ## Positioning
 
 Unlike generic static study schedules or chaotic checklists, this tool:
-1. Embeds exact YouTube playlist metadata (video titles, precise durations in minutes, and direct click-to-watch links).
+1. Embeds exact YouTube playlist metadata (video titles, precise durations in minutes, real instructors, and direct click-to-watch links).
 2. Provides a zero-decision daily rhythm: 4 blocks per day, 1 video per block, 20-minute breaks between blocks.
 3. Features an interactive planner with dependent dropdowns (pick Subject -> see only its videos -> duration auto-populates).
 4. Strictly enforces "Sunday is No Study Day" (ÇALIŞMAK YASAK) to prevent student burnout.
@@ -54,18 +54,18 @@ The student opens the Excel spreadsheet daily on PC, laptop, or tablet. They mar
 - Straightforward, encouraging, clean, non-intimidating design.
 - Clear visual cues: gentle pastel tones, high readability, no overwhelming dense walls of text.
 
-## Evidence on Hand
+## Evidence on Hand (Verified Playlists & Real Instructors)
 
 746 verified YouTube videos from 9 authoritative playlists:
-- TYT Türkçe (Aker Kartal): 71 videos, 23.1 hours
-- TYT-AYT Tarih (Sadettin Akyuva): 166 videos, 101.6 hours
-- TYT Coğrafya (Coğrafyanın Kodları): 60 videos, 36.0 hours
-- AYT Coğrafya (Coğrafyanın Kodları): 54 videos, 32.9 hours
-- TYT Matematik (Mert Hoca): 118 videos, 88.1 hours
-- TYT Biyoloji (Dr. Biyoloji): 80 videos, 41.8 hours
-- TYT Fizik (VIP Fizik): 76 videos, 51.7 hours
-- TYT Kimya (Görkem Şahin): 79 videos, 32.3 hours
-- AYT Edebiyat (Kadir Gümüş): 62 videos, 36.3 hours
+- TYT Türkçe: Aker Kartal (Retro Yayıncılık) - 71 videos, 23.1 hours
+- TYT-AYT Tarih: Mehmet Celal Özyıldız (Retro Yayıncılık) - 166 videos, 101.6 hours
+- TYT Coğrafya: Yunus Hoca (Coğrafyanın Kodları) - 60 videos, 36.0 hours
+- AYT Coğrafya: Yunus Hoca (Coğrafyanın Kodları) - 54 videos, 32.9 hours
+- TYT Matematik: Selim Yüksel (Bıyıklı Matematik) - 118 videos, 88.1 hours
+- TYT Biyoloji: Semih Hoca (Biosem) - 80 videos, 41.8 hours
+- TYT Fizik: Altuğ Güneş (Fizikfinito) - 76 videos, 51.7 hours
+- TYT Kimya: Mesut Hoca (Meschemy Kimya) - 79 videos, 32.3 hours
+- AYT Edebiyat: Deniz Hoca (Deniz Hoca) - 62 videos, 36.3 hours
 
 ## Product Principles
 
