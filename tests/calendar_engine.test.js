@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { generateCalendarDays } from '../src/calendar_engine.js';
 
-test('calendar generator maps 746 videos across ~42 weeks with 4 blocks/day and Sunday off', () => {
+test('calendar generator maps 766 videos across ~42 weeks with 4 blocks/day and Sunday off', () => {
   const data = JSON.parse(fs.readFileSync('playlists_data_tr.json', 'utf8'));
   const weeks = generateCalendarDays(data);
   
