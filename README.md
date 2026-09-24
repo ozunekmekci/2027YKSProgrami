@@ -105,38 +105,84 @@ Excel'e alternatif veya masaüstünde video izlerken yan sekmede açık tutabile
 
 ---
 
+---
+
+## Android Mobil Uygulaması ("YKS 2027 Koçu")
+
+Öğrencinin çalışma programını cebinde taşıyabilmesi, YouTube videolarını tek dokunuşla doğrudan YouTube uygulamasında açabilmesi, mola saatlerinde telefon titreşimiyle uyarılması ve aksayan günlerde sıfır stresle programı kaydırabilmesi için **Capacitor 7** ve **Material Design 3** standartlarında yerel bir Android mobil uygulaması geliştirilmiştir.
+
+### Ekranlar ve Temel Özellikler
+
+1. **Bugün Sekmesi (Günün 4 Bloğu & Mola Asistanı):**
+   - Aktif haftanın seçili günündeki 4 video bloğunu kartlar halinde sunar.
+   - Her blokta konu adı, eğitmen, tahmini süre ve nane yeşili durum kutucuğu yer alır.
+   - **Doğrudan YouTube Açma:** "YouTube'da İzle" butonuna dokunulduğunda doğrudan telefondaki YouTube uygulamasını derin bağlantıyla (`vnd.youtube:VIDEO_ID`) açar; uygulama yoksa web tarayıcısına yumuşak geçiş yapar.
+   - **Haptik Titreşimli 20 Dk Mola Sayacı:** Blok aralarındaki mola kartları Capacitor Haptics motorunu tetikler. Mola başladığında ve bittiğinde telefon titreşir, Web Audio API çift tonlu zil sesi (D5 → A5) çalar.
+   - **Pazar Koruma Kalkanı:** Pazar günleri ekran otomatik olarak kırmızı dinlenme kartına bürünür ve öğrenciyi zihnini dinlendirmeye zorlar.
+
+2. **Radar Sekmesi (Gelecek & Geçmiş + Stress-Free Shift Engine):**
+   - 42 haftalık maratonun tüm haftalarını akordiyon kartlar halinde listeler. Geçmişte kaç video izlendiğini, gelecekte hangi konuların geleceğini şeffafça gösterir.
+   - **19 Haziran 2027 Geri Sayımı:** Sınav gününe kaç gün, kaç saat kaldığını anlık gösterir.
+   - **Stress-Free Shift Engine (Programı Bugüne Göre Güncelle):** Hastalık, motivasyon düşüklüğü veya beklenmeyen durumlarda bir ya da birkaç gün çalışılamadığında öğrenciyi suçlu hissettirmez. Tek dokunuşla henüz izlenmemiş tüm videoları kronolojik sırasını hiç bozmadan bugünden itibaren 4 blokluk günlere yeniden dağıtır.
+
+3. **Müfredat & Arama Sekmesi:**
+   - 9 dersin bağımsız ilerleme çubukları (TYT Türkçe, TYT Matematik vb.).
+   - Türkçe arama desteği (`toLocaleLowerCase('tr-TR')`): Konu veya eğitmen arandığında tüm müfredat taranır ve aranan video tek dokunuşla izlenebilir.
+   - **JSON Yedekleme & Geri Yükleme:** İlerleme verilerini (`yks_2027_ilerleme_yedek.json`) tek tıkla dışa aktarabilir veya başka bir cihaza yükleyebilirsiniz.
+
+---
+
 ## Kurulum ve Geliştirici Kılavuzu
 
-Proje Node.js tabanlı otomasyon araçlarına sahiptir. Dosyaları sıfırdan derlemek veya testleri yürütmek için:
+Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
 
 ### Gereksinimler
-- Node.js (v18 veya üzeri önerilir)
+- Node.js (v18 veya üzeri)
 - npm
+- Android Studio & JDK 17 (Mobil derlemeler ve APK üretimi için)
 
-### Adımlar
+### Komutlar ve Kullanım
 
-1. Bağımlılıkları yükleyin:
+1. **Bağımlılıkları yükleyin:**
    ```bash
    npm install
    ```
 
-2. Test paketini çalıştırın:
+2. **Tüm test paketini çalıştırın:**
    ```bash
    npm test
    ```
-   *15 otomatik test veri bütünlüğünü, takvim dağıtımını, Excel şablonlarını ve HTML arayüzünü doğrular.*
+   *29 otomatik birim testi veri bütünlüğünü, takvim motorunu, Excel sayfalarını, HTML takip panosunu ve Android yerel proje yapısını doğrular.*
 
-3. Excel çalışma kitabını yeniden oluşturun:
+3. **Mobil Uygulama Dosyalarını Güncelleyin & Senkronize Edin:**
    ```bash
-   npm run build
+   npm run build:mobile
    ```
-   *`YKS_2027_Calisma_Programi.xlsx` dosyası tüm formüller, stiller ve ad alanlarıyla birlikte üretilir.*
+   *`src/generate_mobile_app.js` çalışarak `www/index.html` dosyasını üretir ve `npx cap sync android` ile Android varlıklarına senkronlar.*
 
-4. HTML takip panosunu yeniden oluşturun:
+4. **Mobil Uygulamayı Web Tarayıcısında Önizleyin:**
    ```bash
-   node src/generate_dashboard.js
+   # www/index.html dosyasını doğrudan tarayıcıda açabilir ya da:
+   npx cap serve
    ```
-   *`yks_dashboard.html` dosyası güncellenir.*
+
+5. **Android Studio'da Projeyi Açın:**
+   ```bash
+   npx cap open android
+   ```
+   *Proje Android Studio'da açılır; emulator veya fiziksel cihazda tek tıkla (Run 'app') çalıştırılabilir.*
+
+6. **Komut Satırından Debug APK Derleyin:**
+   ```bash
+   cd android && ./gradlew assembleDebug
+   ```
+   *Üretilen APK konumu: `android/app/build/outputs/apk/debug/app-debug.apk`.*
+
+7. **Excel Çalışma Kitabını Yeniden Oluşturun:**
+   ```bash
+   npm run build:excel
+   ```
+   *`YKS_2027_Calisma_Programi.xlsx` dosyası üretilir.*
 
 ---
 
@@ -145,20 +191,31 @@ Proje Node.js tabanlı otomasyon araçlarına sahiptir. Dosyaları sıfırdan de
 ```
 .
 ├── YKS_2027_Calisma_Programi.xlsx   # Üretilen 3 sayfalı hazır Excel çalışma kitabı
-├── yks_dashboard.html               # Tek dosyalık çevrimdışı HTML çalışma asistanı
+├── yks_dashboard.html               # Tek dosyalık çevrimdışı masaüstü HTML çalışma asistanı
 ├── playlists_data_tr.json           # 9 oynatma listesi ve 766 videoluk doğrulanmış veri seti
+├── capacitor.config.json            # Capacitor 7 Android konfigürasyonu (com.yks.planner)
 ├── PRODUCT.md                       # Ürün tasarım ilkeleri ve pedagojik hedefler
 ├── README.md                        # Kullanım kılavuzu ve teknik dökümantasyon
-├── package.json                     # Proje konfigürasyonu ve test scriptleri
+├── package.json                     # Proje konfigürasyonu, bağımlılıklar ve test scriptleri
+├── android/                         # Yerel Android Studio & Gradle projesi
+│   ├── app/src/main/AndroidManifest.xml # İzinler (INTERNET, VIBRATE) ve launcher aktivitesi
+│   ├── app/build.gradle             # Android SDK 35, applicationId ve bağımlılıklar
+│   └── gradlew                      # Linux/macOS Gradle derleme wrapper'ı
+├── www/                             # Mobil web paketi (Capacitor varlık kökü)
+│   └── index.html                   # Material 3 mobil asistanı (766 video gömülü)
 ├── src/
 │   ├── calendar_engine.js           # 42 haftalık kronolojik blok dağıtım algoritması
 │   ├── build_excel.js               # ExcelJS tabanlı çok sayfalı XLSX üreticisi
-│   └── generate_dashboard.js        # Standalone HTML dashboard derleyicisi
+│   ├── generate_dashboard.js        # Standalone masaüstü HTML dashboard derleyicisi
+│   └── generate_mobile_app.js       # Material 3 mobil uygulama üreticisi & derleyicisi
 └── tests/
     ├── test_data_integrity.test.js  # 766 video ve oynatma listesi veri doğrulama testi
     ├── calendar_engine.test.js      # Takvim mantığı, geçişler ve blok bütünlüğü testleri
     ├── excel_generation.test.js     # Excel çalışma sayfaları, formüller ve aralık testleri
-    └── dashboard_generation.test.js # HTML dashboard, sayaç, LocalStorage ve stil testleri
+    ├── dashboard_generation.test.js # Masaüstü HTML dashboard, sayaç ve stil testleri
+    ├── test_capacitor_setup.test.js # Capacitor paketleri ve konfigürasyon testi
+    ├── mobile_app.test.js           # Mobil arayüz, Shift Motoru, 3 sekme ve Impeccable testleri
+    └── android_project.test.js      # Android izinleri, Gradle ve varlık senkronizasyon testleri
 ```
 
 ---
