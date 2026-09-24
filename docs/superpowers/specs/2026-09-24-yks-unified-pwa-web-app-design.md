@@ -18,21 +18,30 @@ Bu tasarım, **YKS 2027 Koçu** uygulamasını hem masaüstü/dizüstü bilgisay
 ### Dosya ve Dizin Yapısı
 ```
 .
+├── tsconfig.json                    # TypeScript derleyici ve tip denetim konfigürasyonu
+├── src/
+│   ├── web/                         # TypeScript tabanlı modüler kaynak kodlar
+│   │   ├── types.ts                 # Video, Takvim, Shift, Timer ve Backup tip tanımları
+│   │   ├── shift_engine.ts          # Tip güvenli kronolojik Shift motoru
+│   │   ├── timer.ts                 # 20 dk mola sayacı ve Web Audio chime motoru
+│   │   ├── storage.ts               # LocalStorage ve JSON yedek doğrulama & saklama
+│   │   └── app.ts                   # Ana uygulama başlatıcı, UI etkileşimleri ve PWA yönetimi
+│   ├── generate_mobile_app.js       # Birleşik web/PWA ve mobil HTML derleyicisi
+│   └── calendar_engine.js           # 42 haftalık kronolojik blok dağıtım algoritması
 ├── www/                             # Dağıtıma hazır web & PWA paketi (Capacitor varlık kökü)
 │   ├── index.html                   # Duyarlı (desktop + mobile) tek sayfa web uygulaması
+│   ├── app.js                       # TypeScript'ten derlenmiş tip güvenli istemci kodu
 │   ├── manifest.json                # PWA manifest dosyası (app name, theme color, icons)
 │   ├── sw.js                        # Offline önbellekleme ve PWA service worker
 │   └── icons/                       # PWA ikonları (192x192, 512x512 SVG/PNG)
-├── src/
-│   ├── generate_mobile_app.js       # Birleşik web/PWA ve mobil HTML derleyicisi
-│   ├── calendar_engine.js           # 42 haftalık kronolojik blok dağıtım algoritması
-│   └── serve_web.js                 # Yerel geliştirme ve web sunucusu (sıfır bağımlılık)
 └── tests/
     ├── web_pwa.test.js              # PWA manifest, Service Worker ve duyarlı arayüz testleri
+    ├── ts_modules.test.js           # TypeScript modülleri (shift, timer, storage) testleri
     └── ...                          # Mevcut 29 birim testi
 ```
 
 ### Teknoloji Seçimleri
+- **TypeScript 5 (Strict Mode):** Tip güvenli müfredat modelleri, video sözleşmeleri, takvim veri yapıları ve PWA event tipleri (`"strict": true`).
 - **Duyarlı CSS & Material 3:** CSS Grid ve Flexbox ile ekran genişliğine göre uyarlanan yerleşim (`@media (min-width: 768px)` ve `@media (min-width: 1024px)`).
 - **Service Worker (`sw.js`):** Cache-first stratejisi ile HTML, CSS, JS ve 766 videoluk JSON verisini çevrimdışı depolar.
 - **Vanilla ESM & Web Standartları:** Sıfır ağır JS kütüphanesi; saf, sürdürülebilir, hafif ve aşırı hızlı istemci mimarisi (Ponytail prensibi).
