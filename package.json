@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "build": "node src/build_excel.js"
+    "build:excel": "node src/build_excel.js",
+    "build:mobile": "node src/generate_mobile_app.js && npx cap sync android",
+    "build": "npm run build:excel && npm run build:mobile"
   },
   "dependencies": {
     "@capacitor/android": "^7.6.9",

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { execSync } from 'node:child_process';
 
 test('Native Android project structure and Gradle wrapper exist', () => {
   assert.ok(fs.existsSync('android'), 'android/ directory does not exist');
@@ -56,6 +57,11 @@ test('android/app/src/main/res/values/strings.xml defines app name as YKS 2027 K
 test('android/app/src/main/assets contains synced web bundle with 766 curriculum videos', () => {
   const assetHtmlPath = 'android/app/src/main/assets/public/index.html';
   const assetConfigPath = 'android/app/src/main/assets/capacitor.config.json';
+
+  // Ensure assets are synced even on clean clone where assets/public is gitignored
+  if (!fs.existsSync(assetHtmlPath)) {
+    execSync('npx cap sync android', { stdio: 'ignore' });
+  }
 
   assert.ok(fs.existsSync(assetHtmlPath), `${assetHtmlPath} does not exist`);
   assert.ok(fs.existsSync(assetConfigPath), `${assetConfigPath} does not exist`);
