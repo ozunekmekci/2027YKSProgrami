@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.js",
+    "typecheck": "tsc --noEmit",
     "build:excel": "node src/build_excel.js",
     "build:mobile": "node src/generate_mobile_app.js && npx cap sync android",
     "build": "npm run build:excel && npm run build:mobile"
@@ -15,6 +16,7 @@
     "exceljs": "^4.4.0"
   },
   "devDependencies": {
-    "@capacitor/cli": "^7.6.9"
+    "@capacitor/cli": "^7.6.9",
+    "typescript": "^5.9.3"
   }
 }
