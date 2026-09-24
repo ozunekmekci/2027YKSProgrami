@@ -77,7 +77,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
           </div>
           <div class="week-details" id="week-details-${w.weekNum}">
             ${dayRows}
-            <button class="btn btn-outline" style="width: 100%; margin-top: 10px; min-height: 40px; font-size: 0.8rem;"
+            <button class="btn btn-outline" style="width: 100%; margin-top: 10px; min-height: 48px; font-size: 0.85rem;"
               onclick="jumpToWeek(${w.weekNum})">
               Bu Haftayı 'Bugün' Olarak Aç
             </button>
@@ -1175,7 +1175,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
           <button class="btn btn-shift" onclick="triggerShiftEngine()">
             <span>Programı Bugüne Göre Güncelle (Shift)</span>
           </button>
-          <button class="btn btn-outline" style="min-height: 40px; font-size: 0.8rem;" onclick="resetToOriginalSchedule()">
+          <button class="btn btn-outline" style="min-height: 48px; font-size: 0.85rem;" onclick="resetToOriginalSchedule()">
             Orijinal Takvime Sıfırla
           </button>
         </div>
@@ -1201,7 +1201,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
       <div id="search-results-area" class="search-results-box">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
           <span id="search-results-count" style="font-size: 0.85rem; font-weight: 700; color: var(--m3-text-secondary);"></span>
-          <button class="btn" style="min-height: 36px; padding: 4px 10px; font-size: 0.75rem;" onclick="clearCurriculumSearch()">Temizle</button>
+          <button class="btn" style="min-height: 48px; padding: 4px 14px; font-size: 0.85rem;" onclick="clearCurriculumSearch()">Temizle</button>
         </div>
         <div id="search-results-list"></div>
       </div>
@@ -1328,18 +1328,24 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
       return map[subj] || 'badge-tekrar';
     }
 
-    // Native YouTube Intent with Web Fallback
+    // Native YouTube Intent with Web Fallback (prevents fallback race on blur)
     function openYouTube(id, event) {
       if (event) event.preventDefault();
       const intentUri = 'vnd.youtube:' + id;
       const webFallback = 'https://www.youtube.com/watch?v=' + id;
+      let appCaptured = false;
+      const onBlur = () => { appCaptured = true; };
+      window.addEventListener('blur', onBlur, { once: true });
       try {
         window.location.href = intentUri;
         setTimeout(() => {
-          // If native app didn't capture, fallback to web
-          window.open(webFallback, '_blank');
+          window.removeEventListener('blur', onBlur);
+          if (!appCaptured) {
+            window.open(webFallback, '_blank');
+          }
         }, 800);
       } catch (err) {
+        window.removeEventListener('blur', onBlur);
         window.open(webFallback, '_blank');
       }
     }
@@ -1358,12 +1364,20 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
     }
 
     // Web Audio API Dual-Tone Chime: D5 (587.33 Hz) -> A5 (880 Hz)
-    function playChime() {
+    function initAudioContext() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        if (!audioCtx) audioCtx = new AudioCtx();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+        if (!audioCtx && AudioCtx) audioCtx = new AudioCtx();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      } catch (e) {
+        console.warn('AudioContext init error:', e);
+      }
+    }
+
+    function playChime() {
+      try {
+        initAudioContext();
+        if (!audioCtx) return;
 
         const now = audioCtx.currentTime;
 
@@ -1397,8 +1411,11 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
 
     // Break Timer Logic
     function openTimerModal(duration = 1200) {
-      timerDuration = duration;
-      timerRemaining = duration;
+      initAudioContext();
+      if (!timerRunning && timerRemaining <= 0) {
+        timerDuration = duration;
+        timerRemaining = duration;
+      }
       document.getElementById('timer-modal-overlay').classList.add('open');
       resumeTimer();
     }
@@ -1417,6 +1434,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
 
     function resumeTimer() {
       if (timerRunning) return;
+      initAudioContext();
       timerRunning = true;
       document.getElementById('timer-toggle-btn').textContent = 'Duraklat';
       timerTargetEndTime = Date.now() + timerRemaining * 1000;
@@ -1650,7 +1668,8 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
       let blocksHtml = '';
       blocks.forEach((b, idx) => {
         const v = b.video;
-        const isDone = v.id && completedVideos[v.id];
+        const videoId = v.id || ('tekrar-' + (b.subject || 'genel').replace(/[^a-zA-Z0-9]/g, '_') + '-w' + activeWeekNum + '-d' + activeDayIndex + '-b' + (idx + 1));
+        const isDone = Boolean(completedVideos[videoId]);
         if (isDone) completedBlocksCount++;
 
         const badgeClass = getSubjectBadgeClass(b.subject);
@@ -1673,7 +1692,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
               <label class="checkbox-label" for="chk-\${activeWeekNum}-\${activeDayIndex}-\${idx}">
                 <input type="checkbox" class="block-checkbox" id="chk-\${activeWeekNum}-\${activeDayIndex}-\${idx}"
                   \${isDone ? 'checked' : ''}
-                  onchange="toggleVideo('\${v.id}', this.checked)">
+                  onchange="toggleVideo('\${videoId}', this.checked)">
                 <span>\${isDone ? 'Tamamlandı' : 'İzlendi olarak işaretle'}</span>
               </label>
 
@@ -1785,7 +1804,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
                   </div>
                 \`;
               }).join('')}
-              <button class="btn btn-outline" style="width: 100%; margin-top: 10px; min-height: 40px; font-size: 0.8rem;"
+              <button class="btn btn-outline" style="width: 100%; margin-top: 10px; min-height: 48px; font-size: 0.85rem;"
                 onclick="jumpToWeek(\${w.weekNum})">
                 Bu Haftayı 'Bugün' Olarak Aç
               </button>
@@ -1835,6 +1854,10 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
       // Re-distribute uncompleted videos across weeks using the calendar distribution algorithm
       const shiftedWeeks = shiftSchedule(remainingQueues);
       currentSchedule = shiftedWeeks;
+      activeWeekNum = 1;
+      activeDayIndex = 0;
+      localStorage.setItem('yks_active_week', 1);
+      localStorage.setItem('yks_active_day', 0);
 
       try {
         localStorage.setItem('yks_shifted_schedule', JSON.stringify(shiftedWeeks));
@@ -1844,6 +1867,8 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
 
       // Re-render
       populateDayDropdown();
+      const select = document.getElementById('day-selector');
+      if (select) select.value = '1-0';
       renderTodayTab();
       renderRadarTab();
       updateTopBar();
@@ -2133,6 +2158,15 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
           if (parsed && typeof parsed.completedVideos === 'object') {
             completedVideos = parsed.completedVideos;
             saveCompletedVideos();
+            if (parsed.activeWeek) {
+              activeWeekNum = parseInt(parsed.activeWeek, 10);
+              localStorage.setItem('yks_active_week', activeWeekNum);
+            }
+            if (parsed.activeDay !== undefined) {
+              activeDayIndex = parseInt(parsed.activeDay, 10);
+              localStorage.setItem('yks_active_day', activeDayIndex);
+            }
+            populateDayDropdown();
             updateAllUI();
             alert(\`Yedek başarıyla yüklendi! \${Object.keys(completedVideos).length} video tamamlandı olarak işaretlendi.\`);
           } else {
