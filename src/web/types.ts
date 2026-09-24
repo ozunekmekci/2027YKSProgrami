@@ -83,6 +83,8 @@ export interface TimerCallbacks {
 export interface BreakTimer {
   start: () => void;
   pause: () => void;
-  reset: () => void;
+  resume: () => void;
+  reset: (durationSec?: number) => void;
   getState: () => TimerState;
+  playChime?: (audioContext?: AudioContext) => void;
 }
