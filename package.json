@@ -5,8 +5,11 @@
   "scripts": {
     "test": "node --test tests/*.test.js",
     "typecheck": "tsc --noEmit",
-    "build:excel": "node src/build_excel.js",
+    "serve": "node src/serve_web.js",
+    "build:web": "node src/generate_mobile_app.js",
     "build:mobile": "node src/generate_mobile_app.js && npx cap sync android",
+    "build:excel": "node src/build_excel.js",
+    "build:all": "npm run build:excel && npm run build:mobile",
     "build": "npm run build:excel && npm run build:mobile"
   },
   "dependencies": {

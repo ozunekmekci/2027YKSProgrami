@@ -105,6 +105,57 @@ Excel'e alternatif veya masaüstünde video izlerken yan sekmede açık tutabile
 
 ---
 
+## Duyarlı Web & PWA Sürümü (Desktop, Tablet & Mobil)
+
+Mobil uygulamanın yanı sıra, masaüstü geniş ekranlar, dizüstü bilgisayarlar ve tabletler için optimize edilmiş tam teşekküllü ve duyarlı bir **Aşamalı Web Uygulaması (PWA - Progressive Web App)** sürümü sunulmaktadır.
+
+### Temel Özellikler
+
+1. **Duyarlı (Responsive) Çok Panelli Tasarım:**
+   - **Masaüstü & Geniş Ekranlar (`>= 1024px`):** İki panelli geniş ekran arayüzü sunar; sol tarafta haftalık takvim seçici ve hızlı aksiyonlar, sağ tarafta seçili günün 4 çalışma bloğu ve mola kartları yer alır.
+   - **Tablet & Mobil (`< 1024px`):** Alt navigasyon barı (Bottom Navigation) ve dokunmatik optimize kaydırma deneyimiyle tek elle kolay kullanım sağlar.
+
+2. **Çevrimdışı Çalışma (Offline-First) & Service Worker:**
+   - `www/sw.js` Servis Çalışanı, uygulamanın çekirdek varlıklarını (`index.html`, `manifest.json`, SVG ikonlar) yerel önbelleğe (Cache Storage) kaydeder.
+   - İnternet bağlantınız kopsa veya çevrimdışı olsanız dahi çalışma takviminiz, mola sayacınız, müfredat arama motorunuz ve kayıtlı ilerlemeniz kesintisiz çalışmaya devam eder.
+
+3. **Doğrudan Yeni Sekmede YouTube Oynatma:**
+   - Masaüstü ve web ortamında "YouTube'da İzle" butonuna tıklandığında, video güvenli bir şekilde yeni tarayıcı sekmesinde (`window.open(url, '_blank', 'noopener,noreferrer')`) açılır. Böylece çalışma panonuz ve mola sayacınız arka planda kapanmadan akmaya devam eder.
+   - Android Capacitor ortamında ise yerel YouTube uygulaması derin bağlantıyla (`vnd.youtube:`) tetiklenir.
+
+4. **Stress-Free Shift Engine (Kayıpsız Telafi Motoru):**
+   - Beklenmeyen aksamalar, hastalık veya tatillerde programdan kopmayı önler.
+   - Henüz izlenmemiş olan tüm ders bloklarını, konuların ve derslerin pedagojik sırasını kesinlikle bozmadan bugünden itibaren sonraki çalışma günlerine dengeli şekilde yeniden dağıtır.
+   - Öğrenciye başarısızlık hissi yaşatmaz; takvimi güncel gerçeğe göre sıfırlar.
+
+5. **TypeScript Tabanlı Sağlam Mimari:**
+   - Web ve PWA çekirdeği katı modda (`strict: true`) yapılandırılmış TypeScript modülleri (`src/web/`) ile inşa edilmiştir:
+     - `types.ts`: Tüm veri modelleri, takvim ve oynatma listesi arayüz sözleşmeleri.
+     - `shift_engine.ts`: Telafi ve blok kaydırma algoritması.
+     - `timer.ts`: Web Audio API tabanlı 20 dakikalık mola sayacı ve D5-A5 çift tonlu zil motoru.
+     - `storage.ts`: LocalStorage kalıcılığı, JSON veri yedekleme ve doğrulama mekanizması.
+     - `app.ts`: Etkileşim kontrolcüsü, sekme ve PWA yükleme yönetimi.
+
+---
+
+### PWA Olarak Yükleme Kılavuzu
+
+Uygulamayı tarayıcı sekmelerinden bağımsız, yerel bir masaüstü veya mobil uygulama gibi penceresiz (standalone) kullanabilirsiniz:
+
+- **Masaüstü (Google Chrome & Microsoft Edge):**
+  1. `http://localhost:3000` (veya canlı sunucu) adresini tarayıcınızda açın.
+  2. Adres çubuğunun sağ tarafındaki **"Uygulamayı Yükle"** (monitör / indirme ikonu) simgesine tıklayın (veya tarayıcı menüsünden `Diğer Araçlar` > `Uygulama olarak yükle`).
+  3. Açılan onay penceresinde "Yükle" butonuna basın. Uygulama bağımsız bir pencerede açılır ve masaüstünüze kısayol eklenir.
+
+- **Mobil (iOS Safari):**
+  1. Safari'de adresi açın.
+  2. Alt kısımdaki **Paylaş** (kare ve yukarı ok) simgesine dokunun.
+  3. Menüden **"Ana Ekrana Ekle"** seçeneğini seçin ve "Ekle" butonuna basın.
+
+- **Mobil (Android Chrome):**
+  1. Chrome'da adresi açın.
+  2. Ekranın altındaki "YKS 2027 Koçu Ana Ekrana Ekle" başlığına dokunun veya sağ üstteki üç noktaya basıp **"Uygulamayı Yükle"** deyin.
+
 ---
 
 ## Android Mobil Uygulaması ("YKS 2027 Koçu")
@@ -148,37 +199,44 @@ Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
    npm install
    ```
 
-2. **Tüm test paketini çalıştırın:**
+2. **Yerel PWA Geliştirme Sunucusunu Başlatın:**
+   ```bash
+   npm run serve
+   ```
+   *Sıfır bağımlılıklı yerel HTTP sunucusu `http://localhost:3000` adresinde başlar; statik PWA varlıklarını ve Service Worker başlıklarını (`Service-Worker-Allowed: /`) eksiksiz sunar.*
+
+3. **TypeScript Statik Tip Kontrolünü Çalıştırın:**
+   ```bash
+   npm run typecheck
+   ```
+   *`tsc --noEmit` komutuyla `src/web/` altındaki tüm TypeScript modüllerini katı kurallarla (`strict: true`) tip kontrolünden geçirir.*
+
+4. **Tüm Test Paketini Çalıştırın:**
    ```bash
    npm test
    ```
-   *29 otomatik birim testi veri bütünlüğünü, takvim motorunu, Excel sayfalarını, HTML takip panosunu ve Android yerel proje yapısını doğrular.*
+   *77 otomatik birim testi veri bütünlüğünü, takvim motorunu, Excel sayfalarını, HTML takip panosunu, mobil uygulamayı, PWA altyapısını ve yerel geliştirme sunucusunu doğrular.*
 
-3. **Mobil Uygulama Dosyalarını Güncelleyin & Senkronize Edin:**
+5. **Web ve Mobil Varlıklarını Derleyin:**
    ```bash
-   npm run build:mobile
-   ```
-   *`src/generate_mobile_app.js` çalışarak `www/index.html` dosyasını üretir ve `npx cap sync android` ile Android varlıklarına senkronlar.*
-
-4. **Mobil Uygulamayı Web Tarayıcısında Önizleyin:**
-   ```bash
-   # www/index.html dosyasını doğrudan tarayıcıda açabilir ya da:
-   npx cap serve
+   npm run build:web       # Yalnızca www/index.html web/PWA paketini derler
+   npm run build:mobile    # www/index.html derler ve Capacitor ile Android'e senkronlar
+   npm run build:all       # Excel, Web ve Mobil tüm varlıkları tek seferde derler
    ```
 
-5. **Android Studio'da Projeyi Açın:**
+6. **Android Studio'da Projeyi Açın:**
    ```bash
    npx cap open android
    ```
    *Proje Android Studio'da açılır; emulator veya fiziksel cihazda tek tıkla (Run 'app') çalıştırılabilir.*
 
-6. **Komut Satırından Debug APK Derleyin:**
+7. **Komut Satırından Debug APK Derleyin:**
    ```bash
    cd android && ./gradlew assembleDebug
    ```
    *Üretilen APK konumu: `android/app/build/outputs/apk/debug/app-debug.apk`.*
 
-7. **Excel Çalışma Kitabını Yeniden Oluşturun:**
+8. **Excel Çalışma Kitabını Yeniden Oluşturun:**
    ```bash
    npm run build:excel
    ```
@@ -194,6 +252,7 @@ Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
 ├── yks_dashboard.html               # Tek dosyalık çevrimdışı masaüstü HTML çalışma asistanı
 ├── playlists_data_tr.json           # 9 oynatma listesi ve 766 videoluk doğrulanmış veri seti
 ├── capacitor.config.json            # Capacitor 7 Android konfigürasyonu (com.yks.planner)
+├── tsconfig.json                    # TypeScript derleyici yapılandırması (ES2022 / ESNext)
 ├── PRODUCT.md                       # Ürün tasarım ilkeleri ve pedagojik hedefler
 ├── README.md                        # Kullanım kılavuzu ve teknik dökümantasyon
 ├── package.json                     # Proje konfigürasyonu, bağımlılıklar ve test scriptleri
@@ -201,13 +260,23 @@ Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
 │   ├── app/src/main/AndroidManifest.xml # İzinler (INTERNET, VIBRATE) ve launcher aktivitesi
 │   ├── app/build.gradle             # Android SDK 35, applicationId ve bağımlılıklar
 │   └── gradlew                      # Linux/macOS Gradle derleme wrapper'ı
-├── www/                             # Mobil web paketi (Capacitor varlık kökü)
-│   └── index.html                   # Material 3 mobil asistanı (766 video gömülü)
+├── www/                             # Mobil ve PWA web dağıtım paketi
+│   ├── index.html                   # Material 3 & Responsive Web asistanı (766 video gömülü)
+│   ├── manifest.json                # PWA Web App Manifest yapılandırması
+│   ├── sw.js                        # Offline-first Service Worker önbellekleme motoru
+│   └── icons/                       # PWA vektörel SVG uygulama ikonları (192x192, 512x512)
 ├── src/
 │   ├── calendar_engine.js           # 42 haftalık kronolojik blok dağıtım algoritması
 │   ├── build_excel.js               # ExcelJS tabanlı çok sayfalı XLSX üreticisi
 │   ├── generate_dashboard.js        # Standalone masaüstü HTML dashboard derleyicisi
-│   └── generate_mobile_app.js       # Material 3 mobil uygulama üreticisi & derleyicisi
+│   ├── generate_mobile_app.js       # Material 3 mobil/web uygulama üreticisi & derleyicisi
+│   ├── serve_web.js                 # Sıfır bağımlılıklı yerel statik PWA dev sunucusu
+│   └── web/                         # Modüler TypeScript Web & PWA mimarisi
+│       ├── types.ts                 # Domain arayüzleri ve veri tipi sözleşmeleri
+│       ├── shift_engine.ts          # Telafi ve blok kaydırma algoritması
+│       ├── timer.ts                 # Web Audio API 20 dk mola sayacı ve çift tonlu zil
+│       ├── storage.ts               # LocalStorage kalıcılığı ve JSON yedekleme/geri yükleme
+│       └── app.ts                   # UI kontrolcüsü, sekme ve PWA yükleme yönetimi
 └── tests/
     ├── test_data_integrity.test.js  # 766 video ve oynatma listesi veri doğrulama testi
     ├── calendar_engine.test.js      # Takvim mantığı, geçişler ve blok bütünlüğü testleri
@@ -215,7 +284,12 @@ Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
     ├── dashboard_generation.test.js # Masaüstü HTML dashboard, sayaç ve stil testleri
     ├── test_capacitor_setup.test.js # Capacitor paketleri ve konfigürasyon testi
     ├── mobile_app.test.js           # Mobil arayüz, Shift Motoru, 3 sekme ve Impeccable testleri
-    └── android_project.test.js      # Android izinleri, Gradle ve varlık senkronizasyon testleri
+    ├── android_project.test.js      # Android izinleri, Gradle ve varlık senkronizasyon testleri
+    ├── ts_types_and_setup.test.js   # TypeScript kurulumu ve domain tip sözleşmeleri testi
+    ├── ts_core_modules.test.js      # TypeScript motor modülleri (shift, timer, storage) testi
+    ├── pwa_infrastructure.test.js   # Manifest, SVG ikonlar ve Service Worker testleri
+    ├── web_responsive_app.test.js   # Masaüstü/mobil responsive düzen ve app.ts testleri
+    └── serve_web.test.js            # Yerel PWA dev sunucusu ve statik dosya sunumu testi
 ```
 
 ---
