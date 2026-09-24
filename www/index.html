@@ -5,6 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
   <title>YKS 2027 Koçu</title>
   <meta name="description" content="YKS 2027 hazırlığı için 766 videoluk kişisel çalışma koçu, stressiz kaydırma motoru ve 20 dakikalık haptik mola zamanlayıcısı.">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="apple-touch-icon" href="icons/icon-192.svg">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.warn('SW registration failed:', err);
+        });
+      });
+    }
+  </script>
   <style>
     :root {
       --sat: env(safe-area-inset-top);
@@ -980,19 +992,211 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+
+    /* Top Bar Actions & Install Button */
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pwa-install-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background-color: var(--m3-surface-subtle);
+      border: 1px solid var(--m3-border);
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--m3-text-primary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .pwa-install-btn:hover {
+      background-color: var(--m3-surface-variant);
+    }
+
+    .desktop-nav-tabs {
+      display: none;
+    }
+
+    .desktop-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--m3-text-secondary);
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .desktop-nav-btn:hover {
+      background-color: var(--m3-surface-subtle);
+      color: var(--m3-text-primary);
+    }
+
+    .desktop-nav-btn.active {
+      background-color: var(--m3-primary-container);
+      color: var(--m3-on-primary-container);
+      border-color: var(--m3-border);
+    }
+
+    /* ==========================================================================
+       Responsive Breakpoints: Desktop Widescreen (>=1024px) & Mobile (<=767px)
+       ========================================================================== */
+    @media (min-width: 1024px) {
+      body {
+        padding-bottom: 32px;
+      }
+
+      .top-app-bar {
+        max-width: 1300px;
+        margin: 0 auto;
+        left: 0;
+        right: 0;
+        padding-left: 24px;
+        padding-right: 24px;
+        height: 64px;
+      }
+
+      .desktop-nav-tabs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .m3-bottom-nav {
+        display: none !important;
+      }
+
+      .tab-pane {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .today-blocks-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        align-items: start;
+      }
+
+      .today-blocks-grid .break-card,
+      .today-blocks-grid .sunday-rest-card {
+        grid-column: 1 / -1;
+      }
+
+      .timeline-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        align-items: start;
+      }
+
+      .timer-overlay {
+        align-items: center;
+        justify-content: center;
+      }
+
+      .timer-sheet {
+        border-radius: var(--radius-lg);
+        max-width: 520px;
+        padding: 28px 24px;
+        animation: modalFadeIn 0.2s ease-out;
+      }
+
+      @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.96); }
+        to { opacity: 1; transform: scale(1); }
+      }
+    }
+
+    @media (max-width: 767px) {
+      .desktop-nav-tabs {
+        display: none;
+      }
+
+      .m3-bottom-nav {
+        display: flex;
+      }
+
+      .tab-pane {
+        padding: 16px;
+        max-width: 680px;
+      }
+
+      .today-blocks-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .timeline-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Top App Bar (Material 3) -->
+  <!-- Top App Bar (Material 3 Responsive) -->
   <header class="top-app-bar">
     <div class="top-bar-left">
       <span class="top-bar-title">YKS 2027 Koçu</span>
       <span class="top-bar-subtitle" id="top-bar-week-date">Hafta 1 • Pazartesi</span>
     </div>
-    <div class="top-bar-progress-pill tabular-nums" id="top-bar-pill">
-      <span class="progress-dot"></span>
-      <span id="top-bar-pct">0.0%</span>
+
+    <!-- Desktop Horizontal Navigation Tabs -->
+    <nav class="desktop-nav-tabs" aria-label="Masaüstü Menü">
+      <button class="desktop-nav-btn active" data-tab="tab-today" onclick="switchTab('tab-today')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span>Bugün</span>
+      </button>
+      <button class="desktop-nav-btn" data-tab="tab-radar" onclick="switchTab('tab-radar')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="12" cy="12" r="9"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span>Radar</span>
+      </button>
+      <button class="desktop-nav-btn" data-tab="tab-curriculum" onclick="switchTab('tab-curriculum')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <span>Müfredat</span>
+      </button>
+    </nav>
+
+    <div class="top-bar-right">
+      <button id="pwa-install-btn" class="pwa-install-btn" style="display: none;" onclick="triggerInstallPrompt()" aria-label="Uygulamayı Yükle">
+        <svg class="pwa-install-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Yükle</span>
+      </button>
+      <div class="top-bar-progress-pill tabular-nums" id="top-bar-pill">
+        <span class="progress-dot"></span>
+        <span id="top-bar-pct">0.0%</span>
+      </div>
     </div>
   </header>
 
@@ -4045,25 +4249,43 @@
       return map[subj] || 'badge-tekrar';
     }
 
-    // Native YouTube Intent with Web Fallback (prevents fallback race on blur)
+    // Native YouTube Intent with Web Fallback (prevents fallback race on blur) & Desktop Web _blank
     function openYouTube(id, event) {
-      if (event) event.preventDefault();
-      const intentUri = 'vnd.youtube:' + id;
+      if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault();
+      }
       const webFallback = 'https://www.youtube.com/watch?v=' + id;
-      let appCaptured = false;
-      const onBlur = () => { appCaptured = true; };
-      window.addEventListener('blur', onBlur, { once: true });
-      try {
-        window.location.href = intentUri;
-        setTimeout(() => {
-          window.removeEventListener('blur', onBlur);
-          if (!appCaptured) {
-            window.open(webFallback, '_blank');
+      const isCapacitorAndroid = typeof window !== 'undefined' && Boolean(
+        ((window.Capacitor?.isNativePlatform && window.Capacitor.isNativePlatform()) ||
+        (window.Capacitor?.getPlatform && window.Capacitor.getPlatform() === 'android'))
+      );
+
+      if (isCapacitorAndroid) {
+        const intentUri = 'vnd.youtube:' + id;
+        let appCaptured = false;
+        const onBlur = () => { appCaptured = true; };
+        window.addEventListener('blur', onBlur, { once: true });
+        try {
+          window.location.href = intentUri;
+          setTimeout(() => {
+            if (typeof window !== 'undefined' && window.removeEventListener) {
+              window.removeEventListener('blur', onBlur);
+            }
+            if (!appCaptured && typeof window !== 'undefined') {
+              window.open(webFallback, '_blank', 'noopener,noreferrer');
+            }
+          }, 800);
+        } catch (err) {
+          if (typeof window !== 'undefined' && window.removeEventListener) {
+            window.removeEventListener('blur', onBlur);
           }
-        }, 800);
-      } catch (err) {
-        window.removeEventListener('blur', onBlur);
-        window.open(webFallback, '_blank');
+          if (typeof window !== 'undefined') {
+            window.open(webFallback, '_blank', 'noopener,noreferrer');
+          }
+        }
+      } else {
+        // Direct opening on Web Desktop/Browser with _blank
+        window.open(webFallback, '_blank', 'noopener,noreferrer');
       }
     }
 
@@ -4258,12 +4480,12 @@
     function switchTab(tabId) {
       document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.desktop-nav-btn').forEach(el => el.classList.remove('active'));
 
       const targetPane = document.getElementById(tabId);
       if (targetPane) targetPane.classList.add('active');
 
-      const targetNav = document.querySelector(`[data-tab="${tabId}"]`);
-      if (targetNav) targetNav.classList.add('active');
+      document.querySelectorAll(`[data-tab="${tabId}"]`).forEach(el => el.classList.add('active'));
 
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
@@ -4382,7 +4604,7 @@
       const blocks = dayData?.blocks || [];
       let completedBlocksCount = 0;
 
-      let blocksHtml = '';
+      let blocksHtml = '<div class="today-blocks-grid">';
       blocks.forEach((b, idx) => {
         const v = b.video;
         const videoId = v.id || ('tekrar-' + (b.subject || 'genel').replace(/[^a-zA-Z0-9]/g, '_') + '-w' + activeWeekNum + '-d' + activeDayIndex + '-b' + (idx + 1));
@@ -4414,7 +4636,7 @@
               </label>
 
               ${v.id ? `
-                <a class="yt-intent-btn" href="https://www.youtube.com/watch?v=${v.id}" onclick="openYouTube('${v.id}', event)">
+                <a class="yt-intent-btn" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener noreferrer" onclick="openYouTube('${v.id}', event)">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                   </svg>
@@ -4441,6 +4663,7 @@
           `;
         }
       });
+      blocksHtml += '</div>';
 
       document.getElementById('day-summary-subtitle').textContent = '4 blok video • 3 mola';
       document.getElementById('day-completed-badge').textContent = `${completedBlocksCount} / ${blocks.length} Blok`;
@@ -4819,7 +5042,7 @@
                   onchange="toggleVideo('${v.id}', this.checked)">
                 <span>${isDone ? 'Tamamlandı' : 'İzlendi'}</span>
               </label>
-              <a class="yt-intent-btn" href="https://www.youtube.com/watch?v=${v.id}" onclick="openYouTube('${v.id}', event)">
+              <a class="yt-intent-btn" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener noreferrer" onclick="openYouTube('${v.id}', event)">
                 <span>YouTube'da İzle</span>
               </a>
             </div>
@@ -4916,6 +5139,32 @@
       renderRadarTab();
       renderCurriculumTab();
     }
+
+    // PWA Install Prompt Handling
+    let deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const btn = document.getElementById('pwa-install-btn');
+      if (btn) btn.style.display = 'inline-flex';
+    });
+
+    function triggerInstallPrompt() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(() => {
+          deferredInstallPrompt = null;
+          const btn = document.getElementById('pwa-install-btn');
+          if (btn) btn.style.display = 'none';
+        });
+      }
+    }
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      const btn = document.getElementById('pwa-install-btn');
+      if (btn) btn.style.display = 'none';
+    });
 
     // Application Initialization
     function init() {
