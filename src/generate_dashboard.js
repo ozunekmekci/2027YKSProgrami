@@ -896,7 +896,7 @@ export function generateDashboardHtml(dataPath = 'playlists_data_tr.json', outpu
     <section class="course-section">
       <div class="course-section-header" id="course-toggle-btn" onclick="toggleCourseSection()">
         <span class="course-section-title">Ders Bazlı İlerleme (9 Ders)</span>
-        <span id="course-toggle-icon">▼</span>
+        <span id="course-toggle-icon">▲</span>
       </div>
       <div class="course-grid" id="course-grid-container">
         <!-- Rendered dynamically -->
@@ -983,7 +983,7 @@ export function generateDashboardHtml(dataPath = 'playlists_data_tr.json', outpu
     const STORAGE_KEY_WEEK = 'yks_current_week_v1';
     let watchedSet = new Set();
     let currentWeekNum = 1;
-    let isCourseSectionOpen = false;
+    let isCourseSectionOpen = true;
 
     // Timer State (20 minutes = 1200 seconds)
     const DEFAULT_BREAK_SECONDS = 1200; // 20 * 60
@@ -1547,6 +1547,20 @@ export function generateDashboardHtml(dataPath = 'playlists_data_tr.json', outpu
       resumeTimer();
     }
 
+    let audioCtx = null;
+    let targetEndTime = 0;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) audioCtx = new AudioCtx();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
     function toggleTimer() {
       if (timerRunning) {
         pauseTimer();
@@ -1557,18 +1571,20 @@ export function generateDashboardHtml(dataPath = 'playlists_data_tr.json', outpu
 
     function resumeTimer() {
       if (timerRunning) return;
+      getAudioContext();
       timerRunning = true;
       document.getElementById('timer-toggle-btn').textContent = 'Duraklat';
+      targetEndTime = Date.now() + timerRemaining * 1000;
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
-        if (timerRemaining > 0) {
-          timerRemaining--;
-          updateTimerDisplay();
-          if (timerRemaining === 0) {
-            onTimerComplete();
-          }
+        const now = Date.now();
+        timerRemaining = Math.max(0, Math.round((targetEndTime - now) / 1000));
+        updateTimerDisplay();
+        if (timerRemaining <= 0) {
+          clearInterval(timerInterval);
+          onTimerComplete();
         }
-      }, 1000);
+      }, 500);
       updateTimerDisplay();
     }
 
@@ -1582,6 +1598,7 @@ export function generateDashboardHtml(dataPath = 'playlists_data_tr.json', outpu
     function resetTimer() {
       pauseTimer();
       timerRemaining = timerDuration;
+      targetEndTime = Date.now() + timerRemaining * 1000;
       document.getElementById('timer-toggle-btn').textContent = 'Başlat';
       updateTimerDisplay();
     }
@@ -1589,15 +1606,17 @@ export function generateDashboardHtml(dataPath = 'playlists_data_tr.json', outpu
     function addTimerMinutes(mins = 5) {
       timerRemaining += mins * 60;
       timerDuration = Math.max(timerDuration, timerRemaining);
+      if (timerRunning) {
+        targetEndTime += mins * 60 * 1000;
+      }
       updateTimerDisplay();
     }
 
     // Synthesize gentle dual-tone chime with Web Audio API (offline, zero audio assets)
     function playChime() {
       try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        const ctx = new AudioCtx();
+        const ctx = getAudioContext();
+        if (!ctx) return;
         const now = ctx.currentTime;
 
         // First tone: D5 (587.33 Hz)
@@ -1632,7 +1651,9 @@ export function generateDashboardHtml(dataPath = 'playlists_data_tr.json', outpu
       pauseTimer();
       playChime();
       document.title = '☕ (Mola Bitti!) YKS 2027 Çalışma Takvimi';
-      alert('☕ 20 dakikalık mola tamamlandı! Zihnin dinlendi, bir sonraki video bloğuna geçmeye hazırsın.');
+      setTimeout(() => {
+        alert('☕ 20 dakikalık mola tamamlandı! Zihnin dinlendi, bir sonraki video bloğuna geçmeye hazırsın.');
+      }, 1300);
     }
 
     // Run on page load
