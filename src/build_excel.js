@@ -528,7 +528,7 @@ export function buildDinamikPlanlayici(workbook, playlistData) {
   }
 
   const daysOfWeek = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
-  const subjectListValidationFormula = '"TYT Türkçe,TYT-AYT Tarih,TYT Coğrafya,AYT Coğrafya,TYT Matematik,TYT Biyoloji,TYT Fizik,TYT Kimya,AYT Edebiyat"';
+  const subjectListValidationFormula = '=Ders_Listesi';
 
   let currentRow = 5;
   const allDailySummaryRows = [];
