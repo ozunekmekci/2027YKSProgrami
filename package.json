@@ -1,0 +1,12 @@
+{
+  "name": "yks-excel-study-planner",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "build": "node src/build_excel.js"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  }
+}
