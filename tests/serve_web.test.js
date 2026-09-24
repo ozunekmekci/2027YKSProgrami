@@ -82,6 +82,17 @@ test('serve_web: starts server on ephemeral port and serves PWA static assets cl
     // 6. Fetch non-existent file and assert 404
     const notFoundRes = await fetch(`${url}/non-existent-file.xyz`);
     assert.equal(notFoundRes.status, 404, 'Non-existent file should return status 404');
+
+    // 7. Malformed percent encoding should return 400 without crashing
+    const malformedRes = await fetch(`${url}/%c0%af`);
+    assert.equal(malformedRes.status, 400, 'Malformed URI encoding should return 400 Bad Request');
+
+    // 8. Directory traversal outside WWW_DIR should be blocked (403 or 404)
+    const traversalRes = await fetch(`${url}/../../../etc/passwd`);
+    assert.ok(
+      traversalRes.status === 403 || traversalRes.status === 404,
+      'Traversal attempt should be blocked'
+    );
   } finally {
     // 7. Clean shutdown without hanging
     await new Promise((resolve, reject) => {

@@ -27,12 +27,26 @@ export function startServer(port = (Number(process.env.PORT) || 3000)) {
   return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
       // Handle base URL and safe path resolution
-      const parsedUrl = new URL(req.url || '/', 'http://localhost');
-      let pathname = decodeURIComponent(parsedUrl.pathname);
+      let pathname = '/';
+      try {
+        const parsedUrl = new URL(req.url || '/', 'http://localhost');
+        pathname = decodeURIComponent(parsedUrl.pathname);
+      } catch {
+        res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('400 Bad Request');
+        return;
+      }
 
       // Prevent directory traversal
       const safePath = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
-      let filePath = path.join(WWW_DIR, safePath);
+      let filePath = path.resolve(WWW_DIR, '.' + path.sep + safePath);
+
+      // Security check: ensure path stays within WWW_DIR
+      if (filePath !== WWW_DIR && !filePath.startsWith(WWW_DIR + path.sep)) {
+        res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('403 Forbidden');
+        return;
+      }
 
       // If directory or root, serve index.html
       try {
@@ -41,13 +55,6 @@ export function startServer(port = (Number(process.env.PORT) || 3000)) {
         }
       } catch {
         // Fall through to regular error handling
-      }
-
-      // Security check: ensure path stays within WWW_DIR
-      if (!filePath.startsWith(WWW_DIR)) {
-        res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
-        res.end('403 Forbidden');
-        return;
       }
 
       fs.readFile(filePath, (err, data) => {
