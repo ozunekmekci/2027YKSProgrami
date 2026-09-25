@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { generateCalendarDays } from './calendar_engine.js';
+import { generateCalendarDays, DEFAULT_WEEKLY_BLUEPRINT } from './calendar_engine.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -708,6 +708,23 @@ export function generateSaaSApp() {
       font-weight: 700;
       color: var(--text-main);
       letter-spacing: -0.01em;
+    }
+
+    .studio-date-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .study-day-badge {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mint-700);
+      background: var(--mint-50);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(16, 185, 129, 0.2);
     }
 
     .meta-card-subtitle {
@@ -2482,6 +2499,15 @@ export function generateSaaSApp() {
     // Embedded Curriculum & Baseline Schedule
     const PLAYLISTS_DATA = ${JSON.stringify(playlistsData)};
     const BASELINE_CALENDAR = ${JSON.stringify(calendar)};
+    const DEFAULT_BLUEPRINT = ${JSON.stringify(DEFAULT_WEEKLY_BLUEPRINT)};
+
+    function getActiveBlueprint() {
+      try {
+        const saved = localStorage.getItem('yks_weekly_blueprint');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+      return DEFAULT_BLUEPRINT;
+    }
 
     // State
     let completedVideos = {};
@@ -2572,8 +2598,16 @@ export function generateSaaSApp() {
         if (savedDay !== null) activeDayIndex = parseInt(savedDay, 10) || 0;
 
         const savedSchedule = localStorage.getItem('yks_shifted_schedule');
+        const customBlueprint = localStorage.getItem('yks_weekly_blueprint');
         if (savedSchedule) {
           currentSchedule = JSON.parse(savedSchedule);
+        } else if (customBlueprint) {
+          try {
+            const bp = JSON.parse(customBlueprint);
+            currentSchedule = generateCalendarDays(PLAYLISTS_DATA, { blueprint: bp });
+          } catch (e) {
+            currentSchedule = JSON.parse(JSON.stringify(BASELINE_CALENDAR));
+          }
         } else {
           currentSchedule = JSON.parse(JSON.stringify(BASELINE_CALENDAR));
         }
@@ -2775,13 +2809,18 @@ export function generateSaaSApp() {
       let completedCount = 0;
       let totalDurationMin = 0;
 
+      const dayTitle = dayData.dateFormatted ? dayData.dateFormatted : (activeWeekNum + '. Hafta • ' + dayData.dayName);
+      const studyDayBadge = dayData.studyDayNumber ? ('<span class="study-day-badge tabular-nums">• ' + dayData.studyDayNumber + '. Çalışma Günü</span>') : '';
+
       let html = \`
         <div class="studio-day-meta-card">
           <div>
-            <div class="meta-card-title">\${activeWeekNum}. Hafta • \${dayData.dayName}</div>
-            <div class="meta-card-subtitle">Bugünün Tarihi: \${realTodayFormatted} • 4 blok video • 3 mola (60 dk)</div>
+            <div class="meta-card-title studio-date-title">
+              \${dayTitle} \${studyDayBadge}
+            </div>
+            <div class="meta-card-subtitle">\${activeWeekNum}. Hafta • \${dayData.dayName} • \${blocks.length} blok video • \${Math.max(0, blocks.length - 1)} mola (\${Math.max(0, blocks.length - 1) * 20} dk)</div>
           </div>
-          <div class="meta-card-badge" id="studio-completed-badge">0 / 4 Blok</div>
+          <div class="meta-card-badge tabular-nums" id="studio-completed-badge">0 / \${blocks.length} Blok</div>
         </div>
       \`;
 
@@ -3290,8 +3329,154 @@ export function generateSaaSApp() {
       return shiftSchedulePreservingPast(rawPlaylists, compMap, baseSchedule).schedule;
     }
 
+    const DAY_KEY_MAP = ['pazar', 'pazartesi', 'sali', 'carsamba', 'persembe', 'cuma', 'cumartesi'];
+    const TURKISH_DAY_NAMES = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+    const TURKISH_MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+
+    function formatTurkishDate(date) {
+      const day = date.getUTCDate();
+      const month = TURKISH_MONTHS[date.getUTCMonth()];
+      const year = date.getUTCFullYear();
+      const dayName = TURKISH_DAY_NAMES[date.getUTCDay()];
+      return day + ' ' + month + ' ' + year + ', ' + dayName;
+    }
+
+    function toIsoDate(date) {
+      const y = date.getUTCFullYear();
+      const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+      const d = String(date.getUTCDate()).padStart(2, '0');
+      return y + '-' + m + '-' + d;
+    }
+
+    function parseIsoDate(isoStr) {
+      const parts = isoStr.split('-').map(Number);
+      return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+    }
+
+    function shiftScheduleWithBlueprint(playlistData, compMap = {}, options = {}) {
+      const blueprint = options.blueprint || getActiveBlueprint();
+      const startDateStr = options.startDate || toIsoDate(new Date());
+
+      if (!playlistData || Object.keys(playlistData).length === 0) {
+        return { schedule: [], nextActiveWeek: 1, nextActiveDay: 0 };
+      }
+
+      const completedSet = new Set(Object.keys(compMap || {}));
+      const uncompletedQueues = {};
+      let totalCurriculumCount = 0;
+      for (const [subj, info] of Object.entries(playlistData)) {
+        const vids = info?.videos || [];
+        totalCurriculumCount += vids.length;
+        uncompletedQueues[subj] = vids.filter(v => !completedSet.has(v.id));
+      }
+
+      if (completedSet.size >= totalCurriculumCount) {
+        return { schedule: [], nextActiveWeek: 1, nextActiveDay: 0 };
+      }
+
+      let currentDate = parseIsoDate(startDateStr);
+      let studyDayNumber = 1;
+      let weekNum = 1;
+      const maxWeeks = 52;
+      const newWeeks = [];
+
+      while (weekNum <= maxWeeks) {
+        const days = [];
+        let hasAnyVideoThisWeek = false;
+
+        for (let dIdx = 0; dIdx < 7; dIdx++) {
+          const dayOfWeek = currentDate.getUTCDay();
+          const dayKey = DAY_KEY_MAP[dayOfWeek];
+          const dayName = TURKISH_DAY_NAMES[dayOfWeek];
+          const dateIso = toIsoDate(currentDate);
+          const dateFormatted = formatTurkishDate(currentDate);
+
+          const isRestDay = (dayOfWeek === 0 || !blueprint[dayKey] || blueprint[dayKey].length === 0);
+
+          if (isRestDay) {
+            days.push({
+              dayName,
+              dateIso,
+              dateFormatted,
+              isRestDay: true,
+              blocks: []
+            });
+          } else {
+            const slots = blueprint[dayKey] || [];
+            const blocks = [];
+
+            for (let bIdx = 0; bIdx < slots.length; bIdx++) {
+              let subj = slots[bIdx];
+              if (subj === 'AYT Edebiyat' && (!uncompletedQueues['AYT Edebiyat'] || uncompletedQueues['AYT Edebiyat'].length === 0) && (uncompletedQueues['AYT Coğrafya']?.length > 0)) {
+                subj = 'AYT Coğrafya';
+              }
+              if (subj === 'TYT Biyoloji' && (!uncompletedQueues['TYT Biyoloji'] || uncompletedQueues['TYT Biyoloji'].length === 0)) {
+                subj = 'Tekrar & Soru Çözümü';
+              }
+
+              const v = uncompletedQueues[subj]?.shift();
+              if (v) {
+                hasAnyVideoThisWeek = true;
+                blocks.push({
+                  blockNum: bIdx + 1,
+                  subject: subj,
+                  video: v,
+                  instructor: v.instructor || playlistData[subj]?.metadata?.instructor || playlistData[subj]?.instructor || ''
+                });
+              } else {
+                blocks.push({
+                  blockNum: bIdx + 1,
+                  subject: subj,
+                  video: {
+                    title: 'Konu Tekrarı & Soru Çözümü',
+                    duration_min: 40,
+                    url: ''
+                  },
+                  instructor: ''
+                });
+              }
+            }
+
+            days.push({
+              dayName,
+              dateIso,
+              dateFormatted,
+              studyDayNumber,
+              isRestDay: false,
+              blocks
+            });
+            studyDayNumber++;
+          }
+
+          currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+        }
+
+        newWeeks.push({ weekNum, days });
+
+        const remainingVideos = Object.values(uncompletedQueues).reduce((sum, q) => sum + q.length, 0);
+        if (remainingVideos === 0) break;
+        if (!hasAnyVideoThisWeek && weekNum > 40) break;
+
+        weekNum++;
+      }
+
+      return {
+        schedule: newWeeks,
+        nextActiveWeek: 1,
+        nextActiveDay: 0
+      };
+    }
+
     function triggerShiftEngine() {
-      const result = shiftSchedulePreservingPast(PLAYLISTS_DATA, completedVideos, currentSchedule || BASELINE_CALENDAR);
+      const blueprint = getActiveBlueprint();
+      const today = new Date();
+      const todayIso = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+
+      const result = shiftScheduleWithBlueprint(PLAYLISTS_DATA, completedVideos, {
+        startDate: todayIso,
+        blueprint: blueprint
+      });
+
       if (!result || !result.schedule || result.schedule.length === 0) {
         alert('Tüm videolar tamamlandı veya kaydırılacak ders bulunamadı.');
         return;
@@ -3302,12 +3487,12 @@ export function generateSaaSApp() {
       } catch (e) {
         console.warn('Storage save error:', e);
       }
-      activeWeekNum = result.nextActiveWeek;
-      activeDayIndex = result.nextActiveDay;
+      activeWeekNum = 1;
+      activeDayIndex = 0;
       saveState();
       updateAllUI();
       renderRadarView();
-      alert('Program güncellendi. Geçmişte tamamladığınız günler korundu, kalan videolar bugünden itibaren takvime yeniden dağıtıldı.');
+      alert('Program güncellendi. Kalan tüm videolar bugünün tarihinden (' + todayIso + ') itibaren haftalık ders şablonunuza göre takvime yeniden dağıtıldı.');
     }
 
     function resetSchedule() {

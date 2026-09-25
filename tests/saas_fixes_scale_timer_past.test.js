@@ -111,3 +111,11 @@ test('Timer reset strictly restores 20:00 (1200s) and single-use 5-minute extens
   assert.equal(timerRemaining, 1500);
 });
 
+test('www/index.html displays real date, study day number, and reads dynamic blueprint', () => {
+  const htmlPath = path.resolve(__dirname, '../www/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  assert.ok(html.includes('studio-date-title'), 'Must include studio-date-title element');
+  assert.ok(html.includes('studyDayNumber'), 'Must track or render studyDayNumber');
+  assert.ok(html.includes('yks_weekly_blueprint'), 'Must check or read yks_weekly_blueprint');
+});
+
