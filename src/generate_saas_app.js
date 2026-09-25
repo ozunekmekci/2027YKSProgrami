@@ -649,37 +649,6 @@ export function generateSaaSApp() {
       margin-bottom: 20px;
     }
 
-    .sidebar-admin-link {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      margin-bottom: 12px;
-      border-radius: var(--radius-md);
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 600;
-      transition: all 0.15s ease;
-    }
-
-    .sidebar-admin-link:hover {
-      background: var(--slate-200);
-      color: var(--text-main);
-      border-color: var(--border-strong);
-    }
-
-    .sidebar-admin-badge {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: var(--slate-200);
-      color: var(--text-muted);
-    }
-
     .studio-nav-right {
       display: flex;
       align-items: center;
@@ -2193,16 +2162,6 @@ export function generateSaaSApp() {
       </nav>
 
       <div class="sidebar-footer">
-        <a href="/admin" class="sidebar-admin-link" data-tab="tab-settings" title="Yönetici Paneli (/admin)">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-            </svg>
-            <span>Yönetim</span>
-          </div>
-          <span class="sidebar-admin-badge">/admin</span>
-        </a>
         <div class="countdown-widget">
           <div class="countdown-label">19 Haziran 2027 Hedefi</div>
           <div class="countdown-val tabular-nums" id="sidebar-target-countdown">Geri sayım yükleniyor...</div>
@@ -2248,7 +2207,7 @@ export function generateSaaSApp() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <polyline points="9 18 15 12 9 6"/>
             </svg>
-            <span>Stressiz Kaydır</span>
+            <span>Programı Dengele</span>
           </button>
           <div class="topbar-timer-pill tabular-nums" id="topbar-timer-pill" onclick="switchSaaSTab('tab-today')">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
@@ -2356,14 +2315,14 @@ export function generateSaaSApp() {
             <div class="radar-header-area">
               <div class="radar-title-wrap">
                 <h2>Master Takvim & İlerleme Radarı</h2>
-                <p>42 haftalık müfredat zaman çizelgesi. Kaçan veya izlenmeyen videoları Stressiz Kaydırma Motoru ile bugünden itibaren geleceğe kaydırabilirsiniz.</p>
+                <p>42 haftalık müfredat zaman çizelgesi. Kaçan veya izlenmeyen videoları Program Dengeleme Motoru ile bugünden itibaren geleceğe aktarabilirsiniz.</p>
               </div>
               <div class="radar-action-buttons">
                 <button class="btn-radar-primary" onclick="triggerShiftEngine()">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                     <polyline points="9 18 15 12 9 6"/>
                   </svg>
-                  <span>Stressiz Kaydır</span>
+                  <span>Programı Dengele</span>
                 </button>
                 <button class="btn-radar-secondary" onclick="resetSchedule()">Orijinal Plana Sıfırla</button>
               </div>
@@ -3143,9 +3102,9 @@ export function generateSaaSApp() {
       }
 
       const newWeeks = [];
-      let shiftStarted = false;
       let firstIncompleteWeek = 1;
       let firstIncompleteDay = 0;
+      let firstFound = false;
 
       const dayConfigs = [
         { name: 'Pazartesi', s1: 'TYT Türkçe', c1: 2, s2: 'TYT Coğrafya', c2: 2 },
@@ -3184,69 +3143,56 @@ export function generateSaaSApp() {
           const baseDay = baseWeek.days && baseWeek.days[dIdx];
           const baseBlocks = (baseDay && baseDay.blocks) || [];
 
-          if (!shiftStarted && baseBlocks.length > 0) {
-            const hasUncompleted = baseBlocks.some(b => {
-              const vid = b.video && b.video.id;
-              return vid && !vid.startsWith('tekrar-') && !completedSet.has(vid);
-            });
-
-            if (!hasUncompleted) {
-              newDays.push(JSON.parse(JSON.stringify(baseDay)));
-              continue;
-            } else {
-              shiftStarted = true;
-              firstIncompleteWeek = weekNum;
-              firstIncompleteDay = dIdx;
-            }
-          }
-
           const s1 = typeof rawCfg.s1 === 'function' ? rawCfg.s1() : rawCfg.s1;
           const s2 = typeof rawCfg.s2 === 'function' ? rawCfg.s2() : rawCfg.s2;
           const c1 = rawCfg.c1 || 2;
           const c2 = rawCfg.c2 || 2;
           const blocks = [];
 
-          for (let i = 0; i < c1; i++) {
-            const v = uncompletedQueues[s1]?.shift();
-            const bIdx = blocks.length;
-            if (v) {
-              const instructor = v.instructor || playlistData[s1]?.metadata?.instructor || playlistData[s1]?.instructor || '';
-              blocks.push({ blockNum: bIdx + 1, subject: s1, video: v, instructor });
+          for (let bIdx = 0; bIdx < 4; bIdx++) {
+            const baseBlock = baseBlocks[bIdx];
+            const vid = baseBlock && baseBlock.video && baseBlock.video.id;
+            const isCompleted = vid && !vid.startsWith('tekrar-') && completedSet.has(vid);
+
+            if (isCompleted) {
+              blocks.push(JSON.parse(JSON.stringify(baseBlock)));
             } else {
-              blocks.push({
-                blockNum: bIdx + 1,
-                subject: s1,
-                video: {
-                  id: 'tekrar-' + s1.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + weekNum + '-d' + dIdx + '-b' + (bIdx + 1),
-                  title: 'Konu Tekrarı & Soru Çözümü',
-                  duration_min: 40,
-                  duration_sec: 2400,
-                  url: ''
-                },
-                instructor: ''
-              });
+              const targetSubj = (bIdx < c1) ? s1 : s2;
+              const nextV = uncompletedQueues[targetSubj]?.shift();
+              if (nextV) {
+                const instructor = nextV.instructor || playlistData[targetSubj]?.metadata?.instructor || playlistData[targetSubj]?.instructor || '';
+                blocks.push({
+                  blockNum: bIdx + 1,
+                  subject: targetSubj,
+                  video: nextV,
+                  instructor
+                });
+              } else {
+                blocks.push({
+                  blockNum: bIdx + 1,
+                  subject: targetSubj,
+                  video: {
+                    id: 'tekrar-' + targetSubj.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + weekNum + '-d' + dIdx + '-b' + (bIdx + 1),
+                    title: 'Konu Tekrarı & Soru Çözümü',
+                    duration_min: 40,
+                    duration_sec: 2400,
+                    url: ''
+                  },
+                  instructor: ''
+                });
+              }
             }
           }
 
-          for (let i = 0; i < c2; i++) {
-            const v = uncompletedQueues[s2]?.shift();
-            const bIdx = blocks.length;
-            if (v) {
-              const instructor = v.instructor || playlistData[s2]?.metadata?.instructor || playlistData[s2]?.instructor || '';
-              blocks.push({ blockNum: bIdx + 1, subject: s2, video: v, instructor });
-            } else {
-              blocks.push({
-                blockNum: bIdx + 1,
-                subject: s2,
-                video: {
-                  id: 'tekrar-' + s2.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + weekNum + '-d' + dIdx + '-b' + (bIdx + 1),
-                  title: 'Konu Tekrarı & Soru Çözümü',
-                  duration_min: 40,
-                  duration_sec: 2400,
-                  url: ''
-                },
-                instructor: ''
-              });
+          if (!firstFound) {
+            const hasIncomplete = blocks.some(b => {
+              const vid = b.video && b.video.id;
+              return vid && !vid.startsWith('tekrar-') && !completedSet.has(vid);
+            });
+            if (hasIncomplete) {
+              firstIncompleteWeek = weekNum;
+              firstIncompleteDay = dIdx;
+              firstFound = true;
             }
           }
 
@@ -3258,7 +3204,7 @@ export function generateSaaSApp() {
 
       let remainingCount = Object.values(uncompletedQueues).reduce((sum, q) => sum + q.length, 0);
       let extraWeekNum = newWeeks.length + 1;
-      while (remainingCount > 0 && extraWeekNum <= 45) {
+      while (remainingCount > 0 && extraWeekNum <= 52) {
         const extraDays = [];
         for (let dIdx = 0; dIdx < 7; dIdx++) {
           const rawCfg = dayConfigs[dIdx];
@@ -3268,8 +3214,10 @@ export function generateSaaSApp() {
           }
           const s1 = typeof rawCfg.s1 === 'function' ? rawCfg.s1() : rawCfg.s1;
           const s2 = typeof rawCfg.s2 === 'function' ? rawCfg.s2() : rawCfg.s2;
+          const c1 = rawCfg.c1 || 2;
+          const c2 = rawCfg.c2 || 2;
           const blocks = [];
-          for (let i = 0; i < (rawCfg.c1 || 2); i++) {
+          for (let i = 0; i < c1; i++) {
             const v = uncompletedQueues[s1]?.shift();
             const bIdx = blocks.length;
             if (v) {
@@ -3290,7 +3238,7 @@ export function generateSaaSApp() {
               });
             }
           }
-          for (let i = 0; i < (rawCfg.c2 || 2); i++) {
+          for (let i = 0; i < c2; i++) {
             const v = uncompletedQueues[s2]?.shift();
             const bIdx = blocks.length;
             if (v) {
@@ -3311,16 +3259,24 @@ export function generateSaaSApp() {
               });
             }
           }
+
+          if (!firstFound) {
+            const hasIncomplete = blocks.some(b => {
+              const vid = b.video && b.video.id;
+              return vid && !vid.startsWith('tekrar-') && !completedSet.has(vid);
+            });
+            if (hasIncomplete) {
+              firstIncompleteWeek = extraWeekNum;
+              firstIncompleteDay = dIdx;
+              firstFound = true;
+            }
+          }
+
           extraDays.push({ dayName: rawCfg.name, isRestDay: false, blocks });
         }
         newWeeks.push({ weekNum: extraWeekNum, days: extraDays });
         remainingCount = Object.values(uncompletedQueues).reduce((sum, q) => sum + q.length, 0);
         extraWeekNum++;
-      }
-
-      if (!shiftStarted) {
-        firstIncompleteWeek = baseline.length;
-        firstIncompleteDay = 5;
       }
 
       return {

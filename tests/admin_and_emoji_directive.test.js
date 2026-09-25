@@ -39,7 +39,9 @@ test('www/index.html student interface is emoji-free, date-aware, and has no stu
   assert.ok(html.includes('btn-today-now'), 'Must have Bugün quick-jump button in studio nav');
   assert.ok(html.includes('is-real-today'), 'Must have is-real-today CSS selector for current day');
 
-  // Dedicated admin separation
-  assert.ok(html.includes('href="/admin"'), 'Must have link to /admin in sidebar');
+  // Dedicated admin separation: student UI has no admin link or settings tab
+  assert.ok(!html.includes('sidebar-admin-link'), 'Student workspace must not have admin link in sidebar');
   assert.ok(!html.includes('<div class="saas-tab-view" id="tab-settings">'), 'Student screen must not contain tab-settings DOM view');
+  assert.ok(html.includes('Programı Dengele'), 'Must have renamed Programı Dengele button');
+  assert.ok(!html.includes('Stressiz Kaydır'), 'Must not contain old Stressiz Kaydır text');
 });

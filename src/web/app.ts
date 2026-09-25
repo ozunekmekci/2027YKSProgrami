@@ -431,11 +431,19 @@ export class AppController {
     }
   }
 
+  private timerExtended: boolean = false;
+
   public resetTimer(): void {
-    this.state.breakTimer?.reset();
+    this.timerExtended = false;
+    this.state.breakTimer?.reset(1200);
     if (typeof document !== 'undefined') {
       const toggleBtn = document.getElementById('timer-toggle-btn');
       if (toggleBtn) toggleBtn.textContent = 'Başlat';
+      const addBtn = document.getElementById('timer-add-btn') as HTMLButtonElement | null;
+      if (addBtn) {
+        addBtn.disabled = false;
+        addBtn.textContent = '+5 dk';
+      }
     }
     const state = this.state.breakTimer?.getState();
     if (state) {
@@ -444,6 +452,8 @@ export class AppController {
   }
 
   public addTimerMinutes(mins: number = 5): void {
+    if (this.timerExtended) return;
+    this.timerExtended = true;
     const timer = this.initTimer();
     const current = timer.getState();
     const newRemaining = current.remaining + mins * 60;
@@ -452,6 +462,13 @@ export class AppController {
     // Adjust remaining
     if (current.running) {
       timer.start();
+    }
+    if (typeof document !== 'undefined') {
+      const addBtn = document.getElementById('timer-add-btn') as HTMLButtonElement | null;
+      if (addBtn) {
+        addBtn.disabled = true;
+        addBtn.textContent = '+5 dk (Kullanıldı)';
+      }
     }
     this.updateTimerDisplay(newRemaining, newDuration);
   }

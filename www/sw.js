@@ -1,4 +1,4 @@
-// YKS 2027 Koçu — Offline-First Service Worker (v2.2.0-saas)
+// YKS 2027 Koçu — Offline-First Service Worker (v3.1.0-saas-balanced-shift)
 const CACHE_NAME = 'yks-kochu-v1';
 
 const CORE_ASSETS = [

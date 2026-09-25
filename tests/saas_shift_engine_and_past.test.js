@@ -95,3 +95,76 @@ test('Shift Engine preserves entire Week 1 when Week 1 is fully completed', () =
     }
   }
 });
+
+test('Shift Engine preserves partial days: watched blocks stay anchored and unwatched pull sequentially', () => {
+  const data = JSON.parse(fs.readFileSync('playlists_data_tr.json', 'utf8'));
+  const baselineCalendar = generateCalendarDays(data);
+
+  // Mark only 2 of 4 blocks of Monday as completed
+  const monBlocks = baselineCalendar[0].days[0].blocks;
+  const completed = {
+    [monBlocks[0].video.id]: true,
+    [monBlocks[1].video.id]: true
+  };
+
+  const result = shiftSchedulePreservingPast(data, completed, baselineCalendar);
+  assert.equal(result.nextActiveWeek, 1, 'Incomplete Monday keeps active week 1');
+  assert.equal(result.nextActiveDay, 0, 'Incomplete Monday keeps active day 0');
+
+  const shiftedMon = result.schedule[0].days[0].blocks;
+  assert.equal(shiftedMon[0].video.id, monBlocks[0].video.id, 'Block 0 must be preserved');
+  assert.equal(shiftedMon[1].video.id, monBlocks[1].video.id, 'Block 1 must be preserved');
+
+  // Verify total curriculum integrity (all 766 videos unique and accounted for)
+  let totalScheduled = 0;
+  const ids = new Set();
+  for (const w of result.schedule) {
+    for (const d of w.days) {
+      for (const b of (d.blocks || [])) {
+        if (b.video?.id && !b.video.id.startsWith('tekrar-')) {
+          assert.ok(!ids.has(b.video.id), `Duplicate video: ${b.video.id}`);
+          ids.add(b.video.id);
+          totalScheduled++;
+        }
+      }
+    }
+  }
+  assert.equal(totalScheduled, 766, 'All 766 curriculum videos must be scheduled');
+  assert.equal(ids.size, 766, 'All 766 videos must be distinct');
+});
+
+test('Shift Engine preserves skipped days: Monday 4/4 and Wednesday 4/4 preserved, Tuesday uncompleted', () => {
+  const data = JSON.parse(fs.readFileSync('playlists_data_tr.json', 'utf8'));
+  const baselineCalendar = generateCalendarDays(data);
+
+  const mon = baselineCalendar[0].days[0].blocks;
+  const wed = baselineCalendar[0].days[2].blocks;
+  const completed = {};
+  mon.forEach(b => completed[b.video.id] = true);
+  wed.forEach(b => completed[b.video.id] = true);
+
+  const result = shiftSchedulePreservingPast(data, completed, baselineCalendar);
+  assert.equal(result.nextActiveWeek, 1, 'Active week should be 1');
+  assert.equal(result.nextActiveDay, 1, 'Active day should be Tuesday (Day 1) since it has incomplete work');
+
+  for (let i = 0; i < 4; i++) {
+    assert.equal(result.schedule[0].days[0].blocks[i].video.id, mon[i].video.id, 'Monday blocks preserved');
+    assert.equal(result.schedule[0].days[2].blocks[i].video.id, wed[i].video.id, 'Wednesday blocks preserved');
+  }
+
+  let totalScheduled = 0;
+  const ids = new Set();
+  for (const w of result.schedule) {
+    for (const d of w.days) {
+      for (const b of (d.blocks || [])) {
+        if (b.video?.id && !b.video.id.startsWith('tekrar-')) {
+          assert.ok(!ids.has(b.video.id), `Duplicate video: ${b.video.id}`);
+          ids.add(b.video.id);
+          totalScheduled++;
+        }
+      }
+    }
+  }
+  assert.equal(totalScheduled, 766);
+  assert.equal(ids.size, 766);
+});

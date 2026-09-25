@@ -1490,7 +1490,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
 
       <div class="timer-actions">
         <button class="btn btn-primary" id="timer-toggle-btn" style="min-width: 110px;" onclick="toggleTimer()">Duraklat</button>
-        <button class="btn" onclick="addTimerMinutes(5)">+5 dk</button>
+        <button class="btn" id="timer-add-btn" onclick="addTimerMinutes(5)">+5 dk</button>
         <button class="btn" onclick="resetTimer()">Sıfırla</button>
         <button class="btn btn-outline" onclick="closeTimerModal()">Kapat</button>
       </div>
@@ -1514,6 +1514,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
     let timerDuration = 1200; // 20 minutes in seconds
     let timerRemaining = 1200;
     let timerRunning = false;
+    let timerExtended = false;
     let timerInterval = null;
     let timerTargetEndTime = 0;
     let audioCtx = null;
@@ -1684,16 +1685,32 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
 
     function resetTimer() {
       pauseTimer();
-      timerRemaining = timerDuration;
-      timerTargetEndTime = Date.now() + timerRemaining * 1000;
+      timerDuration = 1200;
+      timerRemaining = 1200;
+      timerExtended = false;
+      timerTargetEndTime = 0;
+      const toggleBtn = document.getElementById('timer-toggle-btn');
+      if (toggleBtn) toggleBtn.textContent = 'Molayı Başlat';
+      const addBtn = document.getElementById('timer-add-btn');
+      if (addBtn) {
+        addBtn.disabled = false;
+        addBtn.textContent = '+5 dk';
+      }
       updateTimerDisplay();
     }
 
     function addTimerMinutes(mins = 5) {
+      if (timerExtended) return;
+      timerExtended = true;
       timerRemaining += mins * 60;
       timerDuration = Math.max(timerDuration, timerRemaining);
       if (timerRunning) {
         timerTargetEndTime += mins * 60 * 1000;
+      }
+      const addBtn = document.getElementById('timer-add-btn');
+      if (addBtn) {
+        addBtn.disabled = true;
+        addBtn.textContent = '+5 dk (Kullanıldı)';
       }
       updateTimerDisplay();
     }
@@ -1710,11 +1727,21 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
 
     function onTimerComplete() {
       pauseTimer();
+      timerDuration = 1200;
+      timerRemaining = 1200;
+      timerExtended = false;
+      const toggleBtn = document.getElementById('timer-toggle-btn');
+      if (toggleBtn) toggleBtn.textContent = 'Molayı Başlat';
+      const addBtn = document.getElementById('timer-add-btn');
+      if (addBtn) {
+        addBtn.disabled = false;
+        addBtn.textContent = '+5 dk';
+      }
       playChime();
       triggerHaptic(800);
       setTimeout(() => {
-        alert('20 dakikalık mola tamamlandı! Zihnin dinlendi, bir sonraki video bloğuna geçmeye hazırsın.');
-      }, 1000);
+        alert('20 dakikalık mola tamamlandı. Bir sonraki video bloğuna geçebilirsiniz.');
+      }, 500);
     }
 
     // Storage Management

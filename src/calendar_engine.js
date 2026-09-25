@@ -162,9 +162,9 @@ export function shiftSchedulePreservingPast(playlistData, completedVideos = {}, 
   }
 
   const newWeeks = [];
-  let shiftStarted = false;
   let firstIncompleteWeek = 1;
   let firstIncompleteDay = 0;
+  let firstFound = false;
 
   const dayConfigs = [
     { name: 'Pazartesi', s1: 'TYT Türkçe', c1: 2, s2: 'TYT Coğrafya', c2: 2 },
@@ -203,73 +203,58 @@ export function shiftSchedulePreservingPast(playlistData, completedVideos = {}, 
       const baseDay = baseWeek.days?.[dIdx];
       const baseBlocks = baseDay?.blocks || [];
 
-      // Check if this day is fully completed in the past BEFORE shift has started
-      if (!shiftStarted && baseBlocks.length > 0) {
-        const hasUncompleted = baseBlocks.some(b => {
-          const vid = b.video?.id;
-          return vid && !vid.startsWith('tekrar-') && !completedSet.has(vid);
-        });
-
-        if (!hasUncompleted) {
-          // 100% completed day in the past - preserve intact!
-          newDays.push(JSON.parse(JSON.stringify(baseDay)));
-          continue;
-        } else {
-          // First day that has an uncompleted video: shift starts here!
-          shiftStarted = true;
-          firstIncompleteWeek = weekNum;
-          firstIncompleteDay = dIdx;
-        }
-      }
-
-      // Populate blocks from uncompleted queues
       const s1 = typeof rawCfg.s1 === 'function' ? rawCfg.s1() : rawCfg.s1;
       const s2 = typeof rawCfg.s2 === 'function' ? rawCfg.s2() : rawCfg.s2;
       const c1 = rawCfg.c1 ?? 2;
       const c2 = rawCfg.c2 ?? 2;
       const blocks = [];
 
-      for (let i = 0; i < c1; i++) {
-        const v = uncompletedQueues[s1]?.shift();
-        const bIdx = blocks.length;
-        if (v) {
-          const instructor = v.instructor || playlistData[s1]?.metadata?.instructor || '';
-          blocks.push({ blockNum: bIdx + 1, subject: s1, video: v, instructor });
+      for (let bIdx = 0; bIdx < 4; bIdx++) {
+        const baseBlock = baseBlocks[bIdx];
+        const vid = baseBlock?.video?.id;
+        const isCompleted = vid && !vid.startsWith('tekrar-') && completedSet.has(vid);
+
+        if (isCompleted) {
+          // Preserve completed block anchored at this day and slot
+          blocks.push(JSON.parse(JSON.stringify(baseBlock)));
         } else {
-          blocks.push({
-            blockNum: bIdx + 1,
-            subject: s1,
-            video: {
-              id: 'tekrar-' + s1.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + weekNum + '-d' + dIdx + '-b' + (bIdx + 1),
-              title: 'Konu Tekrarı & Soru Çözümü',
-              duration_min: 40,
-              duration_sec: 2400,
-              url: ''
-            },
-            instructor: ''
-          });
+          // Fill uncompleted slot from subject queue
+          const targetSubj = (bIdx < c1) ? s1 : s2;
+          const nextV = uncompletedQueues[targetSubj]?.shift();
+          if (nextV) {
+            const instructor = nextV.instructor || playlistData[targetSubj]?.metadata?.instructor || playlistData[targetSubj]?.instructor || '';
+            blocks.push({
+              blockNum: bIdx + 1,
+              subject: targetSubj,
+              video: nextV,
+              instructor
+            });
+          } else {
+            blocks.push({
+              blockNum: bIdx + 1,
+              subject: targetSubj,
+              video: {
+                id: `tekrar-${targetSubj.replace(/[^a-zA-Z0-9]/g, '_')}-w${weekNum}-d${dIdx}-b${bIdx + 1}`,
+                title: 'Konu Tekrarı & Soru Çözümü',
+                duration_min: 40,
+                duration_sec: 2400,
+                url: ''
+              },
+              instructor: ''
+            });
+          }
         }
       }
 
-      for (let i = 0; i < c2; i++) {
-        const v = uncompletedQueues[s2]?.shift();
-        const bIdx = blocks.length;
-        if (v) {
-          const instructor = v.instructor || playlistData[s2]?.metadata?.instructor || '';
-          blocks.push({ blockNum: bIdx + 1, subject: s2, video: v, instructor });
-        } else {
-          blocks.push({
-            blockNum: bIdx + 1,
-            subject: s2,
-            video: {
-              id: 'tekrar-' + s2.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + weekNum + '-d' + dIdx + '-b' + (bIdx + 1),
-              title: 'Konu Tekrarı & Soru Çözümü',
-              duration_min: 40,
-              duration_sec: 2400,
-              url: ''
-            },
-            instructor: ''
-          });
+      if (!firstFound) {
+        const hasIncomplete = blocks.some(b => {
+          const vid = b.video?.id;
+          return vid && !vid.startsWith('tekrar-') && !completedSet.has(vid);
+        });
+        if (hasIncomplete) {
+          firstIncompleteWeek = weekNum;
+          firstIncompleteDay = dIdx;
+          firstFound = true;
         }
       }
 
@@ -282,7 +267,7 @@ export function shiftSchedulePreservingPast(playlistData, completedVideos = {}, 
   // If there are still remaining uncompleted videos after baseline weeks, append extra weeks
   let remainingCount = Object.values(uncompletedQueues).reduce((sum, q) => sum + q.length, 0);
   let extraWeekNum = newWeeks.length + 1;
-  while (remainingCount > 0 && extraWeekNum <= 45) {
+  while (remainingCount > 0 && extraWeekNum <= 52) {
     const extraDays = [];
     for (let dIdx = 0; dIdx < 7; dIdx++) {
       const rawCfg = dayConfigs[dIdx];
@@ -292,19 +277,21 @@ export function shiftSchedulePreservingPast(playlistData, completedVideos = {}, 
       }
       const s1 = typeof rawCfg.s1 === 'function' ? rawCfg.s1() : rawCfg.s1;
       const s2 = typeof rawCfg.s2 === 'function' ? rawCfg.s2() : rawCfg.s2;
+      const c1 = rawCfg.c1 ?? 2;
+      const c2 = rawCfg.c2 ?? 2;
       const blocks = [];
-      for (let i = 0; i < (rawCfg.c1 ?? 2); i++) {
+      for (let i = 0; i < c1; i++) {
         const v = uncompletedQueues[s1]?.shift();
         const bIdx = blocks.length;
         if (v) {
-          const instructor = v.instructor || playlistData[s1]?.metadata?.instructor || '';
+          const instructor = v.instructor || playlistData[s1]?.metadata?.instructor || playlistData[s1]?.instructor || '';
           blocks.push({ blockNum: bIdx + 1, subject: s1, video: v, instructor });
         } else {
           blocks.push({
             blockNum: bIdx + 1,
             subject: s1,
             video: {
-              id: 'tekrar-' + s1.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + extraWeekNum + '-d' + dIdx + '-b' + (bIdx + 1),
+              id: `tekrar-${s1.replace(/[^a-zA-Z0-9]/g, '_')}-w${extraWeekNum}-d${dIdx}-b${bIdx + 1}`,
               title: 'Konu Tekrarı & Soru Çözümü',
               duration_min: 40,
               duration_sec: 2400,
@@ -314,18 +301,18 @@ export function shiftSchedulePreservingPast(playlistData, completedVideos = {}, 
           });
         }
       }
-      for (let i = 0; i < (rawCfg.c2 ?? 2); i++) {
+      for (let i = 0; i < c2; i++) {
         const v = uncompletedQueues[s2]?.shift();
         const bIdx = blocks.length;
         if (v) {
-          const instructor = v.instructor || playlistData[s2]?.metadata?.instructor || '';
+          const instructor = v.instructor || playlistData[s2]?.metadata?.instructor || playlistData[s2]?.instructor || '';
           blocks.push({ blockNum: bIdx + 1, subject: s2, video: v, instructor });
         } else {
           blocks.push({
             blockNum: bIdx + 1,
             subject: s2,
             video: {
-              id: 'tekrar-' + s2.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + extraWeekNum + '-d' + dIdx + '-b' + (bIdx + 1),
+              id: `tekrar-${s2.replace(/[^a-zA-Z0-9]/g, '_')}-w${extraWeekNum}-d${dIdx}-b${bIdx + 1}`,
               title: 'Konu Tekrarı & Soru Çözümü',
               duration_min: 40,
               duration_sec: 2400,
@@ -335,17 +322,24 @@ export function shiftSchedulePreservingPast(playlistData, completedVideos = {}, 
           });
         }
       }
+
+      if (!firstFound) {
+        const hasIncomplete = blocks.some(b => {
+          const vid = b.video?.id;
+          return vid && !vid.startsWith('tekrar-') && !completedSet.has(vid);
+        });
+        if (hasIncomplete) {
+          firstIncompleteWeek = extraWeekNum;
+          firstIncompleteDay = dIdx;
+          firstFound = true;
+        }
+      }
+
       extraDays.push({ dayName: rawCfg.name, isRestDay: false, blocks });
     }
     newWeeks.push({ weekNum: extraWeekNum, days: extraDays });
     remainingCount = Object.values(uncompletedQueues).reduce((sum, q) => sum + q.length, 0);
     extraWeekNum++;
-  }
-
-  // If all days up to the end were completed:
-  if (!shiftStarted) {
-    firstIncompleteWeek = baseline.length;
-    firstIncompleteDay = 5;
   }
 
   return {

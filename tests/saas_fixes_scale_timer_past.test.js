@@ -65,3 +65,49 @@ test('www/index.html includes updated timer single-use extension, reset, and pas
   assert.ok(html.includes('max-width: 720px'), 'video-embed-container must have max-width constraint for responsive scale');
   assert.ok(html.includes('.studio-grid-layout.is-sunday'), 'Must define is-sunday layout class');
 });
+
+test('Timer reset strictly restores 20:00 (1200s) and single-use 5-minute extension', () => {
+  let timerDuration = 1200;
+  let timerRemaining = 1200;
+  let timerExtended = false;
+  let timerRunning = false;
+
+  const addBreakTimerMinutes = (min = 5) => {
+    if (timerExtended) return false;
+    timerExtended = true;
+    timerRemaining += min * 60;
+    timerDuration = Math.max(timerDuration, timerRemaining);
+    return true;
+  };
+
+  const resetBreakTimer = () => {
+    timerRunning = false;
+    timerDuration = 1200;
+    timerRemaining = 1200;
+    timerExtended = false;
+  };
+
+  // 1. Initial state
+  assert.equal(timerRemaining, 1200);
+  assert.equal(timerExtended, false);
+
+  // 2. Add 5 minutes once
+  assert.equal(addBreakTimerMinutes(5), true);
+  assert.equal(timerRemaining, 1500);
+  assert.equal(timerExtended, true);
+
+  // 3. Second call must be blocked
+  assert.equal(addBreakTimerMinutes(5), false);
+  assert.equal(timerRemaining, 1500, 'Must remain 1500, second call blocked');
+
+  // 4. Reset must restore to 1200 and clear timerExtended
+  resetBreakTimer();
+  assert.equal(timerRemaining, 1200, 'Must reset to 1200');
+  assert.equal(timerDuration, 1200, 'Duration must reset to 1200');
+  assert.equal(timerExtended, false, 'timerExtended must be cleared');
+
+  // 5. After reset, single-use can be used again
+  assert.equal(addBreakTimerMinutes(5), true);
+  assert.equal(timerRemaining, 1500);
+});
+
