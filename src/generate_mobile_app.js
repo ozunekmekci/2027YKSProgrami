@@ -121,7 +121,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
   <meta name="theme-color" content="#0f172a">
   <link rel="apple-touch-icon" href="icons/icon-192.svg">
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && (location.protocol.startsWith('http') || location.hostname === 'localhost')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => {
           console.warn('SW registration failed:', err);
@@ -1740,6 +1740,16 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
       }
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function saveCompletedVideos() {
       try {
         localStorage.setItem('yks_completed_videos', JSON.stringify(completedVideos));
@@ -1903,12 +1913,12 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
               <div class="video-block-meta-left">
                 <span class="block-num-pill">Blok \${b.blockNum || idx + 1}</span>
                 <span class="subject-badge \${badgeClass}">\${b.subject}</span>
-                <span class="video-instructor-label">\${b.instructor}</span>
+                <span class="video-instructor-label">\${escapeHtml(b.instructor)}</span>
               </div>
               <span class="video-duration-pill tabular-nums">\${durationText}</span>
             </div>
 
-            <div class="video-title">\${v.title}</div>
+            <div class="video-title">\${escapeHtml(v.title)}</div>
 
             <div class="video-block-actions">
               <label class="checkbox-label" for="chk-\${activeWeekNum}-\${activeDayIndex}-\${idx}">
@@ -2313,11 +2323,11 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
             <div class="video-block-header">
               <div class="video-block-meta-left">
                 <span class="subject-badge \${badgeClass}">\${m.subject}</span>
-                <span class="video-instructor-label">\${m.instructor}</span>
+                <span class="video-instructor-label">\${escapeHtml(m.instructor)}</span>
               </div>
               <span class="video-duration-pill tabular-nums">\${durationText}</span>
             </div>
-            <div class="video-title" style="margin-bottom: 8px;">\${v.title}</div>
+            <div class="video-title" style="margin-bottom: 8px;">\${escapeHtml(v.title)}</div>
             <div class="video-block-actions">
               <label class="checkbox-label" for="search-chk-\${v.id}">
                 <input type="checkbox" class="block-checkbox" id="search-chk-\${v.id}"

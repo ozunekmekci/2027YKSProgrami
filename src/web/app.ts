@@ -34,6 +34,19 @@ export interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
+/**
+ * Safely sanitizes text for HTML embedding to protect against XSS and attribute breaking.
+ */
+export function escapeHtml(str: string): string {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export interface AppState {
   completedVideos: Record<string, boolean>;
   currentSchedule: WeekSchedule[];
@@ -496,7 +509,12 @@ export class AppController {
   // PWA Service Worker & Install Prompt
   // ---------------------------------------------------------------------------
   public async registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
-    if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+    if (
+      typeof window !== 'undefined' &&
+      typeof navigator !== 'undefined' &&
+      'serviceWorker' in navigator &&
+      (window.location.protocol.startsWith('http') || window.location.hostname === 'localhost')
+    ) {
       try {
         const registration = await navigator.serviceWorker.register('./sw.js', { scope: './' });
         return registration;
@@ -645,7 +663,7 @@ export class AppController {
             const isDone = Boolean(this.state.completedVideos[v.id]);
             return `
               <div class="video-block-card ${isDone ? 'completed' : ''}" style="margin-bottom: 8px;">
-                <div class="video-title" style="margin-bottom: 8px;">${v.title}</div>
+                <div class="video-title" style="margin-bottom: 8px;">${escapeHtml(v.title)}</div>
                 <div class="video-block-actions">
                   <label class="checkbox-label" for="search-chk-${v.id}">
                     <input type="checkbox" class="block-checkbox" id="search-chk-${v.id}"
@@ -773,12 +791,12 @@ export class AppController {
             <div class="video-block-meta-left">
               <span class="block-num-pill">Blok ${b.blockNum || idx + 1}</span>
               <span class="subject-badge badge-${(b.subject || '').toLowerCase().replace(/[^a-z0-9]/g, '-')}">${b.subject}</span>
-              <span class="video-instructor-label">${b.instructor || ''}</span>
+              <span class="video-instructor-label">${escapeHtml(b.instructor || '')}</span>
             </div>
             <span class="video-duration-pill tabular-nums">${durationText}</span>
           </div>
 
-          <div class="video-title">${v.title}</div>
+          <div class="video-title">${escapeHtml(v.title)}</div>
 
           <div class="video-block-actions">
             <label class="checkbox-label" for="chk-${this.state.activeWeekNum}-${this.state.activeDayIndex}-${idx}">

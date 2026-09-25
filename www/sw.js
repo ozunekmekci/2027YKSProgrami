@@ -69,9 +69,9 @@ self.addEventListener('fetch', (event) => {
             (!origin || url.origin === origin)
           ) {
             const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
+            caches.open(CACHE_NAME)
+              .then((cache) => cache.put(event.request, responseToCache).catch(() => {}))
+              .catch(() => {});
           }
           return networkResponse;
         })

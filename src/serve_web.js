@@ -23,7 +23,7 @@ const MIME_TYPES = {
  * @param {number} [port] - Port number to listen on (default: process.env.PORT or 3000; 0 for ephemeral).
  * @returns {Promise<{ server: http.Server, url: string, port: number }>}
  */
-export function startServer(port = (Number(process.env.PORT) || 3000)) {
+export function startServer(port = (Number(process.env.PORT) || 3000), host = (process.env.HOST || '0.0.0.0')) {
   return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
       // Handle base URL and safe path resolution
@@ -78,13 +78,18 @@ export function startServer(port = (Number(process.env.PORT) || 3000)) {
           'Access-Control-Allow-Origin': '*',
           'Content-Length': data.length
         });
-        res.end(data);
+
+        if (req.method === 'HEAD') {
+          res.end();
+        } else {
+          res.end(data);
+        }
       });
     });
 
     server.on('error', reject);
 
-    server.listen(port, () => {
+    server.listen(port, host, () => {
       const addr = server.address();
       const actualPort = typeof addr === 'object' && addr ? addr.port : port;
       const url = `http://localhost:${actualPort}`;
