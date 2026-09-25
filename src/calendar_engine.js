@@ -14,6 +14,49 @@
  *   - Pazar: Rest day (isRestDay: true)
  */
 
+export const DEFAULT_WEEKLY_BLUEPRINT = {
+  pazartesi: ['TYT Türkçe', 'TYT Türkçe', 'TYT Coğrafya', 'TYT Coğrafya'],
+  sali: ['TYT Matematik', 'TYT Matematik', 'TYT-AYT Tarih', 'TYT-AYT Tarih'],
+  carsamba: ['TYT Biyoloji', 'TYT Biyoloji', 'AYT Edebiyat', 'AYT Edebiyat'],
+  persembe: ['TYT Matematik', 'TYT Matematik', 'TYT Kimya', 'TYT Kimya'],
+  cuma: ['TYT Fizik', 'TYT Fizik', 'AYT Edebiyat', 'AYT Edebiyat'],
+  cumartesi: ['TYT-AYT Tarih', 'TYT-AYT Tarih', 'TYT Biyoloji', 'TYT Biyoloji'],
+  pazar: []
+};
+
+const TURKISH_MONTHS = [
+  'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+  'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+];
+
+const TURKISH_DAY_NAMES = [
+  'Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'
+];
+
+const DAY_KEY_MAP = [
+  'pazar', 'pazartesi', 'sali', 'carsamba', 'persembe', 'cuma', 'cumartesi'
+];
+
+export function formatTurkishDate(date) {
+  const day = date.getUTCDate();
+  const month = TURKISH_MONTHS[date.getUTCMonth()];
+  const year = date.getUTCFullYear();
+  const dayName = TURKISH_DAY_NAMES[date.getUTCDay()];
+  return `${day} ${month} ${year}, ${dayName}`;
+}
+
+export function toIsoDate(date) {
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(date.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+export function parseIsoDate(isoStr) {
+  const parts = isoStr.split('-').map(Number);
+  return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+}
+
 export function generateCalendarDays(playlistData, options = {}) {
   if (!playlistData || Object.keys(playlistData).length === 0) {
     return [];
@@ -25,93 +68,151 @@ export function generateCalendarDays(playlistData, options = {}) {
     queues[subj] = [...(info.videos || [])];
   }
 
+  const blueprint = options.blueprint || DEFAULT_WEEKLY_BLUEPRINT;
   const weeks = [];
   let weekNum = 1;
   const maxWeeks = options.maxWeeks || 45;
 
+  if (options.startDate) {
+    // Date-anchored rolling schedule starting from real date
+    let currentDate = parseIsoDate(options.startDate);
+    let studyDayNumber = 1;
+
+    while (weekNum <= maxWeeks) {
+      const days = [];
+      let hasAnyVideoThisWeek = false;
+
+      for (let dIdx = 0; dIdx < 7; dIdx++) {
+        const dayOfWeek = currentDate.getUTCDay();
+        const dayKey = DAY_KEY_MAP[dayOfWeek];
+        const dayName = TURKISH_DAY_NAMES[dayOfWeek];
+        const dateIso = toIsoDate(currentDate);
+        const dateFormatted = formatTurkishDate(currentDate);
+
+        const isRestDay = (dayOfWeek === 0 || !blueprint[dayKey] || blueprint[dayKey].length === 0);
+
+        if (isRestDay) {
+          days.push({
+            dayName,
+            dateIso,
+            dateFormatted,
+            isRestDay: true,
+            blocks: []
+          });
+        } else {
+          const slots = blueprint[dayKey] || [];
+          const blocks = [];
+
+          for (let bIdx = 0; bIdx < slots.length; bIdx++) {
+            let subj = slots[bIdx];
+            if (subj === 'AYT Edebiyat' && (!queues['AYT Edebiyat'] || queues['AYT Edebiyat'].length === 0) && (queues['AYT Coğrafya']?.length > 0)) {
+              subj = 'AYT Coğrafya';
+            }
+            if (subj === 'TYT Biyoloji' && (!queues['TYT Biyoloji'] || queues['TYT Biyoloji'].length === 0)) {
+              subj = 'Tekrar & Soru Çözümü';
+            }
+
+            const v = queues[subj]?.shift();
+            if (v) {
+              hasAnyVideoThisWeek = true;
+              blocks.push({
+                blockNum: bIdx + 1,
+                subject: subj,
+                video: v,
+                instructor: v.instructor || playlistData[subj]?.metadata?.instructor || playlistData[subj]?.instructor || ''
+              });
+            } else {
+              blocks.push({
+                blockNum: bIdx + 1,
+                subject: subj,
+                video: {
+                  title: 'Konu Tekrarı & Soru Çözümü',
+                  duration_min: 40,
+                  url: ''
+                },
+                instructor: ''
+              });
+            }
+          }
+
+          days.push({
+            dayName,
+            dateIso,
+            dateFormatted,
+            studyDayNumber,
+            isRestDay: false,
+            blocks
+          });
+          studyDayNumber++;
+        }
+
+        currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+      }
+
+      weeks.push({ weekNum, days });
+
+      const remainingVideos = Object.values(queues).reduce((sum, q) => sum + q.length, 0);
+      if (remainingVideos === 0) break;
+      if (!hasAnyVideoThisWeek && weekNum > 40) break;
+
+      weekNum++;
+    }
+
+    return weeks;
+  }
+
+  // Baseline Monday-Sunday scheduling (for backward compatibility when no startDate is provided)
+  const dayOrderKeys = ['pazartesi', 'sali', 'carsamba', 'persembe', 'cuma', 'cumartesi', 'pazar'];
+  const dayDisplayNames = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+
   while (weekNum <= maxWeeks) {
     const days = [];
-
-    const dayConfigs = [
-      { name: 'Pazartesi', s1: 'TYT Türkçe', c1: 2, s2: 'TYT Coğrafya', c2: 2 },
-      { name: 'Salı', s1: 'TYT Matematik', c1: 2, s2: 'TYT-AYT Tarih', c2: 2 },
-      { name: 'Çarşamba', s1: 'TYT Biyoloji', c1: 2, s2: 'AYT Edebiyat', c2: 2 },
-      { name: 'Perşembe', s1: 'TYT Matematik', c1: 2, s2: 'TYT Kimya', c2: 2 },
-      {
-        name: 'Cuma',
-        s1: 'TYT Fizik',
-        c1: 2,
-        s2: () => (queues['AYT Edebiyat']?.length > 0 ? 'AYT Edebiyat' : 'AYT Coğrafya'),
-        c2: 2
-      },
-      {
-        name: 'Cumartesi',
-        s1: 'TYT-AYT Tarih',
-        c1: 2,
-        s2: () => (queues['TYT Biyoloji']?.length > 0 ? 'TYT Biyoloji' : 'Tekrar & Soru Çözümü'),
-        c2: 2
-      },
-      { name: 'Pazar', isRestDay: true }
-    ];
-
     let hasAnyVideo = false;
 
-    for (const rawCfg of dayConfigs) {
-      if (rawCfg.isRestDay) {
-        days.push({ dayName: rawCfg.name, isRestDay: true });
+    for (let dIdx = 0; dIdx < 7; dIdx++) {
+      const dayKey = dayOrderKeys[dIdx];
+      const dayName = dayDisplayNames[dIdx];
+      const slots = blueprint[dayKey] || [];
+
+      if (dayKey === 'pazar' || slots.length === 0) {
+        days.push({ dayName, isRestDay: true, blocks: [] });
         continue;
       }
 
-      const s1 = typeof rawCfg.s1 === 'function' ? rawCfg.s1() : rawCfg.s1;
-      const s2 = typeof rawCfg.s2 === 'function' ? rawCfg.s2() : rawCfg.s2;
-      const c1 = rawCfg.c1;
-      const c2 = rawCfg.c2;
-
       const blocks = [];
+      for (let bIdx = 0; bIdx < slots.length; bIdx++) {
+        let subj = slots[bIdx];
+        if (subj === 'AYT Edebiyat' && (!queues['AYT Edebiyat'] || queues['AYT Edebiyat'].length === 0) && (queues['AYT Coğrafya']?.length > 0)) {
+          subj = 'AYT Coğrafya';
+        }
+        if (subj === 'TYT Biyoloji' && (!queues['TYT Biyoloji'] || queues['TYT Biyoloji'].length === 0)) {
+          subj = 'Tekrar & Soru Çözümü';
+        }
 
-      // Subject 1
-      for (let i = 0; i < c1; i++) {
-        const v = queues[s1]?.shift();
+        const v = queues[subj]?.shift();
         if (v) {
           hasAnyVideo = true;
           blocks.push({
-            blockNum: blocks.length + 1,
-            subject: s1,
+            blockNum: bIdx + 1,
+            subject: subj,
             video: v,
-            instructor: v.instructor || playlistData[s1]?.metadata?.instructor || ''
+            instructor: v.instructor || playlistData[subj]?.metadata?.instructor || playlistData[subj]?.instructor || ''
           });
         } else {
           blocks.push({
-            blockNum: blocks.length + 1,
-            subject: s1,
-            video: { title: 'Konu Tekrarı & Soru Çözümü', duration_min: 40, url: '' },
+            blockNum: bIdx + 1,
+            subject: subj,
+            video: {
+              title: 'Konu Tekrarı & Soru Çözümü',
+              duration_min: 40,
+              url: ''
+            },
             instructor: ''
           });
         }
       }
 
-      // Subject 2
-      for (let i = 0; i < c2; i++) {
-        const v = queues[s2]?.shift();
-        if (v) {
-          hasAnyVideo = true;
-          blocks.push({
-            blockNum: blocks.length + 1,
-            subject: s2,
-            video: v,
-            instructor: v.instructor || playlistData[s2]?.metadata?.instructor || ''
-          });
-        } else {
-          blocks.push({
-            blockNum: blocks.length + 1,
-            subject: s2,
-            video: { title: 'Konu Tekrarı & Soru Çözümü', duration_min: 40, url: '' },
-            instructor: ''
-          });
-        }
-      }
-
-      days.push({ dayName: rawCfg.name, isRestDay: false, blocks });
+      days.push({ dayName, isRestDay: false, blocks });
     }
 
     weeks.push({ weekNum, days });
@@ -124,6 +225,74 @@ export function generateCalendarDays(playlistData, options = {}) {
   }
 
   return weeks;
+}
+
+/**
+ * Shifts uncompleted videos forward using date anchoring and the weekly blueprint.
+ * Preserves strict FIFO chronological order for each subject.
+ *
+ * @param {Object} playlistData - 9 subject playlists
+ * @param {Object} completedVideos - Map of videoId -> boolean
+ * @param {Object} [options] - Options { startDate, blueprint }
+ * @returns {{ schedule: Array, nextActiveWeek: number, nextActiveDay: number, projectedEndDate: string|null, completesBeforeYks: boolean }}
+ */
+export function shiftScheduleWithBlueprint(playlistData, completedVideos = {}, options = {}) {
+  const blueprint = options.blueprint || DEFAULT_WEEKLY_BLUEPRINT;
+  const startDateStr = options.startDate || toIsoDate(new Date());
+
+  if (!playlistData || Object.keys(playlistData).length === 0) {
+    return { schedule: [], nextActiveWeek: 1, nextActiveDay: 0, projectedEndDate: null, completesBeforeYks: true };
+  }
+
+  const completedSet = new Set(Object.keys(completedVideos || {}).filter(k => completedVideos[k]));
+
+  // Build uncompleted FIFO queues for all subjects
+  const uncompletedQueues = {};
+  let totalCurriculumCount = 0;
+  for (const [subj, info] of Object.entries(playlistData)) {
+    const vids = info?.videos || [];
+    totalCurriculumCount += vids.length;
+    uncompletedQueues[subj] = vids.filter(v => !completedSet.has(v.id));
+  }
+
+  if (completedSet.size >= totalCurriculumCount) {
+    return { schedule: [], nextActiveWeek: 1, nextActiveDay: 0, projectedEndDate: null, completesBeforeYks: true };
+  }
+
+  // Construct uncompleted data set for generateCalendarDays
+  const uncompletedData = {};
+  for (const [subj, info] of Object.entries(playlistData)) {
+    uncompletedData[subj] = {
+      ...info,
+      videos: [...uncompletedQueues[subj]]
+    };
+  }
+
+  const schedule = generateCalendarDays(uncompletedData, {
+    startDate: startDateStr,
+    blueprint
+  });
+
+  // Calculate projected completion date
+  let projectedEndDate = null;
+  for (const week of schedule) {
+    for (const day of week.days) {
+      const hasRealVideo = (day.blocks || []).some(b => b.video?.id && !b.video.id.startsWith('tekrar-'));
+      if (hasRealVideo && day.dateIso) {
+        projectedEndDate = day.dateIso;
+      }
+    }
+  }
+
+  const completesBeforeYks = projectedEndDate ? (new Date(projectedEndDate) <= new Date('2027-06-19')) : true;
+
+  return {
+    schedule,
+    nextActiveWeek: 1,
+    nextActiveDay: 0,
+    projectedEndDate,
+    completesBeforeYks
+  };
 }
 
 /**
