@@ -11,18 +11,6 @@ export function generateSaaSApp() {
   const playlistsData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
   const calendar = generateCalendarDays(playlistsData);
 
-  const subjectBadges = {
-    'TYT Türkçe': 'badge-turkce',
-    'TYT-AYT Tarih': 'badge-tarih',
-    'TYT Coğrafya': 'badge-cografya',
-    'AYT Coğrafya': 'badge-ayt-cografya',
-    'TYT Matematik': 'badge-matematik',
-    'TYT Biyoloji': 'badge-biyoloji',
-    'TYT Fizik': 'badge-fizik',
-    'TYT Kimya': 'badge-kimya',
-    'AYT Edebiyat': 'badge-edebiyat'
-  };
-
   const html = `<!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -477,6 +465,497 @@ export function generateSaaSApp() {
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Badges */
+    .subject-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-turkce      { background: #eff6ff; color: #1d4ed8; }
+    .badge-tarih       { background: #fef2f2; color: #b91c1c; }
+    .badge-cografya    { background: #f0fdf4; color: #15803d; }
+    .badge-ayt-cografya{ background: #ecfdf5; color: #047857; }
+    .badge-matematik   { background: #faf5ff; color: #6b21a8; }
+    .badge-biyoloji    { background: #f0fdfa; color: #0f766e; }
+    .badge-fizik       { background: #fff7ed; color: #c2410c; }
+    .badge-kimya       { background: #ecfeff; color: #0e7490; }
+    .badge-edebiyat    { background: #fff1f2; color: #be123c; }
+    .badge-genel       { background: #f1f5f9; color: #475569; }
+
+    /* Task 2: Study Studio (Bugün) */
+    .studio-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .studio-top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+    }
+
+    .studio-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .week-select-dropdown {
+      height: 38px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background-color: var(--bg-surface);
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .week-select-dropdown:focus {
+      border-color: var(--mint-500);
+    }
+
+    .day-tab-buttons {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .day-tab-btn {
+      padding: 8px 14px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .day-tab-btn:hover {
+      background-color: var(--slate-200);
+      color: var(--text-main);
+    }
+
+    .day-tab-btn.active {
+      background-color: var(--mint-500);
+      color: var(--white);
+    }
+
+    .studio-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-nav-arrow {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+      font-size: 16px;
+      transition: all 0.15s;
+    }
+
+    .btn-nav-arrow:hover {
+      border-color: var(--mint-500);
+      color: var(--mint-600);
+    }
+
+    /* 2-Column Grid Layout */
+    .studio-grid-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .studio-blocks-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .studio-day-meta-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .meta-card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+    }
+
+    .meta-card-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .meta-card-badge {
+      padding: 6px 14px;
+      background: var(--mint-50);
+      color: var(--mint-700);
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 999px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    /* Video Card */
+    .saas-video-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+    }
+
+    .saas-video-card:hover {
+      border-color: var(--slate-300);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .saas-video-card.completed {
+      background-color: #fcfdfc;
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+
+    .video-card-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .video-card-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .block-pill {
+      font-size: 11px;
+      font-weight: 700;
+      background-color: var(--slate-100);
+      color: var(--slate-700);
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .video-instructor-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .video-duration-tag {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: var(--bg-subtle);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .video-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .video-card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid var(--slate-100);
+    }
+
+    .saas-checkbox-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .saas-checkbox-input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--mint-500);
+      cursor: pointer;
+    }
+
+    .btn-watch-youtube {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background-color: #dc2626;
+      color: var(--white);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      transition: background 0.15s;
+    }
+
+    .btn-watch-youtube:hover {
+      background-color: #b91c1c;
+    }
+
+    /* Aside Column (KPI & Break Timer) */
+    .studio-aside-column {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .saas-aside-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    .aside-card-header {
+      margin-bottom: 16px;
+    }
+
+    .aside-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .aside-card-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Circular SVG Timer */
+    .saas-break-timer-card {
+      text-align: center;
+    }
+
+    .svg-timer-circle-wrap {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 16px auto 20px;
+    }
+
+    .svg-timer-circle {
+      transform: rotate(-90deg);
+    }
+
+    .timer-circle-bg {
+      stroke: var(--slate-100);
+    }
+
+    .timer-circle-bar {
+      stroke: var(--mint-500);
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .timer-center-display {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timer-digits {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .timer-state-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    .timer-btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .btn-timer-primary {
+      padding: 10px 24px;
+      background-color: var(--mint-500);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-timer-primary:hover {
+      background-color: var(--mint-600);
+    }
+
+    .btn-timer-secondary {
+      padding: 10px 16px;
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-timer-secondary:hover {
+      background-color: var(--slate-200);
+      color: var(--text-main);
+    }
+
+    .btn-timer-add {
+      padding: 6px 12px;
+      background: transparent;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-timer-add:hover {
+      border-color: var(--mint-500);
+      color: var(--mint-600);
+    }
+
+    /* KPI Items */
+    .kpi-row-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--slate-100);
+      font-size: 13px;
+    }
+
+    .kpi-row-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .kpi-row-label {
+      color: var(--text-secondary);
+    }
+
+    .kpi-row-val {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Sunday Rest Screen */
+    .sunday-rest-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 48px 32px;
+      text-align: center;
+      max-width: 680px;
+      margin: 40px auto;
+    }
+
+    .sunday-rest-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .sunday-rest-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--rose-500);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .sunday-rest-text {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .btn-preview-weekday {
+      padding: 12px 28px;
+      background-color: var(--mint-500);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-preview-weekday:hover {
+      background-color: var(--mint-600);
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
       .saas-sidebar {
@@ -494,6 +973,9 @@ export function generateSaaSApp() {
       }
       .saas-content-canvas {
         padding: 20px 16px;
+      }
+      .studio-grid-layout {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -621,18 +1103,101 @@ export function generateSaaSApp() {
 
       <!-- Content Canvas -->
       <main class="saas-content-canvas">
+        <!-- View 1: Study Studio (Bugün) -->
         <div class="saas-tab-view active" id="tab-today">
-          <!-- Populated in Task 2 -->
+          <div class="studio-container">
+            <!-- Studio Navigation Header -->
+            <div class="studio-top-nav">
+              <div class="studio-nav-left">
+                <select class="week-select-dropdown" id="studio-week-select" onchange="onStudioWeekChange(this.value)">
+                  <!-- 1..42 populated dynamically -->
+                </select>
+                <div class="day-tab-buttons" id="studio-day-tabs">
+                  <button class="day-tab-btn active" onclick="setStudioDay(0)">Pazartesi</button>
+                  <button class="day-tab-btn" onclick="setStudioDay(1)">Salı</button>
+                  <button class="day-tab-btn" onclick="setStudioDay(2)">Çarşamba</button>
+                  <button class="day-tab-btn" onclick="setStudioDay(3)">Perşembe</button>
+                  <button class="day-tab-btn" onclick="setStudioDay(4)">Cuma</button>
+                  <button class="day-tab-btn" onclick="setStudioDay(5)">Cumartesi</button>
+                  <button class="day-tab-btn" onclick="setStudioDay(6)">Pazar</button>
+                </div>
+              </div>
+              <div class="studio-nav-right">
+                <button class="btn-nav-arrow" onclick="navigateStudioDay(-1)" title="Önceki Gün">←</button>
+                <button class="btn-nav-arrow" onclick="navigateStudioDay(1)" title="Sonraki Gün">→</button>
+              </div>
+            </div>
+
+            <!-- Studio 2-Column Grid Layout -->
+            <div class="studio-grid-layout" id="studio-content-area">
+              <!-- Left Column: Video Blocks -->
+              <div class="studio-blocks-column" id="studio-blocks-column">
+                <!-- Dynamically rendered -->
+              </div>
+
+              <!-- Right Column: KPI & Break Timer -->
+              <div class="studio-aside-column" id="studio-aside-column">
+                <!-- Inline Break Timer Card -->
+                <div class="saas-aside-card saas-break-timer-card">
+                  <div class="aside-card-header">
+                    <div class="aside-card-title">☕ 20 Dakika Mola İstasyonu</div>
+                    <div class="aside-card-desc">Beyin dinlenmeden öğrenme kalıcı olmaz.</div>
+                  </div>
+
+                  <div class="svg-timer-circle-wrap">
+                    <svg class="svg-timer-circle" width="160" height="160" viewBox="0 0 160 160">
+                      <circle class="timer-circle-bg" cx="80" cy="80" r="70" stroke-width="8" stroke="var(--slate-100)" fill="none" />
+                      <circle id="timer-circle-progress" class="timer-circle-bar" cx="80" cy="80" r="70" stroke-width="8" stroke="var(--mint-500)" stroke-linecap="round" fill="none" stroke-dasharray="440" stroke-dashoffset="0" />
+                    </svg>
+                    <div class="timer-center-display">
+                      <div class="timer-digits tabular-nums" id="studio-timer-digits">20:00</div>
+                      <div class="timer-state-label" id="studio-timer-label">Mola Sayacı</div>
+                    </div>
+                  </div>
+
+                  <div class="timer-btn-row">
+                    <button class="btn-timer-primary" id="btn-timer-toggle" onclick="toggleBreakTimer()">Molayı Başlat</button>
+                    <button class="btn-timer-secondary" onclick="resetBreakTimer()">Sıfırla</button>
+                  </div>
+                  <button class="btn-timer-add" onclick="addBreakTimerMinutes(5)">+5 Dakika Uzat</button>
+                </div>
+
+                <!-- Daily KPI Card -->
+                <div class="saas-aside-card studio-kpi-card">
+                  <div class="aside-card-header">
+                    <div class="aside-card-title">📊 Günlük Odak Özeti</div>
+                    <div class="aside-card-desc" id="aside-day-name-desc">Pazartesi Programı</div>
+                  </div>
+
+                  <div class="kpi-row-item">
+                    <span class="kpi-row-label">Toplam Çalışma</span>
+                    <span class="kpi-row-val tabular-nums" id="aside-total-study-time">4 Blok Video</span>
+                  </div>
+                  <div class="kpi-row-item">
+                    <span class="kpi-row-label">Mola Sayısı</span>
+                    <span class="kpi-row-val tabular-nums">3 Mola (60 dk)</span>
+                  </div>
+                  <div class="kpi-row-item">
+                    <span class="kpi-row-label">Tamamlanan</span>
+                    <span class="kpi-row-val tabular-nums" id="aside-completed-blocks-count">0 / 4 Blok</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
+        <!-- View 2: Master Calendar (Radar) -->
         <div class="saas-tab-view" id="tab-radar">
           <!-- Populated in Task 3 -->
         </div>
 
+        <!-- View 3: Curriculum Matrix -->
         <div class="saas-tab-view" id="tab-curriculum">
           <!-- Populated in Task 4 -->
         </div>
 
+        <!-- View 4: Preferences & Backup -->
         <div class="saas-tab-view" id="tab-settings">
           <!-- Populated in Task 6 -->
         </div>
@@ -641,6 +1206,130 @@ export function generateSaaSApp() {
   </div>
 
   <script>
+    // Embedded Curriculum & Baseline Schedule
+    const PLAYLISTS_DATA = ${JSON.stringify(playlistsData)};
+    const BASELINE_CALENDAR = ${JSON.stringify(calendar)};
+
+    // State
+    let completedVideos = {};
+    let currentSchedule = [];
+    let activeWeekNum = 1;
+    let activeDayIndex = 0; // 0: Pazartesi ... 6: Pazar
+
+    // Break Timer State
+    let timerDuration = 1200; // 20 min in sec
+    let timerRemaining = 1200;
+    let timerRunning = false;
+    let timerInterval = null;
+    let timerTargetEnd = 0;
+
+    // Web Audio Chime
+    let audioCtx = null;
+    function initAudio() {
+      try {
+        const AudioClass = window.AudioContext || window.webkitAudioContext;
+        if (!audioCtx && AudioClass) {
+          audioCtx = new AudioClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch (e) {
+        console.warn('Audio init error:', e);
+      }
+    }
+
+    function playChime() {
+      try {
+        initAudio();
+        if (!audioCtx) return;
+
+        const now = audioCtx.currentTime;
+
+        // Tone 1: D5 (587.33 Hz)
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(587.33, now);
+        gain1.gain.setValueAtTime(0.25, now);
+        gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.18);
+
+        // Tone 2: A5 (880 Hz)
+        const tone2Start = now + 0.18;
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880, tone2Start);
+        gain2.gain.setValueAtTime(0.3, tone2Start);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, tone2Start + 0.4);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start(tone2Start);
+        osc2.stop(tone2Start + 0.4);
+      } catch (err) {
+        console.warn('Chime audio error:', err);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Storage Management
+    function loadState() {
+      try {
+        const savedComp = localStorage.getItem('yks_completed_videos');
+        if (savedComp) completedVideos = JSON.parse(savedComp);
+
+        const savedWeek = localStorage.getItem('yks_active_week');
+        if (savedWeek) activeWeekNum = parseInt(savedWeek, 10) || 1;
+
+        const savedDay = localStorage.getItem('yks_active_day');
+        if (savedDay !== null) activeDayIndex = parseInt(savedDay, 10) || 0;
+
+        const savedSchedule = localStorage.getItem('yks_shifted_schedule');
+        if (savedSchedule) {
+          currentSchedule = JSON.parse(savedSchedule);
+        } else {
+          currentSchedule = JSON.parse(JSON.stringify(BASELINE_CALENDAR));
+        }
+      } catch (e) {
+        console.warn('Load state error:', e);
+        currentSchedule = JSON.parse(JSON.stringify(BASELINE_CALENDAR));
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem('yks_completed_videos', JSON.stringify(completedVideos));
+        localStorage.setItem('yks_active_week', String(activeWeekNum));
+        localStorage.setItem('yks_active_day', String(activeDayIndex));
+      } catch (e) {
+        console.warn('Save state error:', e);
+      }
+    }
+
+    function toggleVideo(videoId, isChecked) {
+      if (isChecked) {
+        completedVideos[videoId] = true;
+      } else {
+        delete completedVideos[videoId];
+      }
+      saveState();
+      updateAllUI();
+    }
+
+    // UI Tab Navigation
     function switchSaaSTab(tabId) {
       document.querySelectorAll('.saas-tab-view').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
@@ -672,13 +1361,329 @@ export function generateSaaSApp() {
       if (sb) sb.classList.toggle('open');
     }
 
-    function openCommandPalette() {
-      // Defined in Task 5
+    // Studio Day Navigation
+    function onStudioWeekChange(val) {
+      activeWeekNum = parseInt(val, 10) || 1;
+      saveState();
+      updateAllUI();
     }
 
-    function triggerShiftEngine() {
-      // Defined in Task 3
+    function setStudioDay(idx) {
+      activeDayIndex = idx;
+      saveState();
+      updateAllUI();
     }
+
+    function navigateStudioDay(delta) {
+      let nextDay = activeDayIndex + delta;
+      if (nextDay < 0) {
+        if (activeWeekNum > 1) {
+          activeWeekNum--;
+          nextDay = 6;
+        } else {
+          nextDay = 0;
+        }
+      } else if (nextDay > 6) {
+        if (activeWeekNum < (currentSchedule.length || 42)) {
+          activeWeekNum++;
+          nextDay = 0;
+        } else {
+          nextDay = 6;
+        }
+      }
+      activeDayIndex = nextDay;
+      saveState();
+      updateAllUI();
+    }
+
+    function getSubjectBadgeClass(subject) {
+      const badges = {
+        'TYT Türkçe': 'badge-turkce',
+        'TYT-AYT Tarih': 'badge-tarih',
+        'TYT Coğrafya': 'badge-cografya',
+        'AYT Coğrafya': 'badge-ayt-cografya',
+        'TYT Matematik': 'badge-matematik',
+        'TYT Biyoloji': 'badge-biyoloji',
+        'TYT Fizik': 'badge-fizik',
+        'TYT Kimya': 'badge-kimya',
+        'AYT Edebiyat': 'badge-edebiyat'
+      };
+      return badges[subject] || 'badge-genel';
+    }
+
+    // Render Studio Day (Task 2)
+    function renderStudioDay() {
+      const weekData = currentSchedule.find(w => w.weekNum === activeWeekNum) || currentSchedule[0];
+      const dayData = weekData?.days?.[activeDayIndex];
+
+      // Update week dropdown
+      const weekSelect = document.getElementById('studio-week-select');
+      if (weekSelect && weekSelect.children.length === 0) {
+        let options = '';
+        currentSchedule.forEach(w => {
+          options += \`<option value="\${w.weekNum}">Hafta \${w.weekNum}</option>\`;
+        });
+        weekSelect.innerHTML = options;
+      }
+      if (weekSelect) weekSelect.value = String(activeWeekNum);
+
+      // Update day tabs active state
+      const dayTabBtns = document.querySelectorAll('.day-tab-btn');
+      dayTabBtns.forEach((btn, idx) => {
+        if (idx === activeDayIndex) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+
+      const blocksContainer = document.getElementById('studio-blocks-column');
+      const asideColumn = document.getElementById('studio-aside-column');
+      const contentArea = document.getElementById('studio-content-area');
+      if (!blocksContainer) return;
+
+      // Sunday rest state
+      if (!dayData || dayData.isRestDay || activeDayIndex === 6) {
+        if (asideColumn) asideColumn.style.display = 'none';
+        contentArea.style.gridTemplateColumns = '1fr';
+        blocksContainer.innerHTML = \`
+          <div class="sunday-rest-card">
+            <span class="sunday-rest-icon">☕</span>
+            <div class="sunday-rest-title">⛔ PAZAR: ÇALIŞMAK KESİNLİKLE YASAK!</div>
+            <div class="sunday-rest-text">
+              Bugün beyninizi dinlendirme ve ödüllendirme günüdür. YKS bir maratondur; dinlenmeden zihinsel güç yenilenemez.
+              Yarın zinde ve odaklanmış bir şekilde 4 blokla haftaya başlayacaksınız.
+            </div>
+            <button class="btn-preview-weekday" onclick="setStudioDay(0)">Pazartesi Programını Önizle</button>
+          </div>
+        \`;
+        return;
+      }
+
+      // Weekday with 4 blocks
+      if (asideColumn) asideColumn.style.display = 'flex';
+      contentArea.style.gridTemplateColumns = 'minmax(0, 1fr) 360px';
+
+      const blocks = dayData.blocks || [];
+      let completedCount = 0;
+      let totalDurationMin = 0;
+
+      let html = \`
+        <div class="studio-day-meta-card">
+          <div>
+            <div class="meta-card-title">\${activeWeekNum}. Hafta • \${dayData.dayName}</div>
+            <div class="meta-card-subtitle">4 blok video • 3 mola (60 dk)</div>
+          </div>
+          <div class="meta-card-badge" id="studio-completed-badge">0 / 4 Blok</div>
+        </div>
+      \`;
+
+      blocks.forEach((b, idx) => {
+        const v = b.video;
+        const videoId = v.id || ('tekrar-' + (b.subject || 'genel').replace(/[^a-zA-Z0-9]/g, '_') + '-w' + activeWeekNum + '-d' + activeDayIndex + '-b' + (idx + 1));
+        const isDone = Boolean(completedVideos[videoId]);
+        if (isDone) completedCount++;
+
+        const durMin = v.duration_min ? Math.round(v.duration_min) : 40;
+        totalDurationMin += durMin;
+        const badgeClass = getSubjectBadgeClass(b.subject);
+
+        html += \`
+          <div class="saas-video-card \${isDone ? 'completed' : ''}" id="video-card-\${idx}">
+            <div class="video-card-top-row">
+              <div class="video-card-meta-left">
+                <span class="block-pill">Blok \${b.blockNum || idx + 1}</span>
+                <span class="subject-badge \${badgeClass}">\${b.subject}</span>
+                <span class="video-instructor-text">\${escapeHtml(b.instructor)}</span>
+              </div>
+              <span class="video-duration-tag tabular-nums">\${durMin} dk</span>
+            </div>
+
+            <div class="video-card-title">\${escapeHtml(v.title)}</div>
+
+            <div class="video-card-actions">
+              <label class="saas-checkbox-label" for="chk-\${activeWeekNum}-\${activeDayIndex}-\${idx}">
+                <input type="checkbox" class="saas-checkbox-input" id="chk-\${activeWeekNum}-\${activeDayIndex}-\${idx}"
+                  \${isDone ? 'checked' : ''}
+                  onchange="toggleVideo('\${videoId}', this.checked)">
+                <span>\${isDone ? 'Tamamlandı' : 'İzlendi olarak işaretle'}</span>
+              </label>
+
+              \${v.id ? \`
+                <a class="btn-watch-youtube" href="https://www.youtube.com/watch?v=\${v.id}" target="_blank" rel="noopener noreferrer">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  </svg>
+                  <span>YouTube'da İzle</span>
+                </a>
+              \` : ''}
+            </div>
+          </div>
+        \`;
+      });
+
+      blocksContainer.innerHTML = html;
+
+      // Update KPI widgets
+      const badgeEl = document.getElementById('studio-completed-badge');
+      if (badgeEl) badgeEl.textContent = \`\${completedCount} / \${blocks.length} Blok\`;
+
+      const asideTotalTime = document.getElementById('aside-total-study-time');
+      if (asideTotalTime) asideTotalTime.textContent = \`\${totalDurationMin} dk (~\${(totalDurationMin / 60).toFixed(1)} sa)\`;
+
+      const asideCompletedCount = document.getElementById('aside-completed-blocks-count');
+      if (asideCompletedCount) asideCompletedCount.textContent = \`\${completedCount} / \${blocks.length} Blok\`;
+
+      const asideDayDesc = document.getElementById('aside-day-name-desc');
+      if (asideDayDesc) asideDayDesc.textContent = \`\${activeWeekNum}. Hafta • \${dayData.dayName}\`;
+    }
+
+    // Break Timer Logic
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timerRemaining / 60);
+      const seconds = timerRemaining % 60;
+      const text = \`\${String(minutes).padStart(2, '0')}:\${String(seconds).padStart(2, '0')}\`;
+
+      const studioDigits = document.getElementById('studio-timer-digits');
+      if (studioDigits) studioDigits.textContent = text;
+
+      const topbarPill = document.getElementById('topbar-timer-pill');
+      const topbarText = document.getElementById('topbar-timer-text');
+      if (topbarText) topbarText.textContent = text;
+
+      if (topbarPill) {
+        topbarPill.style.display = timerRunning ? 'inline-flex' : 'none';
+      }
+
+      // Update SVG Circular progress
+      const circle = document.getElementById('timer-circle-progress');
+      if (circle) {
+        const circumference = 440; // 2 * pi * 70 ≈ 439.8
+        const offset = circumference - (timerRemaining / timerDuration) * circumference;
+        circle.style.strokeDashoffset = offset;
+      }
+    }
+
+    function toggleBreakTimer() {
+      initAudio();
+      if (timerRunning) {
+        pauseBreakTimer();
+      } else {
+        startBreakTimer();
+      }
+    }
+
+    function startBreakTimer() {
+      if (timerRunning) return;
+      if (timerRemaining <= 0) timerRemaining = timerDuration;
+      timerRunning = true;
+      timerTargetEnd = Date.now() + timerRemaining * 1000;
+
+      const btn = document.getElementById('btn-timer-toggle');
+      if (btn) btn.textContent = 'Duraklat';
+
+      const label = document.getElementById('studio-timer-label');
+      if (label) label.textContent = 'Mola Akıyor...';
+
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        const now = Date.now();
+        timerRemaining = Math.max(0, Math.round((timerTargetEnd - now) / 1000));
+        updateTimerDisplay();
+
+        if (timerRemaining <= 0) {
+          clearInterval(timerInterval);
+          timerRunning = false;
+          if (btn) btn.textContent = 'Molayı Başlat';
+          if (label) label.textContent = 'Mola Tamamlandı!';
+          playChime();
+          alert('☕ 20 dakikalık mola tamamlandı! Zihnin yenilendi, sonraki bloğa hazırsın.');
+        }
+      }, 200);
+      updateTimerDisplay();
+    }
+
+    function pauseBreakTimer() {
+      timerRunning = false;
+      if (timerInterval) clearInterval(timerInterval);
+      const btn = document.getElementById('btn-timer-toggle');
+      if (btn) btn.textContent = 'Devam Et';
+
+      const label = document.getElementById('studio-timer-label');
+      if (label) label.textContent = 'Duraklatıldı';
+      updateTimerDisplay();
+    }
+
+    function resetBreakTimer() {
+      timerRunning = false;
+      if (timerInterval) clearInterval(timerInterval);
+      timerRemaining = timerDuration;
+
+      const btn = document.getElementById('btn-timer-toggle');
+      if (btn) btn.textContent = 'Molayı Başlat';
+
+      const label = document.getElementById('studio-timer-label');
+      if (label) label.textContent = 'Mola Sayacı';
+
+      updateTimerDisplay();
+    }
+
+    function addBreakTimerMinutes(min) {
+      timerRemaining += min * 60;
+      timerDuration = Math.max(timerDuration, timerRemaining);
+      if (timerRunning) {
+        timerTargetEnd += min * 60 * 1000;
+      }
+      updateTimerDisplay();
+    }
+
+    // Target Date Countdown (19 June 2027)
+    function updateTargetCountdown() {
+      const target = new Date('2027-06-19T10:00:00');
+      const now = new Date();
+      const diffMs = target - now;
+
+      if (diffMs > 0) {
+        const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const weeks = Math.floor(days / 7);
+        const remDays = days % 7;
+        const el = document.getElementById('sidebar-target-countdown');
+        if (el) el.textContent = \`\${days} Gün (\${weeks} Hafta \${remDays} Gün)\`;
+      }
+    }
+
+    // Global UI Sync
+    function updateAllUI() {
+      const totalVideos = 766;
+      const completedCount = Object.keys(completedVideos).length;
+      const pct = Math.round((completedCount / totalVideos) * 100);
+
+      // Topbar pill
+      const topbarPill = document.getElementById('topbar-progress-pill');
+      if (topbarPill) topbarPill.textContent = \`\${completedCount} / \${totalVideos} Video (% \${pct})\`;
+
+      // Sidebar pill
+      const sidebarPct = document.getElementById('sidebar-pct-label');
+      if (sidebarPct) sidebarPct.textContent = \`%\${pct}\`;
+
+      const sidebarFill = document.getElementById('sidebar-progress-fill');
+      if (sidebarFill) sidebarFill.style.width = \`\${pct}%\`;
+
+      const dayNames = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+      const sidebarTag = document.getElementById('sidebar-active-tag');
+      if (sidebarTag) sidebarTag.textContent = \`Hafta \${activeWeekNum} • \${dayNames[activeDayIndex]}\`;
+
+      renderStudioDay();
+      updateTargetCountdown();
+    }
+
+    // Placeholders for Task 3, 4, 5
+    function openCommandPalette() {}
+    function triggerShiftEngine() {}
+
+    // Initial Load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      updateAllUI();
+      updateTimerDisplay();
+    });
   </script>
 </body>
 </html>`;
