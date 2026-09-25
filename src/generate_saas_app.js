@@ -956,6 +956,213 @@ export function generateSaaSApp() {
       background-color: var(--mint-600);
     }
 
+    /* Task 3: Master Calendar & Radar */
+    .radar-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .radar-header-area {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .radar-title-wrap h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .radar-title-wrap p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .radar-action-buttons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-radar-primary {
+      padding: 10px 18px;
+      background-color: var(--mint-500);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .btn-radar-primary:hover {
+      background-color: var(--mint-600);
+    }
+
+    .btn-radar-secondary {
+      padding: 10px 16px;
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-radar-secondary:hover {
+      background-color: var(--slate-200);
+      color: var(--text-main);
+    }
+
+    .radar-week-selector {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 6px 2px 14px;
+      scrollbar-width: thin;
+    }
+
+    .week-nav-chip {
+      padding: 8px 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      min-width: 90px;
+      transition: all 0.15s;
+    }
+
+    .week-nav-chip:hover {
+      border-color: var(--mint-500);
+      color: var(--text-main);
+    }
+
+    .week-nav-chip.active {
+      background: var(--slate-900);
+      border-color: var(--slate-900);
+      color: var(--white);
+    }
+
+    .week-nav-chip.active .chip-pct {
+      color: var(--mint-500);
+    }
+
+    .chip-pct {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .radar-weekly-matrix {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    .matrix-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .matrix-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .matrix-days-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .matrix-day-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .matrix-day-card.rest-day {
+      background: #fff1f2;
+      border-color: rgba(244, 63, 94, 0.2);
+    }
+
+    .matrix-day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .matrix-day-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    .matrix-day-blocks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .matrix-block-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 12px;
+    }
+
+    .matrix-block-item.done {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: #f0fdf4;
+    }
+
+    .matrix-block-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .matrix-block-title {
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
       .saas-sidebar {
@@ -1189,7 +1396,33 @@ export function generateSaaSApp() {
 
         <!-- View 2: Master Calendar (Radar) -->
         <div class="saas-tab-view" id="tab-radar">
-          <!-- Populated in Task 3 -->
+          <div class="radar-container">
+            <div class="radar-header-area">
+              <div class="radar-title-wrap">
+                <h2>🗺️ Master Takvim & İlerleme Radarı</h2>
+                <p>42 haftalık müfredat zaman çizelgesi. Kaçan veya izlenmeyen videoları Stressiz Kaydırma Motoru ile bugünden itibaren geleceğe kaydırabilirsiniz.</p>
+              </div>
+              <div class="radar-action-buttons">
+                <button class="btn-radar-primary" onclick="triggerShiftEngine()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                  <span>Stressiz Kaydır</span>
+                </button>
+                <button class="btn-radar-secondary" onclick="resetSchedule()">Orijinal Plana Sıfırla</button>
+              </div>
+            </div>
+
+            <!-- Week Selector Track -->
+            <div class="radar-week-selector" id="radar-week-selector">
+              <!-- Dynamically populated 1..42 -->
+            </div>
+
+            <!-- Weekly Matrix Container -->
+            <div class="radar-weekly-matrix" id="radar-weekly-matrix">
+              <!-- Dynamically populated 7 days -->
+            </div>
+          </div>
         </div>
 
         <!-- View 3: Curriculum Matrix -->
@@ -1354,6 +1587,10 @@ export function generateSaaSApp() {
       };
       const bc = document.getElementById('topbar-breadcrumb-title');
       if (bc && breadcrumbMap[tabId]) bc.textContent = breadcrumbMap[tabId];
+
+      if (tabId === 'tab-radar') {
+        renderRadarView();
+      }
     }
 
     function toggleSidebar() {
@@ -1674,9 +1911,262 @@ export function generateSaaSApp() {
       updateTargetCountdown();
     }
 
-    // Placeholders for Task 3, 4, 5
+    let radarActiveWeekNum = 1;
+
+    function selectRadarWeek(wNum) {
+      radarActiveWeekNum = wNum;
+      renderRadarView();
+    }
+
+    function jumpToStudioWeek(wNum) {
+      activeWeekNum = wNum;
+      activeDayIndex = 0;
+      saveState();
+      updateAllUI();
+      switchSaaSTab('tab-today');
+    }
+
+    function shiftSchedule(rawPlaylists, compMap = {}) {
+      if (!rawPlaylists || Object.keys(rawPlaylists).length === 0) return [];
+      const queues = {};
+      let totalRemaining = 0;
+      for (const [subj, info] of Object.entries(rawPlaylists)) {
+        const uncompleted = (info?.videos || []).filter(v => !compMap[v.id]);
+        queues[subj] = [...uncompleted];
+        totalRemaining += uncompleted.length;
+      }
+      if (totalRemaining === 0) return [];
+
+      const weeks = [];
+      let weekNum = 1;
+      const maxWeeks = 45;
+
+      while (weekNum <= maxWeeks) {
+        const days = [];
+        const dayConfigs = [
+          { name: 'Pazartesi', s1: 'TYT Türkçe', c1: 2, s2: 'TYT Coğrafya', c2: 2 },
+          { name: 'Salı', s1: 'TYT Matematik', c1: 2, s2: 'TYT-AYT Tarih', c2: 2 },
+          { name: 'Çarşamba', s1: 'TYT Biyoloji', c1: 2, s2: 'AYT Edebiyat', c2: 2 },
+          { name: 'Perşembe', s1: 'TYT Matematik', c1: 2, s2: 'TYT Kimya', c2: 2 },
+          {
+            name: 'Cuma',
+            s1: 'TYT Fizik',
+            c1: 2,
+            s2: () => ((queues['AYT Edebiyat']?.length ?? 0) > 0 ? 'AYT Edebiyat' : 'AYT Coğrafya'),
+            c2: 2
+          },
+          {
+            name: 'Cumartesi',
+            s1: 'TYT-AYT Tarih',
+            c1: 2,
+            s2: () => ((queues['TYT Biyoloji']?.length ?? 0) > 0 ? 'TYT Biyoloji' : 'Tekrar & Soru Çözümü'),
+            c2: 2
+          },
+          { name: 'Pazar', isRestDay: true }
+        ];
+
+        let hasAnyVideo = false;
+
+        for (let dayIdx = 0; dayIdx < dayConfigs.length; dayIdx++) {
+          const rawCfg = dayConfigs[dayIdx];
+          if (rawCfg.isRestDay) {
+            days.push({ dayName: 'Pazar', isRestDay: true });
+            continue;
+          }
+
+          const s1 = typeof rawCfg.s1 === 'function' ? rawCfg.s1() : rawCfg.s1;
+          const s2 = typeof rawCfg.s2 === 'function' ? rawCfg.s2() : rawCfg.s2;
+          const c1 = rawCfg.c1 ?? 2;
+          const c2 = rawCfg.c2 ?? 2;
+          const blocks = [];
+
+          for (let i = 0; i < c1; i++) {
+            const v = queues[s1]?.shift();
+            const bIdx = blocks.length;
+            if (v) {
+              hasAnyVideo = true;
+              const instructor = v.instructor || rawPlaylists[s1]?.instructor || (rawPlaylists[s1]?.metadata?.instructor) || '';
+              blocks.push({ blockNum: bIdx + 1, subject: s1, video: v, instructor });
+            } else {
+              blocks.push({
+                blockNum: bIdx + 1,
+                subject: s1,
+                video: {
+                  id: 'tekrar-' + s1.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + weekNum + '-d' + dayIdx + '-b' + (bIdx + 1),
+                  title: 'Konu Tekrarı & Soru Çözümü',
+                  duration_min: 40,
+                  duration_sec: 2400,
+                  url: ''
+                },
+                instructor: ''
+              });
+            }
+          }
+
+          for (let i = 0; i < c2; i++) {
+            const v = queues[s2]?.shift();
+            const bIdx = blocks.length;
+            if (v) {
+              hasAnyVideo = true;
+              const instructor = v.instructor || rawPlaylists[s2]?.instructor || (rawPlaylists[s2]?.metadata?.instructor) || '';
+              blocks.push({ blockNum: bIdx + 1, subject: s2, video: v, instructor });
+            } else {
+              blocks.push({
+                blockNum: bIdx + 1,
+                subject: s2,
+                video: {
+                  id: 'tekrar-' + s2.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + weekNum + '-d' + dayIdx + '-b' + (bIdx + 1),
+                  title: 'Konu Tekrarı & Soru Çözümü',
+                  duration_min: 40,
+                  duration_sec: 2400,
+                  url: ''
+                },
+                instructor: ''
+              });
+            }
+          }
+
+          days.push({ dayName: rawCfg.name, isRestDay: false, blocks });
+        }
+
+        weeks.push({ weekNum, days });
+        const remainingVideos = Object.values(queues).reduce((sum, q) => sum + q.length, 0);
+        if (remainingVideos === 0) break;
+        if (!hasAnyVideo && weekNum > 40) break;
+        weekNum++;
+      }
+      return weeks;
+    }
+
+    function triggerShiftEngine() {
+      const shifted = shiftSchedule(PLAYLISTS_DATA, completedVideos);
+      if (!shifted || shifted.length === 0) {
+        alert('🎉 Tebrikler! Tüm videolar tamamlanmış veya kaydırılacak video kalmamış.');
+        return;
+      }
+      currentSchedule = shifted;
+      try {
+        localStorage.setItem('yks_shifted_schedule', JSON.stringify(shifted));
+      } catch (e) {
+        console.warn('Storage save error:', e);
+      }
+      activeWeekNum = 1;
+      activeDayIndex = 0;
+      saveState();
+      updateAllUI();
+      renderRadarView();
+      alert('⚡ Stressiz Kaydırma Motoru Çalıştırıldı!\\nİzlenmemiş tüm videolar bugünden itibaren sıralı olarak sonraki haftalara yeniden dağıtıldı.');
+    }
+
+    function resetSchedule() {
+      if (confirm('Orijinal 42 haftalık temel plana dönmek istediğinize emin misiniz?')) {
+        currentSchedule = JSON.parse(JSON.stringify(BASELINE_CALENDAR));
+        try {
+          localStorage.removeItem('yks_shifted_schedule');
+        } catch (e) {}
+        saveState();
+        updateAllUI();
+        renderRadarView();
+        alert('Takvim orijinal başlangıç planına sıfırlandı.');
+      }
+    }
+
+    function renderRadarView() {
+      const weekSelector = document.getElementById('radar-week-selector');
+      const matrixContainer = document.getElementById('radar-weekly-matrix');
+      if (!weekSelector || !matrixContainer) return;
+
+      // 1. Render Week Chips
+      let chipsHtml = '';
+      currentSchedule.forEach(w => {
+        let weekTotal = 0;
+        let weekDone = 0;
+        w.days.forEach(d => {
+          (d.blocks || []).forEach(b => {
+            if (b.video?.id && !b.video.id.startsWith('tekrar-')) {
+              weekTotal++;
+              if (completedVideos[b.video.id]) weekDone++;
+            }
+          });
+        });
+        const pct = weekTotal > 0 ? Math.round((weekDone / weekTotal) * 100) : 0;
+        const isActive = w.weekNum === radarActiveWeekNum;
+
+        chipsHtml += \`
+          <button class="week-nav-chip \${isActive ? 'active' : ''}" onclick="selectRadarWeek(\${w.weekNum})">
+            <span>Hafta \${w.weekNum}</span>
+            <span class="chip-pct tabular-nums">%\${pct}</span>
+          </button>
+        \`;
+      });
+      weekSelector.innerHTML = chipsHtml;
+
+      // 2. Render Weekly Matrix
+      const targetWeek = currentSchedule.find(w => w.weekNum === radarActiveWeekNum) || currentSchedule[0];
+      if (!targetWeek) return;
+
+      let matrixHtml = \`
+        <div class="matrix-header">
+          <div class="matrix-title">Hafta Planı (\${targetWeek.weekNum}. Hafta • 6 Günlük Ders Matrisi + Pazar)</div>
+          <button class="btn-radar-secondary" onclick="jumpToStudioWeek(\${targetWeek.weekNum})">Bu Haftayı Stüdyoda Aç →</button>
+        </div>
+        <div class="matrix-days-grid">
+      \`;
+
+      targetWeek.days.forEach((d, dayIdx) => {
+        if (d.isRestDay || dayIdx === 6) {
+          matrixHtml += \`
+            <div class="matrix-day-card rest-day">
+              <div class="matrix-day-header">
+                <span class="matrix-day-name">Pazar</span>
+                <span class="subject-badge badge-tarih">Dinlenme</span>
+              </div>
+              <p style="font-size: 13px; color: var(--rose-500); font-weight: 600; padding: 20px 0; text-align: center;">
+                ☕ Zihinsel Yenilenme Günü
+              </p>
+            </div>
+          \`;
+          return;
+        }
+
+        matrixHtml += \`
+          <div class="matrix-day-card">
+            <div class="matrix-day-header">
+              <span class="matrix-day-name">\${d.dayName}</span>
+              <span class="tabular-nums" style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">4 Blok</span>
+            </div>
+            <div class="matrix-day-blocks-list">
+        \`;
+
+        (d.blocks || []).forEach(b => {
+          const v = b.video;
+          const isDone = Boolean(completedVideos[v.id]);
+          const badgeClass = getSubjectBadgeClass(b.subject);
+          const durMin = v.duration_min ? Math.round(v.duration_min) : 40;
+
+          matrixHtml += \`
+            <div class="matrix-block-item \${isDone ? 'done' : ''}">
+              <div class="matrix-block-meta">
+                <span class="subject-badge \${badgeClass}">\${b.subject}</span>
+                <span class="tabular-nums" style="color: var(--text-muted); font-size: 11px;">\${durMin} dk</span>
+              </div>
+              <div class="matrix-block-title">\${escapeHtml(v.title)}</div>
+            </div>
+          \`;
+        });
+
+        matrixHtml += \`
+            </div>
+          </div>
+        \`;
+      });
+
+      matrixHtml += '</div>';
+      matrixContainer.innerHTML = matrixHtml;
+    }
+
+    // Placeholders for Task 4, 5
     function openCommandPalette() {}
-    function triggerShiftEngine() {}
 
     // Initial Load
     window.addEventListener('DOMContentLoaded', () => {
