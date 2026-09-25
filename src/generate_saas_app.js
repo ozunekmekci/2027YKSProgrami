@@ -1163,6 +1163,238 @@ export function generateSaaSApp() {
       line-height: 1.3;
     }
 
+    /* Curriculum Matrix (Task 4) */
+    .curriculum-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .curriculum-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      padding: 16px 20px;
+      border-radius: var(--radius-lg);
+    }
+
+    .toolbar-title-wrap h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    .toolbar-title-wrap p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 4px 0 0 0;
+    }
+
+    .toolbar-filters {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .filter-group select {
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-group select:focus {
+      border-color: var(--emerald-500);
+    }
+
+    .search-group input {
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      outline: none;
+      min-width: 220px;
+    }
+
+    .search-group input:focus {
+      border-color: var(--emerald-500);
+    }
+
+    .curriculum-course-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
+    .course-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .course-card:hover {
+      border-color: var(--slate-300);
+      transform: translateY(-1px);
+    }
+
+    .course-card.active-filter {
+      border-color: var(--emerald-500);
+      background: #f0fdf4;
+    }
+
+    .course-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .course-card-instructor {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 110px;
+    }
+
+    .course-progress-track {
+      width: 100%;
+      height: 6px;
+      background: var(--slate-100);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .course-progress-fill {
+      height: 100%;
+      background: var(--emerald-500);
+      transition: width 0.3s ease;
+    }
+
+    .course-card-stats {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .saas-table-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .table-meta-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .table-scroll-wrapper {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .saas-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .saas-data-table th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-canvas);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-light);
+      z-index: 2;
+    }
+
+    .saas-data-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+      color: var(--text-main);
+    }
+
+    .saas-data-table tr:hover {
+      background: var(--slate-50);
+    }
+
+    .saas-data-table tr.video-done {
+      background: rgba(16, 185, 129, 0.03);
+    }
+
+    .table-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--emerald-600);
+      background: #ecfdf5;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+
+    .table-action-btn:hover {
+      background: #d1fae5;
+    }
+
+    .table-check-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .table-check-wrap input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--emerald-500);
+      cursor: pointer;
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
       .saas-sidebar {
@@ -1427,7 +1659,74 @@ export function generateSaaSApp() {
 
         <!-- View 3: Curriculum Matrix -->
         <div class="saas-tab-view" id="tab-curriculum">
-          <!-- Populated in Task 4 -->
+          <div class="curriculum-container">
+            <!-- Top Toolbar -->
+            <div class="curriculum-toolbar">
+              <div class="toolbar-title-wrap">
+                <h2>Müfredat Veri Bankası</h2>
+                <p>9 Ders • 766 Video • Kronolojik Çalışma Takibi & Veri Tabanı</p>
+              </div>
+              <div class="toolbar-filters">
+                <div class="filter-group">
+                  <label for="subject-filter-select">Ders:</label>
+                  <select id="subject-filter-select" onchange="filterCurriculumTable()">
+                    <option value="all">Tüm Dersler (9 Ders)</option>
+                    <option value="TYT Türkçe">TYT Türkçe</option>
+                    <option value="TYT-AYT Tarih">TYT-AYT Tarih</option>
+                    <option value="TYT Coğrafya">TYT Coğrafya</option>
+                    <option value="AYT Coğrafya">AYT Coğrafya</option>
+                    <option value="TYT Matematik">TYT Matematik</option>
+                    <option value="TYT Biyoloji">TYT Biyoloji</option>
+                    <option value="TYT Fizik">TYT Fizik</option>
+                    <option value="TYT Kimya">TYT Kimya</option>
+                    <option value="AYT Edebiyat">AYT Edebiyat</option>
+                  </select>
+                </div>
+                <div class="filter-group">
+                  <label for="status-filter-select">Durum:</label>
+                  <select id="status-filter-select" onchange="filterCurriculumTable()">
+                    <option value="all">Tüm Durumlar</option>
+                    <option value="completed">Tamamlananlar</option>
+                    <option value="uncompleted">Kalanlar</option>
+                  </select>
+                </div>
+                <div class="search-group">
+                  <input type="text" id="table-search-input" placeholder="Video veya konu ara..." oninput="filterCurriculumTable()" />
+                </div>
+              </div>
+            </div>
+
+            <!-- 9 Course Cards Overview -->
+            <div class="curriculum-course-cards" id="curriculum-course-cards">
+              <!-- Dynamically populated 9 cards -->
+            </div>
+
+            <!-- Table Card -->
+            <div class="saas-table-card">
+              <div class="table-meta-header">
+                <span id="table-result-count" class="tabular-nums" style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">766 video listeleniyor</span>
+                <span style="font-size: 12px; color: var(--text-muted);">Durum kutucuğuna tıklayarak doğrudan tamamlandı olarak işaretleyebilirsiniz.</span>
+              </div>
+              <div class="table-scroll-wrapper">
+                <table class="saas-data-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 140px;">Ders</th>
+                      <th style="width: 80px;" class="tabular-nums">No</th>
+                      <th>Başlık</th>
+                      <th style="width: 150px;">Eğitmen</th>
+                      <th style="width: 90px;" class="tabular-nums">Süre</th>
+                      <th style="width: 110px;">Durum</th>
+                      <th style="width: 110px; text-align: right;">Eylem</th>
+                    </tr>
+                  </thead>
+                  <tbody id="curriculum-table-tbody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- View 4: Preferences & Backup -->
@@ -1590,6 +1889,8 @@ export function generateSaaSApp() {
 
       if (tabId === 'tab-radar') {
         renderRadarView();
+      } else if (tabId === 'tab-curriculum') {
+        renderCurriculumView();
       }
     }
 
@@ -1909,6 +2210,11 @@ export function generateSaaSApp() {
 
       renderStudioDay();
       updateTargetCountdown();
+
+      const currTab = document.getElementById('tab-curriculum');
+      if (currTab && currTab.classList.contains('active')) {
+        renderCurriculumView();
+      }
     }
 
     let radarActiveWeekNum = 1;
@@ -2165,7 +2471,168 @@ export function generateSaaSApp() {
       matrixContainer.innerHTML = matrixHtml;
     }
 
-    // Placeholders for Task 4, 5
+    // Curriculum View & Table Logic (Task 4)
+    let selectedCurriculumSubject = 'all';
+
+    function renderCurriculumView() {
+      const cardsContainer = document.getElementById('curriculum-course-cards');
+      if (!cardsContainer) return;
+
+      let cardsHtml = '';
+      for (const [subj, info] of Object.entries(PLAYLISTS_DATA)) {
+        const videos = info.videos || [];
+        const totalCount = videos.length;
+        let doneCount = 0;
+        let totalSec = 0;
+        let remSec = 0;
+
+        videos.forEach(v => {
+          const sec = v.duration_sec || (v.duration_min ? v.duration_min * 60 : 2400);
+          totalSec += sec;
+          if (completedVideos[v.id]) {
+            doneCount++;
+          } else {
+            remSec += sec;
+          }
+        });
+
+        const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+        const remHours = (remSec / 3600).toFixed(1);
+        const badgeClass = getSubjectBadgeClass(subj);
+        const instructor = info.instructor || (info.metadata && info.metadata.instructor) || '';
+        const isSelected = selectedCurriculumSubject === subj;
+
+        cardsHtml += \`
+          <div class="course-card \${isSelected ? 'active-filter' : ''}" onclick="selectCurriculumCourseCard('\${subj}')">
+            <div class="course-card-top">
+              <span class="subject-badge \${badgeClass}">\${subj}</span>
+              <span class="course-card-instructor" title="\${escapeHtml(instructor)}">\${escapeHtml(instructor)}</span>
+            </div>
+            <div class="course-progress-track">
+              <div class="course-progress-fill" style="width: \${pct}%"></div>
+            </div>
+            <div class="course-card-stats tabular-nums">
+              <span>\${doneCount} / \${totalCount} Video</span>
+              <span><strong>%\${pct}</strong> • \${remHours} sa kaldı</span>
+            </div>
+          </div>
+        \`;
+      }
+      cardsContainer.innerHTML = cardsHtml;
+
+      filterCurriculumTable();
+    }
+
+    function selectCurriculumCourseCard(subj) {
+      const select = document.getElementById('subject-filter-select');
+      if (select) {
+        if (selectedCurriculumSubject === subj) {
+          selectedCurriculumSubject = 'all';
+          select.value = 'all';
+        } else {
+          selectedCurriculumSubject = subj;
+          select.value = subj;
+        }
+      }
+      renderCurriculumView();
+    }
+
+    function filterCurriculumTable() {
+      const subjectSelect = document.getElementById('subject-filter-select');
+      const statusSelect = document.getElementById('status-filter-select');
+      const searchInput = document.getElementById('table-search-input');
+      const tbody = document.getElementById('curriculum-table-tbody');
+      const countEl = document.getElementById('table-result-count');
+
+      if (!tbody) return;
+
+      const currentSubj = subjectSelect ? subjectSelect.value : 'all';
+      selectedCurriculumSubject = currentSubj;
+      const currentStatus = statusSelect ? statusSelect.value : 'all';
+      const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+      let matchedVideos = [];
+
+      for (const [subj, info] of Object.entries(PLAYLISTS_DATA)) {
+        if (currentSubj !== 'all' && currentSubj !== subj) continue;
+
+        const instructor = info.instructor || (info.metadata && info.metadata.instructor) || '';
+        const videos = info.videos || [];
+
+        videos.forEach((v, idx) => {
+          const isDone = Boolean(completedVideos[v.id]);
+
+          if (currentStatus === 'completed' && !isDone) return;
+          if (currentStatus === 'uncompleted' && isDone) return;
+
+          if (query) {
+            const titleMatch = (v.title || '').toLowerCase().includes(query);
+            const instMatch = instructor.toLowerCase().includes(query);
+            const subjMatch = subj.toLowerCase().includes(query);
+            if (!titleMatch && !instMatch && !subjMatch) return;
+          }
+
+          matchedVideos.push({
+            subject: subj,
+            instructor,
+            video: v,
+            videoNum: idx + 1,
+            isDone
+          });
+        });
+      }
+
+      if (countEl) {
+        countEl.textContent = \`\${matchedVideos.length} video listeleniyor\`;
+      }
+
+      if (matchedVideos.length === 0) {
+        tbody.innerHTML = \`
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">
+              Aramanıza veya filtre kriterlerinize uygun video bulunamadı.
+            </td>
+          </tr>
+        \`;
+        return;
+      }
+
+      let rowsHtml = '';
+      matchedVideos.forEach(item => {
+        const v = item.video;
+        const badgeClass = getSubjectBadgeClass(item.subject);
+        const durMin = v.duration_min ? Math.round(v.duration_min) : 40;
+        const watchUrl = v.url || \`https://www.youtube.com/watch?v=\${v.id}\`;
+
+        rowsHtml += \`
+          <tr class="\${item.isDone ? 'video-done' : ''}">
+            <td><span class="subject-badge \${badgeClass}">\${item.subject}</span></td>
+            <td class="tabular-nums" style="color: var(--text-muted); font-weight: 600;">#\${item.videoNum}</td>
+            <td style="font-weight: 600; color: var(--text-main);">\${escapeHtml(v.title)}</td>
+            <td style="color: var(--text-secondary); font-size: 12px;">\${escapeHtml(item.instructor)}</td>
+            <td class="tabular-nums" style="color: var(--text-secondary);">\${durMin} dk</td>
+            <td>
+              <label class="table-check-wrap">
+                <input type="checkbox" \${item.isDone ? 'checked' : ''} onchange="toggleVideo('\${v.id}', this.checked)" />
+                <span style="font-size: 12px; color: \${item.isDone ? 'var(--emerald-600)' : 'var(--text-muted)'}; font-weight: 500;">
+                  \${item.isDone ? 'Tamamlandı' : 'Bekliyor'}
+                </span>
+              </label>
+            </td>
+            <td style="text-align: right;">
+              <a href="\${watchUrl}" target="_blank" rel="noopener noreferrer" class="table-action-btn">
+                <span>İzle</span>
+                <span>↗</span>
+              </a>
+            </td>
+          </tr>
+        \`;
+      });
+
+      tbody.innerHTML = rowsHtml;
+    }
+
+    // Placeholders for Task 5
     function openCommandPalette() {}
 
     // Initial Load
