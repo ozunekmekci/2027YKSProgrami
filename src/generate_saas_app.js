@@ -561,6 +561,18 @@ export function generateSaaSApp() {
       color: var(--white);
     }
 
+    .day-tab-btn.day-done:not(.active) {
+      border-color: rgba(16, 185, 129, 0.4);
+      color: var(--mint-600);
+      background-color: var(--mint-50);
+    }
+
+    .day-tab-btn.day-done::after {
+      content: ' ✓';
+      font-size: 11px;
+      font-weight: 700;
+    }
+
     .studio-nav-right {
       display: flex;
       align-items: center;
@@ -593,6 +605,10 @@ export function generateSaaSApp() {
       grid-template-columns: minmax(0, 1fr) 360px;
       gap: 28px;
       align-items: start;
+    }
+
+    .studio-grid-layout.is-sunday {
+      grid-template-columns: 1fr;
     }
 
     .studio-blocks-column {
@@ -787,6 +803,7 @@ export function generateSaaSApp() {
     /* Embedded Video Player Styles */
     .video-embed-container {
       margin: 12px 0 16px 0;
+      max-width: 720px;
       border-radius: var(--radius-md);
       overflow: hidden;
       background: var(--slate-950);
@@ -1084,6 +1101,14 @@ export function generateSaaSApp() {
       color: var(--mint-600);
     }
 
+    .btn-timer-add:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      border-color: var(--border-subtle);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
     /* KPI Items */
     .kpi-row-item {
       display: flex;
@@ -1309,6 +1334,15 @@ export function generateSaaSApp() {
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .matrix-day-card:hover {
+      border-color: var(--mint-500);
+      background: var(--bg-surface);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
     }
 
     .matrix-day-card.rest-day {
@@ -1959,8 +1993,9 @@ export function generateSaaSApp() {
       .saas-content-canvas {
         padding: 20px 16px;
       }
-      .studio-grid-layout {
-        grid-template-columns: 1fr;
+      .studio-grid-layout,
+      .studio-grid-layout.is-sunday {
+        grid-template-columns: 1fr !important;
       }
     }
 
@@ -2144,7 +2179,7 @@ export function generateSaaSApp() {
                     <button class="btn-timer-primary" id="btn-timer-toggle" onclick="toggleBreakTimer()">Molayı Başlat</button>
                     <button class="btn-timer-secondary" onclick="resetBreakTimer()">Sıfırla</button>
                   </div>
-                  <button class="btn-timer-add" onclick="addBreakTimerMinutes(5)">+5 Dakika Uzat</button>
+                  <button class="btn-timer-add" id="btn-timer-add-minutes" onclick="addBreakTimerMinutes(5)">+5 Dakika Uzat</button>
                 </div>
 
                 <!-- Daily KPI Card -->
@@ -2478,6 +2513,7 @@ export function generateSaaSApp() {
     let timerDuration = 1200; // 20 min in sec
     let timerRemaining = 1200;
     let timerRunning = false;
+    let timerExtended = false;
     let timerInterval = null;
     let timerTargetEnd = 0;
 
@@ -2684,20 +2720,34 @@ export function generateSaaSApp() {
 
       // Update week dropdown
       const weekSelect = document.getElementById('studio-week-select');
-      if (weekSelect && weekSelect.children.length === 0) {
-        let options = '';
-        currentSchedule.forEach(w => {
-          options += \`<option value="\${w.weekNum}">Hafta \${w.weekNum}</option>\`;
-        });
-        weekSelect.innerHTML = options;
+      if (weekSelect) {
+        if (weekSelect.children.length !== currentSchedule.length) {
+          let options = '';
+          currentSchedule.forEach(w => {
+            options += \`<option value="\${w.weekNum}">Hafta \${w.weekNum}</option>\`;
+          });
+          weekSelect.innerHTML = options;
+        }
+        weekSelect.value = String(activeWeekNum);
       }
-      if (weekSelect) weekSelect.value = String(activeWeekNum);
 
-      // Update day tabs active state
+      // Update day tabs active state and completed indicators
       const dayTabBtns = document.querySelectorAll('.day-tab-btn');
       dayTabBtns.forEach((btn, idx) => {
         if (idx === activeDayIndex) btn.classList.add('active');
         else btn.classList.remove('active');
+
+        const d = weekData?.days?.[idx];
+        if (d && !d.isRestDay && d.blocks?.length > 0) {
+          const isDayDone = d.blocks.every(b => {
+            const vid = b.video?.id;
+            return vid && !vid.startsWith('tekrar-') ? Boolean(completedVideos[vid]) : true;
+          });
+          if (isDayDone) btn.classList.add('day-done');
+          else btn.classList.remove('day-done');
+        } else {
+          btn.classList.remove('day-done');
+        }
       });
 
       const blocksContainer = document.getElementById('studio-blocks-column');
@@ -2708,7 +2758,7 @@ export function generateSaaSApp() {
       // Sunday rest state
       if (!dayData || dayData.isRestDay || activeDayIndex === 6) {
         if (asideColumn) asideColumn.style.display = 'none';
-        contentArea.style.gridTemplateColumns = '1fr';
+        if (contentArea) contentArea.classList.add('is-sunday');
         blocksContainer.innerHTML = \`
           <div class="sunday-rest-card">
             <span class="sunday-rest-icon">☕</span>
@@ -2724,8 +2774,8 @@ export function generateSaaSApp() {
       }
 
       // Weekday with 4 blocks
-      if (asideColumn) asideColumn.style.display = 'flex';
-      contentArea.style.gridTemplateColumns = 'minmax(0, 1fr) 360px';
+      if (asideColumn) asideColumn.style.display = '';
+      if (contentArea) contentArea.classList.remove('is-sunday');
 
       const blocks = dayData.blocks || [];
       let completedCount = 0;
@@ -2885,10 +2935,19 @@ export function generateSaaSApp() {
         if (timerRemaining <= 0) {
           clearInterval(timerInterval);
           timerRunning = false;
+          timerDuration = 1200;
+          timerRemaining = 1200;
+          timerExtended = false;
           if (btn) btn.textContent = 'Molayı Başlat';
           if (label) label.textContent = 'Mola Tamamlandı!';
+          const addBtn = document.getElementById('btn-timer-add-minutes');
+          if (addBtn) {
+            addBtn.disabled = false;
+            addBtn.textContent = '+5 Dakika Uzat';
+          }
           playChime();
           alert('20 dakikalık mola tamamlandı. Sıradaki bloğa başlayabilirsiniz.');
+          updateTimerDisplay();
         }
       }, 200);
       updateTimerDisplay();
@@ -2908,7 +2967,9 @@ export function generateSaaSApp() {
     function resetBreakTimer() {
       timerRunning = false;
       if (timerInterval) clearInterval(timerInterval);
-      timerRemaining = timerDuration;
+      timerDuration = 1200;
+      timerRemaining = 1200;
+      timerExtended = false;
 
       const btn = document.getElementById('btn-timer-toggle');
       if (btn) btn.textContent = 'Molayı Başlat';
@@ -2916,15 +2977,31 @@ export function generateSaaSApp() {
       const label = document.getElementById('studio-timer-label');
       if (label) label.textContent = 'Mola Sayacı';
 
+      const addBtn = document.getElementById('btn-timer-add-minutes');
+      if (addBtn) {
+        addBtn.disabled = false;
+        addBtn.textContent = '+5 Dakika Uzat';
+      }
+
       updateTimerDisplay();
     }
 
     function addBreakTimerMinutes(min) {
+      if (timerExtended) return;
+      timerExtended = true;
+
       timerRemaining += min * 60;
       timerDuration = Math.max(timerDuration, timerRemaining);
       if (timerRunning) {
         timerTargetEnd += min * 60 * 1000;
       }
+
+      const addBtn = document.getElementById('btn-timer-add-minutes');
+      if (addBtn) {
+        addBtn.disabled = true;
+        addBtn.textContent = '+5 Dk Eklendi (Kullanıldı)';
+      }
+
       updateTimerDisplay();
     }
 
@@ -2947,18 +3024,22 @@ export function generateSaaSApp() {
     function updateAllUI() {
       const totalVideos = 766;
       const completedCount = Object.keys(completedVideos).length;
-      const pct = Math.round((completedCount / totalVideos) * 100);
+      const rawPct = (completedCount / totalVideos) * 100;
+      const pctFormatted = completedCount === 0 ? '0' : (rawPct < 10 ? rawPct.toFixed(1) : Math.round(rawPct).toString());
 
       // Topbar pill
       const topbarPill = document.getElementById('topbar-progress-pill');
-      if (topbarPill) topbarPill.textContent = \`\${completedCount} / \${totalVideos} Video (% \${pct})\`;
+      if (topbarPill) topbarPill.textContent = \`\${completedCount} / \${totalVideos} Video (%\${pctFormatted})\`;
 
       // Sidebar pill
       const sidebarPct = document.getElementById('sidebar-pct-label');
-      if (sidebarPct) sidebarPct.textContent = \`%\${pct}\`;
+      if (sidebarPct) sidebarPct.textContent = \`%\${pctFormatted}\`;
 
       const sidebarFill = document.getElementById('sidebar-progress-fill');
-      if (sidebarFill) sidebarFill.style.width = \`\${pct}%\`;
+      if (sidebarFill) {
+        const visualWidth = completedCount === 0 ? 0 : Math.max(1, Math.min(100, rawPct));
+        sidebarFill.style.width = \`\${visualWidth.toFixed(2)}%\`;
+      }
 
       const dayNames = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
       const sidebarTag = document.getElementById('sidebar-active-tag');
@@ -2993,73 +3074,115 @@ export function generateSaaSApp() {
       switchSaaSTab('tab-today');
     }
 
-    function shiftSchedule(rawPlaylists, compMap = {}) {
-      if (!rawPlaylists || Object.keys(rawPlaylists).length === 0) return [];
-      const queues = {};
-      let totalRemaining = 0;
-      for (const [subj, info] of Object.entries(rawPlaylists)) {
-        const uncompleted = (info?.videos || []).filter(v => !compMap[v.id]);
-        queues[subj] = [...uncompleted];
-        totalRemaining += uncompleted.length;
+    function jumpToStudioDay(wNum, dIdx) {
+      activeWeekNum = wNum;
+      activeDayIndex = dIdx;
+      saveState();
+      updateAllUI();
+      switchSaaSTab('tab-today');
+    }
+
+    function shiftSchedulePreservingPast(playlistData, compMap = {}, baseSchedule = null) {
+      if (!playlistData || Object.keys(playlistData).length === 0) {
+        return { schedule: [], nextActiveWeek: 1, nextActiveDay: 0 };
       }
-      if (totalRemaining === 0) return [];
 
-      const weeks = [];
-      let weekNum = 1;
-      const maxWeeks = 45;
+      const baseline = baseSchedule && baseSchedule.length > 0 ? baseSchedule : BASELINE_CALENDAR;
+      const completedSet = new Set(Object.keys(compMap || {}));
 
-      while (weekNum <= maxWeeks) {
-        const days = [];
-        const dayConfigs = [
-          { name: 'Pazartesi', s1: 'TYT Türkçe', c1: 2, s2: 'TYT Coğrafya', c2: 2 },
-          { name: 'Salı', s1: 'TYT Matematik', c1: 2, s2: 'TYT-AYT Tarih', c2: 2 },
-          { name: 'Çarşamba', s1: 'TYT Biyoloji', c1: 2, s2: 'AYT Edebiyat', c2: 2 },
-          { name: 'Perşembe', s1: 'TYT Matematik', c1: 2, s2: 'TYT Kimya', c2: 2 },
-          {
-            name: 'Cuma',
-            s1: 'TYT Fizik',
-            c1: 2,
-            s2: () => ((queues['AYT Edebiyat']?.length ?? 0) > 0 ? 'AYT Edebiyat' : 'AYT Coğrafya'),
-            c2: 2
-          },
-          {
-            name: 'Cumartesi',
-            s1: 'TYT-AYT Tarih',
-            c1: 2,
-            s2: () => ((queues['TYT Biyoloji']?.length ?? 0) > 0 ? 'TYT Biyoloji' : 'Tekrar & Soru Çözümü'),
-            c2: 2
-          },
-          { name: 'Pazar', isRestDay: true }
-        ];
+      if (completedSet.size === 0) {
+        return { schedule: JSON.parse(JSON.stringify(baseline)), nextActiveWeek: 1, nextActiveDay: 0 };
+      }
 
-        let hasAnyVideo = false;
+      let totalCurriculumCount = 0;
+      for (const info of Object.values(playlistData)) {
+        totalCurriculumCount += (info.videos || []).length;
+      }
+      if (completedSet.size >= totalCurriculumCount) {
+        return { schedule: [], nextActiveWeek: 1, nextActiveDay: 0 };
+      }
 
-        for (let dayIdx = 0; dayIdx < dayConfigs.length; dayIdx++) {
-          const rawCfg = dayConfigs[dayIdx];
-          if (rawCfg.isRestDay) {
-            days.push({ dayName: 'Pazar', isRestDay: true });
+      const uncompletedQueues = {};
+      for (const [subj, info] of Object.entries(playlistData)) {
+        uncompletedQueues[subj] = (info?.videos || []).filter(v => !completedSet.has(v.id));
+      }
+
+      const newWeeks = [];
+      let shiftStarted = false;
+      let firstIncompleteWeek = 1;
+      let firstIncompleteDay = 0;
+
+      const dayConfigs = [
+        { name: 'Pazartesi', s1: 'TYT Türkçe', c1: 2, s2: 'TYT Coğrafya', c2: 2 },
+        { name: 'Salı', s1: 'TYT Matematik', c1: 2, s2: 'TYT-AYT Tarih', c2: 2 },
+        { name: 'Çarşamba', s1: 'TYT Biyoloji', c1: 2, s2: 'AYT Edebiyat', c2: 2 },
+        { name: 'Perşembe', s1: 'TYT Matematik', c1: 2, s2: 'TYT Kimya', c2: 2 },
+        {
+          name: 'Cuma',
+          s1: 'TYT Fizik',
+          c1: 2,
+          s2: () => ((uncompletedQueues['AYT Edebiyat']?.length ?? 0) > 0 ? 'AYT Edebiyat' : 'AYT Coğrafya'),
+          c2: 2
+        },
+        {
+          name: 'Cumartesi',
+          s1: 'TYT-AYT Tarih',
+          c1: 2,
+          s2: () => ((uncompletedQueues['TYT Biyoloji']?.length ?? 0) > 0 ? 'TYT Biyoloji' : 'Tekrar & Soru Çözümü'),
+          c2: 2
+        },
+        { name: 'Pazar', isRestDay: true }
+      ];
+
+      for (let wIdx = 0; wIdx < baseline.length; wIdx++) {
+        const baseWeek = baseline[wIdx];
+        const weekNum = wIdx + 1;
+        const newDays = [];
+
+        for (let dIdx = 0; dIdx < 7; dIdx++) {
+          const rawCfg = dayConfigs[dIdx];
+          if (rawCfg.isRestDay || dIdx === 6) {
+            newDays.push({ dayName: 'Pazar', isRestDay: true });
             continue;
+          }
+
+          const baseDay = baseWeek.days && baseWeek.days[dIdx];
+          const baseBlocks = (baseDay && baseDay.blocks) || [];
+
+          if (!shiftStarted && baseBlocks.length > 0) {
+            const hasUncompleted = baseBlocks.some(b => {
+              const vid = b.video && b.video.id;
+              return vid && !vid.startsWith('tekrar-') && !completedSet.has(vid);
+            });
+
+            if (!hasUncompleted) {
+              newDays.push(JSON.parse(JSON.stringify(baseDay)));
+              continue;
+            } else {
+              shiftStarted = true;
+              firstIncompleteWeek = weekNum;
+              firstIncompleteDay = dIdx;
+            }
           }
 
           const s1 = typeof rawCfg.s1 === 'function' ? rawCfg.s1() : rawCfg.s1;
           const s2 = typeof rawCfg.s2 === 'function' ? rawCfg.s2() : rawCfg.s2;
-          const c1 = rawCfg.c1 ?? 2;
-          const c2 = rawCfg.c2 ?? 2;
+          const c1 = rawCfg.c1 || 2;
+          const c2 = rawCfg.c2 || 2;
           const blocks = [];
 
           for (let i = 0; i < c1; i++) {
-            const v = queues[s1]?.shift();
+            const v = uncompletedQueues[s1]?.shift();
             const bIdx = blocks.length;
             if (v) {
-              hasAnyVideo = true;
-              const instructor = v.instructor || rawPlaylists[s1]?.instructor || (rawPlaylists[s1]?.metadata?.instructor) || '';
+              const instructor = v.instructor || playlistData[s1]?.metadata?.instructor || playlistData[s1]?.instructor || '';
               blocks.push({ blockNum: bIdx + 1, subject: s1, video: v, instructor });
             } else {
               blocks.push({
                 blockNum: bIdx + 1,
                 subject: s1,
                 video: {
-                  id: 'tekrar-' + s1.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + weekNum + '-d' + dayIdx + '-b' + (bIdx + 1),
+                  id: 'tekrar-' + s1.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + weekNum + '-d' + dIdx + '-b' + (bIdx + 1),
                   title: 'Konu Tekrarı & Soru Çözümü',
                   duration_min: 40,
                   duration_sec: 2400,
@@ -3071,18 +3194,17 @@ export function generateSaaSApp() {
           }
 
           for (let i = 0; i < c2; i++) {
-            const v = queues[s2]?.shift();
+            const v = uncompletedQueues[s2]?.shift();
             const bIdx = blocks.length;
             if (v) {
-              hasAnyVideo = true;
-              const instructor = v.instructor || rawPlaylists[s2]?.instructor || (rawPlaylists[s2]?.metadata?.instructor) || '';
+              const instructor = v.instructor || playlistData[s2]?.metadata?.instructor || playlistData[s2]?.instructor || '';
               blocks.push({ blockNum: bIdx + 1, subject: s2, video: v, instructor });
             } else {
               blocks.push({
                 blockNum: bIdx + 1,
                 subject: s2,
                 video: {
-                  id: 'tekrar-' + s2.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + weekNum + '-d' + dayIdx + '-b' + (bIdx + 1),
+                  id: 'tekrar-' + s2.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + weekNum + '-d' + dIdx + '-b' + (bIdx + 1),
                   title: 'Konu Tekrarı & Soru Çözümü',
                   duration_min: 40,
                   duration_sec: 2400,
@@ -3093,36 +3215,108 @@ export function generateSaaSApp() {
             }
           }
 
-          days.push({ dayName: rawCfg.name, isRestDay: false, blocks });
+          newDays.push({ dayName: rawCfg.name, isRestDay: false, blocks });
         }
 
-        weeks.push({ weekNum, days });
-        const remainingVideos = Object.values(queues).reduce((sum, q) => sum + q.length, 0);
-        if (remainingVideos === 0) break;
-        if (!hasAnyVideo && weekNum > 40) break;
-        weekNum++;
+        newWeeks.push({ weekNum, days: newDays });
       }
-      return weeks;
+
+      let remainingCount = Object.values(uncompletedQueues).reduce((sum, q) => sum + q.length, 0);
+      let extraWeekNum = newWeeks.length + 1;
+      while (remainingCount > 0 && extraWeekNum <= 45) {
+        const extraDays = [];
+        for (let dIdx = 0; dIdx < 7; dIdx++) {
+          const rawCfg = dayConfigs[dIdx];
+          if (rawCfg.isRestDay || dIdx === 6) {
+            extraDays.push({ dayName: 'Pazar', isRestDay: true });
+            continue;
+          }
+          const s1 = typeof rawCfg.s1 === 'function' ? rawCfg.s1() : rawCfg.s1;
+          const s2 = typeof rawCfg.s2 === 'function' ? rawCfg.s2() : rawCfg.s2;
+          const blocks = [];
+          for (let i = 0; i < (rawCfg.c1 || 2); i++) {
+            const v = uncompletedQueues[s1]?.shift();
+            const bIdx = blocks.length;
+            if (v) {
+              const instructor = v.instructor || playlistData[s1]?.metadata?.instructor || playlistData[s1]?.instructor || '';
+              blocks.push({ blockNum: bIdx + 1, subject: s1, video: v, instructor });
+            } else {
+              blocks.push({
+                blockNum: bIdx + 1,
+                subject: s1,
+                video: {
+                  id: 'tekrar-' + s1.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + extraWeekNum + '-d' + dIdx + '-b' + (bIdx + 1),
+                  title: 'Konu Tekrarı & Soru Çözümü',
+                  duration_min: 40,
+                  duration_sec: 2400,
+                  url: ''
+                },
+                instructor: ''
+              });
+            }
+          }
+          for (let i = 0; i < (rawCfg.c2 || 2); i++) {
+            const v = uncompletedQueues[s2]?.shift();
+            const bIdx = blocks.length;
+            if (v) {
+              const instructor = v.instructor || playlistData[s2]?.metadata?.instructor || playlistData[s2]?.instructor || '';
+              blocks.push({ blockNum: bIdx + 1, subject: s2, video: v, instructor });
+            } else {
+              blocks.push({
+                blockNum: bIdx + 1,
+                subject: s2,
+                video: {
+                  id: 'tekrar-' + s2.replace(/[^a-zA-Z0-9]/g, '_') + '-w' + extraWeekNum + '-d' + dIdx + '-b' + (bIdx + 1),
+                  title: 'Konu Tekrarı & Soru Çözümü',
+                  duration_min: 40,
+                  duration_sec: 2400,
+                  url: ''
+                },
+                instructor: ''
+              });
+            }
+          }
+          extraDays.push({ dayName: rawCfg.name, isRestDay: false, blocks });
+        }
+        newWeeks.push({ weekNum: extraWeekNum, days: extraDays });
+        remainingCount = Object.values(uncompletedQueues).reduce((sum, q) => sum + q.length, 0);
+        extraWeekNum++;
+      }
+
+      if (!shiftStarted) {
+        firstIncompleteWeek = baseline.length;
+        firstIncompleteDay = 5;
+      }
+
+      return {
+        schedule: newWeeks,
+        nextActiveWeek: firstIncompleteWeek,
+        nextActiveDay: firstIncompleteDay
+      };
+    }
+
+    function shiftSchedule(rawPlaylists, compMap = {}, baseSchedule = null) {
+      return shiftSchedulePreservingPast(rawPlaylists, compMap, baseSchedule).schedule;
     }
 
     function triggerShiftEngine() {
-      const shifted = shiftSchedule(PLAYLISTS_DATA, completedVideos);
-      if (!shifted || shifted.length === 0) {
+      const result = shiftSchedulePreservingPast(PLAYLISTS_DATA, completedVideos, currentSchedule || BASELINE_CALENDAR);
+      if (!result || !result.schedule || result.schedule.length === 0) {
         alert('Tüm videolar tamamlandı veya kaydırılacak ders bulunamadı.');
         return;
       }
-      currentSchedule = shifted;
+      currentSchedule = result.schedule;
       try {
-        localStorage.setItem('yks_shifted_schedule', JSON.stringify(shifted));
+        localStorage.setItem('yks_shifted_schedule', JSON.stringify(result.schedule));
       } catch (e) {
         console.warn('Storage save error:', e);
       }
-      activeWeekNum = 1;
-      activeDayIndex = 0;
+      activeWeekNum = result.nextActiveWeek;
+      activeDayIndex = result.nextActiveDay;
       saveState();
       updateAllUI();
       renderRadarView();
-      alert('Program güncellendi. Kalan videolar bugünden itibaren takvime yeniden dağıtıldı.');
+      alert('Program güncellendi. Geçmişte tamamladığınız günler korundu, kalan videolar bugünden itibaren takvime yeniden dağıtıldı.');
     }
 
     function resetSchedule() {
@@ -3197,7 +3391,7 @@ export function generateSaaSApp() {
         }
 
         matrixHtml += \`
-          <div class="matrix-day-card">
+          <div class="matrix-day-card" onclick="jumpToStudioDay(\${targetWeek.weekNum}, \${dayIdx})" title="\${d.dayName} gününü stüdyoda aç">
             <div class="matrix-day-header">
               <span class="matrix-day-name">\${d.dayName}</span>
               <span class="tabular-nums" style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">4 Blok</span>
