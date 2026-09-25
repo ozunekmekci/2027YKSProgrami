@@ -1395,6 +1395,151 @@ export function generateSaaSApp() {
       cursor: pointer;
     }
 
+    /* Command Palette Modal (Task 5) */
+    .palette-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 100px;
+    }
+
+    .palette-overlay.open {
+      display: flex;
+    }
+
+    .palette-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 640px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: paletteFadeIn 0.15s ease-out;
+    }
+
+    @keyframes paletteFadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .palette-input-wrap {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-light);
+      gap: 12px;
+    }
+
+    .palette-search-icon {
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .palette-input-wrap input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      color: var(--text-main);
+      background: transparent;
+    }
+
+    .palette-input-wrap input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .palette-esc-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: var(--slate-100);
+      color: var(--text-muted);
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid var(--border-light);
+    }
+
+    .palette-results-list {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .palette-result-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background 0.1s ease;
+      gap: 12px;
+    }
+
+    .palette-result-item:hover, .palette-result-item.selected {
+      background: var(--slate-50);
+    }
+
+    .palette-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .palette-item-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .palette-item-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .palette-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: var(--bg-canvas);
+      border-top: 1px solid var(--border-light);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .palette-footer-hints {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .palette-footer-hints kbd {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 10px;
+      font-family: inherit;
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
       .saas-sidebar {
@@ -1734,6 +1879,30 @@ export function generateSaaSApp() {
           <!-- Populated in Task 6 -->
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- Global Command Palette Modal (Ctrl+K / ⌘K) -->
+  <div class="palette-overlay" id="command-palette-modal" onclick="onPaletteOverlayClick(event)">
+    <div class="palette-card">
+      <div class="palette-input-wrap">
+        <svg class="palette-search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="command-palette-input" placeholder="Video başlığı, ders veya eğitmen arayın... (ESC kapatır)" oninput="onPaletteSearch(this.value)" autocomplete="off" />
+        <span class="palette-esc-badge" onclick="closeCommandPalette()">ESC</span>
+      </div>
+      <div class="palette-results-list" id="palette-results-list">
+        <!-- Dynamically rendered instant results -->
+      </div>
+      <div class="palette-footer">
+        <div class="palette-footer-hints">
+          <span><kbd>↑</kbd><kbd>↓</kbd> Gezin</span>
+          <span><kbd>ESC</kbd> Kapat</span>
+        </div>
+        <div class="palette-footer-count" id="palette-total-count">766 Video İçinde Arama</div>
+      </div>
     </div>
   </div>
 
@@ -2632,8 +2801,118 @@ export function generateSaaSApp() {
       tbody.innerHTML = rowsHtml;
     }
 
-    // Placeholders for Task 5
-    function openCommandPalette() {}
+    // Command Palette Logic (Task 5)
+    function openCommandPalette() {
+      const modal = document.getElementById('command-palette-modal');
+      const input = document.getElementById('command-palette-input');
+      if (!modal) return;
+      modal.classList.add('open');
+      if (input) {
+        input.value = '';
+        setTimeout(() => input.focus(), 50);
+      }
+      onPaletteSearch('');
+    }
+
+    function closeCommandPalette() {
+      const modal = document.getElementById('command-palette-modal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function onPaletteOverlayClick(e) {
+      if (e.target && e.target.id === 'command-palette-modal') {
+        closeCommandPalette();
+      }
+    }
+
+    function onPaletteSearch(query) {
+      const listEl = document.getElementById('palette-results-list');
+      const countEl = document.getElementById('palette-total-count');
+      if (!listEl) return;
+
+      const q = (query || '').toLowerCase().trim();
+      let matches = [];
+
+      for (const [subj, info] of Object.entries(PLAYLISTS_DATA)) {
+        const instructor = info.instructor || (info.metadata && info.metadata.instructor) || '';
+        const videos = info.videos || [];
+
+        for (let i = 0; i < videos.length; i++) {
+          const v = videos[i];
+          const isDone = Boolean(completedVideos[v.id]);
+
+          if (q) {
+            const titleMatch = (v.title || '').toLowerCase().includes(q);
+            const instMatch = instructor.toLowerCase().includes(q);
+            const subjMatch = subj.toLowerCase().includes(q);
+            if (titleMatch || instMatch || subjMatch) {
+              matches.push({ subj, instructor, video: v, videoNum: i + 1, isDone });
+            }
+          } else {
+            // Default: show first 12 uncompleted videos
+            if (!isDone && matches.length < 12) {
+              matches.push({ subj, instructor, video: v, videoNum: i + 1, isDone });
+            }
+          }
+          if (matches.length >= 25) break;
+        }
+        if (matches.length >= 25) break;
+      }
+
+      if (countEl) {
+        countEl.textContent = q ? \`\${matches.length} Sonuç Bulundu\` : '766 Video İçinde Arama';
+      }
+
+      if (matches.length === 0) {
+        listEl.innerHTML = \`
+          <div style="padding: 30px; text-align: center; color: var(--text-muted); font-size: 13px;">
+            Aramanızla eşleşen video veya konu bulunamadı.
+          </div>
+        \`;
+        return;
+      }
+
+      let html = '';
+      matches.forEach(item => {
+        const v = item.video;
+        const badgeClass = getSubjectBadgeClass(item.subj);
+        const durMin = v.duration_min ? Math.round(v.duration_min) : 40;
+        const watchUrl = v.url || \`https://www.youtube.com/watch?v=\${v.id}\`;
+
+        html += \`
+          <div class="palette-result-item" onclick="onPaletteSelectVideo('\${v.id}', '\${watchUrl}')">
+            <div class="palette-item-left">
+              <span class="subject-badge \${badgeClass}">\${item.subj}</span>
+              <span class="palette-item-title">\${escapeHtml(v.title)}</span>
+            </div>
+            <div class="palette-item-right">
+              <span style="font-size: 11px; color: var(--text-muted);">\${escapeHtml(item.instructor)}</span>
+              <span class="tabular-nums" style="font-size: 11px; color: var(--text-secondary);">\${durMin} dk</span>
+              <span style="font-size: 11px; font-weight: 600; color: \${item.isDone ? 'var(--emerald-600)' : 'var(--text-muted)'};">
+                \${item.isDone ? '✓ Tamam' : 'Bekliyor'}
+              </span>
+            </div>
+          </div>
+        \`;
+      });
+
+      listEl.innerHTML = html;
+    }
+
+    function onPaletteSelectVideo(videoId, watchUrl) {
+      closeCommandPalette();
+      window.open(watchUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    // Keyboard Shortcuts (Ctrl+K / Cmd+K, Escape)
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openCommandPalette();
+      } else if (e.key === 'Escape') {
+        closeCommandPalette();
+      }
+    });
 
     // Initial Load
     window.addEventListener('DOMContentLoaded', () => {
