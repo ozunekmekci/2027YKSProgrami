@@ -483,7 +483,7 @@ export class AppController {
 
     if (typeof window !== 'undefined' && window.alert) {
       setTimeout(() => {
-        window.alert('☕ 20 dakikalık mola tamamlandı! Zihnin dinlendi, bir sonraki video bloğuna geçmeye hazırsın.');
+        window.alert('20 dakikalık mola tamamlandı! Zihnin dinlendi, bir sonraki video bloğuna geçmeye hazırsın.');
       }, 500);
     }
   }
@@ -755,16 +755,16 @@ export class AppController {
 
       container.innerHTML = `
         <div class="sunday-rest-card">
-          <div class="sunday-icon">⛔</div>
-          <div class="sunday-title">⛔ PAZAR: ÇALIŞMAK KESİNLİKLE YASAK! (Beyin dinlenmeden öğrenme kalıcı olmaz)</div>
+          <div class="sunday-badge">Dinlenme Günü</div>
+          <div class="sunday-title">PAZAR: ÇALIŞMAK KESİNLİKLE YASAK! (Beyin dinlenmeden öğrenme kalıcı olmaz)</div>
           <p class="sunday-desc">
             Haftanın 6 günü boyunca disiplinle zihnini zorladın. Bilimsel araştırmalar, beynin öğrendiklerini uzun vadeli hafızaya aktarabilmesi için haftada en az bir gün ders çalışmadan dinlenmesi gerektiğini kanıtlamıştır.
           </p>
           <div class="sunday-tips-grid">
-            <div class="sunday-tip-chip">🚶 Açık Havada Yürüyüş</div>
-            <div class="sunday-tip-chip">😴 Kaliteli & Uzun Uyku</div>
-            <div class="sunday-tip-chip">👥 Sevdiklerinle Vakit Geçir</div>
-            <div class="sunday-tip-chip">🎮 Rahatlatıcı Hobiler</div>
+            <div class="sunday-tip-chip">Açık Havada Yürüyüş</div>
+            <div class="sunday-tip-chip">Kaliteli ve Uzun Uyku</div>
+            <div class="sunday-tip-chip">Sevdiklerinle Vakit Geçir</div>
+            <div class="sunday-tip-chip">Rahatlatıcı Hobiler</div>
           </div>
           <button class="btn btn-outline" style="width: 100%;" onclick="app.navigateDay(1)">Pazartesi Programını Önizle</button>
         </div>
@@ -823,7 +823,7 @@ export class AppController {
         blocksHtml += `
           <div class="break-card">
             <div class="break-content">
-              <span class="break-icon">☕</span>
+              <span class="break-icon">Mola</span>
               <div>
                 <div class="break-title">20 dk Mola</div>
                 <div class="break-desc">Beyin dinlenmeden öğrenme kalıcı olmaz.</div>
@@ -910,7 +910,7 @@ export class AppController {
           <div class="week-details" id="week-details-${w.weekNum}">
             ${w.days.map(d => {
               if (d.isRestDay) {
-                return `<div class="week-day-row"><span>${d.dayName}</span><span style="color: var(--m3-red-primary); font-weight: 600;">⛔ Dinlenme Günü</span></div>`;
+                return `<div class="week-day-row"><span>${d.dayName}</span><span style="color: var(--m3-red-primary); font-weight: 600;">Dinlenme Günü</span></div>`;
               }
               const bCount = d.blocks?.length || 4;
               const dCompleted = d.blocks?.filter(b => b.video?.id && this.state.completedVideos[b.video.id]).length || 0;

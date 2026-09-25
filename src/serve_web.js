@@ -48,13 +48,20 @@ export function startServer(port = (Number(process.env.PORT) || 3000), host = (p
         return;
       }
 
-      // If directory or root, serve index.html
-      try {
-        if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
-          filePath = path.join(filePath, 'index.html');
+      // Route /admin or /admin/ to admin.html
+      if (pathname === '/admin' || pathname === '/admin/') {
+        filePath = path.resolve(WWW_DIR, 'admin.html');
+      } else {
+        // If directory or root, serve index.html; support clean URLs
+        try {
+          if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+            filePath = path.join(filePath, 'index.html');
+          } else if (!fs.existsSync(filePath) && fs.existsSync(filePath + '.html')) {
+            filePath = filePath + '.html';
+          }
+        } catch {
+          // Fall through to regular error handling
         }
-      } catch {
-        // Fall through to regular error handling
       }
 
       fs.readFile(filePath, (err, data) => {
@@ -111,12 +118,12 @@ if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
   const initialPort = Number(process.env.PORT) || 3000;
   startServer(initialPort)
     .then(({ url }) => {
-      console.log(`🚀 YKS 2027 PWA Dev Server running at: ${url}`);
-      console.log(`📦 Serving static assets from: ${WWW_DIR}`);
-      console.log(`📱 PWA Service Worker allowed at root /`);
+      console.log(`[SERVER] YKS 2027 PWA Dev Server running at: ${url}`);
+      console.log(`[STATIC] Serving static assets from: ${WWW_DIR}`);
+      console.log(`[SERVICE_WORKER] PWA Service Worker allowed at root /`);
     })
     .catch((err) => {
-      console.error('❌ Failed to start server:', err);
+      console.error('[ERROR] Failed to start server:', err);
       process.exit(1);
     });
 }

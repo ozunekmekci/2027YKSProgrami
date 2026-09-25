@@ -565,12 +565,119 @@ export function generateSaaSApp() {
       border-color: rgba(16, 185, 129, 0.4);
       color: var(--mint-600);
       background-color: var(--mint-50);
+      font-weight: 700;
     }
 
     .day-tab-btn.day-done::after {
-      content: ' ✓';
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-left: 6px;
+      vertical-align: middle;
+      border-radius: 50%;
+      background-color: var(--mint-500);
+    }
+
+    .day-tab-btn.is-real-today:not(.active) {
+      border-color: rgba(59, 130, 246, 0.4);
+      color: var(--blue-600);
+      background-color: var(--blue-50);
+    }
+
+    .btn-today-now {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-today-now:hover {
+      border-color: var(--mint-500);
+      color: var(--mint-600);
+      background: var(--mint-50);
+    }
+
+    .topbar-live-clock {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: -0.01em;
+    }
+
+    .live-clock-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--mint-500);
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    }
+
+    .meta-card-sep {
+      margin: 0 8px;
+      color: var(--border-strong);
+    }
+
+    .meta-card-today {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .sunday-rest-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--rose-50);
+      color: var(--rose-600);
+      border: 1px solid rgba(244, 63, 94, 0.2);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-admin-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-admin-link:hover {
+      background: var(--slate-200);
+      color: var(--text-main);
+      border-color: var(--border-strong);
+    }
+
+    .sidebar-admin-badge {
       font-size: 11px;
       font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--slate-200);
+      color: var(--text-muted);
     }
 
     .studio-nav-right {
@@ -2052,29 +2159,50 @@ export function generateSaaSApp() {
       <nav class="sidebar-nav">
         <div class="nav-section-title">Çalışma Alanı</div>
         <button class="nav-btn active" id="nav-btn-today" onclick="switchSaaSTab('tab-today')">
-          <span class="nav-btn-icon">🎯</span>
+          <span class="nav-btn-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+            </svg>
+          </span>
           <span>Çalışma Stüdyosu</span>
           <span class="nav-btn-shortcut">1</span>
         </button>
         <button class="nav-btn" id="nav-btn-radar" onclick="switchSaaSTab('tab-radar')">
-          <span class="nav-btn-icon">🗺️</span>
+          <span class="nav-btn-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </span>
           <span>Master Takvim</span>
           <span class="nav-btn-shortcut">2</span>
         </button>
         <button class="nav-btn" id="nav-btn-curriculum" onclick="switchSaaSTab('tab-curriculum')">
-          <span class="nav-btn-icon">📚</span>
+          <span class="nav-btn-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+          </span>
           <span>Müfredat Tablosu</span>
           <span class="nav-btn-shortcut">3</span>
-        </button>
-        <div class="nav-section-title">Yönetim</div>
-        <button class="nav-btn" id="nav-btn-settings" onclick="switchSaaSTab('tab-settings')">
-          <span class="nav-btn-icon">⚙️</span>
-          <span>Veri & Yedekleme</span>
-          <span class="nav-btn-shortcut">4</span>
         </button>
       </nav>
 
       <div class="sidebar-footer">
+        <a href="/admin" class="sidebar-admin-link" data-tab="tab-settings" title="Yönetici Paneli (/admin)">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span>Yönetim</span>
+          </div>
+          <span class="sidebar-admin-badge">/admin</span>
+        </a>
         <div class="countdown-widget">
           <div class="countdown-label">19 Haziran 2027 Hedefi</div>
           <div class="countdown-val tabular-nums" id="sidebar-target-countdown">Geri sayım yükleniyor...</div>
@@ -2087,11 +2215,21 @@ export function generateSaaSApp() {
       <!-- Top Command Bar -->
       <header class="saas-topbar">
         <div class="topbar-left">
-          <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Menü">☰</button>
+          <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Menü">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
           <div class="topbar-breadcrumbs">
             <span class="breadcrumb-root">Çalışma Alanı</span>
             <span class="breadcrumb-sep">/</span>
             <span class="breadcrumb-current" id="topbar-breadcrumb-title">Çalışma Stüdyosu</span>
+          </div>
+          <div class="topbar-live-clock tabular-nums" id="topbar-live-clock" title="Sistem Tarihi ve Saati">
+            <span class="live-clock-dot"></span>
+            <span id="live-clock-text">--:--</span>
           </div>
         </div>
 
@@ -2101,7 +2239,7 @@ export function generateSaaSApp() {
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <span>Video veya konu ara...</span>
-            <span class="command-search-shortcut">⌘K / Ctrl+K</span>
+            <span class="command-search-shortcut">Ctrl+K</span>
           </button>
         </div>
 
@@ -2113,7 +2251,11 @@ export function generateSaaSApp() {
             <span>Stressiz Kaydır</span>
           </button>
           <div class="topbar-timer-pill tabular-nums" id="topbar-timer-pill" onclick="switchSaaSTab('tab-today')">
-            <span>☕ Mola: </span><span id="topbar-timer-text">20:00</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Mola: </span><span id="topbar-timer-text">20:00</span>
           </div>
           <div class="topbar-progress-pill tabular-nums" id="topbar-progress-pill">
             0 / 766 Video
@@ -2143,6 +2285,7 @@ export function generateSaaSApp() {
                 </div>
               </div>
               <div class="studio-nav-right">
+                <button class="btn-today-now" onclick="goToRealToday()" title="Bugünün takvim gününe git">Bugün</button>
                 <button class="btn-nav-arrow" onclick="navigateStudioDay(-1)" title="Önceki Gün">←</button>
                 <button class="btn-nav-arrow" onclick="navigateStudioDay(1)" title="Sonraki Gün">→</button>
               </div>
@@ -2185,7 +2328,7 @@ export function generateSaaSApp() {
                 <!-- Daily KPI Card -->
                 <div class="saas-aside-card studio-kpi-card">
                   <div class="aside-card-header">
-                    <div class="aside-card-title">📊 Günlük Odak Özeti</div>
+                    <div class="aside-card-title">Günlük Odak Özeti</div>
                     <div class="aside-card-desc" id="aside-day-name-desc">Pazartesi Programı</div>
                   </div>
 
@@ -2212,7 +2355,7 @@ export function generateSaaSApp() {
           <div class="radar-container">
             <div class="radar-header-area">
               <div class="radar-title-wrap">
-                <h2>🗺️ Master Takvim & İlerleme Radarı</h2>
+                <h2>Master Takvim & İlerleme Radarı</h2>
                 <p>42 haftalık müfredat zaman çizelgesi. Kaçan veya izlenmeyen videoları Stressiz Kaydırma Motoru ile bugünden itibaren geleceğe kaydırabilirsiniz.</p>
               </div>
               <div class="radar-action-buttons">
@@ -2309,133 +2452,11 @@ export function generateSaaSApp() {
             </div>
           </div>
         </div>
-
-        <!-- View 4: Preferences & Backup -->
-        <div class="saas-tab-view" id="tab-settings">
-          <div class="settings-container">
-            <div class="settings-header">
-              <h2>Veri & Yedekleme Yönetimi</h2>
-              <p>Çalışma verilerinizi cihazlar arasında senkronize edin, yedekleyin veya sıfırlayın.</p>
-            </div>
-
-            <div class="settings-grid">
-              <!-- Card 1: Backup & Restore -->
-              <div class="settings-card">
-                <div class="settings-card-header">
-                  <div class="settings-card-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3>JSON Yedekleme ve İçe Aktarma</h3>
-                    <p>Tüm ilerlemenizi, tamamlanan videoları ve aktif hafta konumunuzu tek bir JSON dosyasında saklayın.</p>
-                  </div>
-                </div>
-
-                <div class="settings-card-body">
-                  <div class="backup-action-row">
-                    <div>
-                      <div class="action-title">Yedek İndir (Dışa Aktar)</div>
-                      <div class="action-desc">Mevcut tüm çalışma geçmişinizi tek tıkla JSON dosyası olarak indirin.</div>
-                    </div>
-                    <button class="btn-saas-primary" onclick="exportBackup()">
-                      <span>JSON Yedek İndir</span>
-                      <span>↓</span>
-                    </button>
-                  </div>
-
-                  <div class="backup-action-row">
-                    <div>
-                      <div class="action-title">Yedekten Geri Yükle (İçe Aktar)</div>
-                      <div class="action-desc">Daha önce indirdiğiniz JSON dosyasını seçerek ilerlemenizi geri yükleyin.</div>
-                    </div>
-                    <div>
-                      <input type="file" id="backup-file-input" accept=".json" style="display: none;" onchange="importBackup(event)" />
-                      <button class="btn-saas-secondary" onclick="document.getElementById('backup-file-input').click()">
-                        <span>Dosya Seç & Yükle</span>
-                        <span>↑</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card 2: Workspace Status & Target -->
-              <div class="settings-card">
-                <div class="settings-card-header">
-                  <div class="settings-card-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"/>
-                      <polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3>Sistem & Hedef Durumu</h3>
-                    <p>YKS 2027 sınav tarihi ve yerel tarayıcı veri depolama metrikleri.</p>
-                  </div>
-                </div>
-
-                <div class="settings-card-body">
-                  <div class="settings-stat-grid tabular-nums">
-                    <div class="settings-stat-item">
-                      <span class="stat-num" id="settings-completed-count">0 / 766</span>
-                      <span class="stat-label">Tamamlanan Video</span>
-                    </div>
-                    <div class="settings-stat-item">
-                      <span class="stat-num" id="settings-pct-stat">%0</span>
-                      <span class="stat-label">Genel İlerleme</span>
-                    </div>
-                    <div class="settings-stat-item">
-                      <span class="stat-num" id="settings-days-stat">-</span>
-                      <span class="stat-label">19 Haziran 2027'ye Kalan</span>
-                    </div>
-                    <div class="settings-stat-item">
-                      <span class="stat-num">42 Hafta</span>
-                      <span class="stat-label">Toplam Müfredat Programı</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card 3: Danger Zone (Reset) -->
-              <div class="settings-card danger-zone">
-                <div class="settings-card-header">
-                  <div class="settings-card-icon danger">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                      <line x1="12" y1="9" x2="12" y2="13"/>
-                      <line x1="12" y1="17" x2="12.01" y2="17"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 style="color: var(--rose-600);">Tehlikeli Alan (İlerleme Sıfırlama)</h3>
-                    <p>Yerel depolamadaki tüm tamamlanma kayıtlarını ve kaydırılmış takvim durumunu sıfırlar.</p>
-                  </div>
-                </div>
-
-                <div class="settings-card-body">
-                  <div class="backup-action-row">
-                    <div>
-                      <div class="action-title" style="color: var(--rose-600);">Tüm Çalışma İlerlemesini Temizle</div>
-                      <div class="action-desc">Bu işlem geri alınamaz. Sıfırlamadan önce JSON yedeğinizi indirmeniz önerilir.</div>
-                    </div>
-                    <button class="btn-saas-danger" onclick="resetAllProgress()">
-                      <span>İlerlemeyi Sıfırla</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   </div>
 
-  <!-- Global Command Palette Modal (Ctrl+K / ⌘K) -->
+  <!-- Global Command Palette Modal (Ctrl+K) -->
   <div class="palette-overlay" id="command-palette-modal" onclick="onPaletteOverlayClick(event)">
     <div class="palette-card">
       <div class="palette-input-wrap">
@@ -2625,6 +2646,11 @@ export function generateSaaSApp() {
 
     // UI Tab Navigation
     function switchSaaSTab(tabId) {
+      if (tabId === 'tab-settings') {
+        window.location.href = '/admin';
+        return;
+      }
+
       document.querySelectorAll('.saas-tab-view').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
 
@@ -2634,8 +2660,7 @@ export function generateSaaSApp() {
       const btnMap = {
         'tab-today': 'nav-btn-today',
         'tab-radar': 'nav-btn-radar',
-        'tab-curriculum': 'nav-btn-curriculum',
-        'tab-settings': 'nav-btn-settings'
+        'tab-curriculum': 'nav-btn-curriculum'
       };
       const activeBtn = document.getElementById(btnMap[tabId]);
       if (activeBtn) activeBtn.classList.add('active');
@@ -2643,8 +2668,7 @@ export function generateSaaSApp() {
       const breadcrumbMap = {
         'tab-today': 'Çalışma Stüdyosu (Bugün)',
         'tab-radar': 'Master Takvim & Radar',
-        'tab-curriculum': 'Müfredat Veri Bankası',
-        'tab-settings': 'Veri & Yedekleme'
+        'tab-curriculum': 'Müfredat Veri Bankası'
       };
       const bc = document.getElementById('topbar-breadcrumb-title');
       if (bc && breadcrumbMap[tabId]) bc.textContent = breadcrumbMap[tabId];
@@ -2653,8 +2677,6 @@ export function generateSaaSApp() {
         renderRadarView();
       } else if (tabId === 'tab-curriculum') {
         renderCurriculumView();
-      } else if (tabId === 'tab-settings') {
-        renderSettingsView();
       }
     }
 
@@ -2731,11 +2753,24 @@ export function generateSaaSApp() {
         weekSelect.value = String(activeWeekNum);
       }
 
+      // Real-time date awareness
+      const realNow = new Date();
+      const realDayIdx = (realNow.getDay() + 6) % 7; // 0=Mon..6=Sun
+      const realTodayFormatted = realNow.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
+
       // Update day tabs active state and completed indicators
       const dayTabBtns = document.querySelectorAll('.day-tab-btn');
       dayTabBtns.forEach((btn, idx) => {
         if (idx === activeDayIndex) btn.classList.add('active');
         else btn.classList.remove('active');
+
+        if (idx === realDayIdx) {
+          btn.classList.add('is-real-today');
+          btn.title = btn.textContent + ' (Bugün)';
+        } else {
+          btn.classList.remove('is-real-today');
+          btn.removeAttribute('title');
+        }
 
         const d = weekData?.days?.[idx];
         if (d && !d.isRestDay && d.blocks?.length > 0) {
@@ -2761,11 +2796,11 @@ export function generateSaaSApp() {
         if (contentArea) contentArea.classList.add('is-sunday');
         blocksContainer.innerHTML = \`
           <div class="sunday-rest-card">
-            <span class="sunday-rest-icon">☕</span>
-            <div class="sunday-rest-title">⛔ PAZAR: ÇALIŞMAK KESİNLİKLE YASAK!</div>
+            <div class="sunday-rest-badge">Dinlenme Günü</div>
+            <div class="sunday-rest-title">PAZAR: ÇALIŞMAK KESİNLİKLE YASAK!</div>
             <div class="sunday-rest-text">
-              Bugün beyninizi dinlendirme ve ödüllendirme günüdür. YKS bir maratondur; dinlenmeden zihinsel güç yenilenemez.
-              Yarın zinde ve odaklanmış bir şekilde 4 blokla haftaya başlayacaksınız.
+              Bugün beyninizi dinlendirme ve yenilenme günüdür. YKS uzun soluklu bir maratondur; düzenli dinlenme olmadan öğrenilen bilgiler kalıcı hafızaya aktarılamaz.
+              Pazartesi günü zinde ve odaklanmış bir şekilde 4 blokluk yeni haftaya başlayacaksınız.
             </div>
             <button class="btn-preview-weekday" onclick="setStudioDay(0)">Pazartesi Programını Önizle</button>
           </div>
@@ -2785,7 +2820,7 @@ export function generateSaaSApp() {
         <div class="studio-day-meta-card">
           <div>
             <div class="meta-card-title">\${activeWeekNum}. Hafta • \${dayData.dayName}</div>
-            <div class="meta-card-subtitle">4 blok video • 3 mola (60 dk)</div>
+            <div class="meta-card-subtitle">Bugünün Tarihi: \${realTodayFormatted} • 4 blok video • 3 mola (60 dk)</div>
           </div>
           <div class="meta-card-badge" id="studio-completed-badge">0 / 4 Blok</div>
         </div>
@@ -3383,7 +3418,7 @@ export function generateSaaSApp() {
                 <span class="subject-badge badge-tarih">Dinlenme</span>
               </div>
               <p style="font-size: 13px; color: var(--rose-500); font-weight: 600; padding: 20px 0; text-align: center;">
-                ☕ Zihinsel Yenilenme Günü
+                Zihinsel Dinlenme Günü
               </p>
             </div>
           \`;
@@ -3702,7 +3737,7 @@ export function generateSaaSApp() {
               <span style="font-size: 11px; color: var(--text-muted);">\${escapeHtml(item.instructor)}</span>
               <span class="tabular-nums" style="font-size: 11px; color: var(--text-secondary);">\${durMin} dk</span>
               <span style="font-size: 11px; font-weight: 600; color: \${item.isDone ? 'var(--emerald-600)' : 'var(--text-muted)'};">
-                \${item.isDone ? '✓ Tamam' : 'Bekliyor'}
+                \${item.isDone ? 'Tamamlandı' : 'Bekliyor'}
               </span>
             </div>
           </div>
@@ -3818,24 +3853,27 @@ export function generateSaaSApp() {
       }
     });
 
-    // Settings, Backup & Restore Logic (Task 6)
-    function renderSettingsView() {
-      const totalVideos = 766;
-      const completedCount = Object.keys(completedVideos).length;
-      const pct = Math.round((completedCount / totalVideos) * 100);
-
-      const countEl = document.getElementById('settings-completed-count');
-      if (countEl) countEl.textContent = \`\${completedCount} / \${totalVideos}\`;
-
-      const pctEl = document.getElementById('settings-pct-stat');
-      if (pctEl) pctEl.textContent = \`%\${pct}\`;
-
-      const daysEl = document.getElementById('settings-days-stat');
-      const targetDate = new Date('2027-06-19T00:00:00');
+    // Live Real-Time Date & Clock Engine
+    function updateLiveDateTime() {
+      const clockEl = document.getElementById('live-clock-text');
+      if (!clockEl) return;
       const now = new Date();
-      const diffMs = targetDate.getTime() - now.getTime();
-      const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
-      if (daysEl) daysEl.textContent = \`\${diffDays} Gün\`;
+      const dateStr = now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
+      const timeStr = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      clockEl.textContent = \`\${dateStr} • \${timeStr}\`;
+    }
+
+    function goToRealToday() {
+      const now = new Date();
+      const realDayIdx = (now.getDay() + 6) % 7;
+      activeDayIndex = realDayIdx;
+      saveState();
+      updateAllUI();
+      switchSaaSTab('tab-today');
+    }
+
+    function renderSettingsView() {
+      // Delegated to dedicated /admin route
     }
 
     function exportBackup() {
@@ -3884,7 +3922,6 @@ export function generateSaaSApp() {
           }
           saveState();
           updateAllUI();
-          renderSettingsView();
           alert('Yedek başarıyla geri yüklendi.');
         } catch (err) {
           alert('Yedek dosyası okunamadı veya biçimi geçersiz: ' + err.message);
@@ -3895,7 +3932,7 @@ export function generateSaaSApp() {
     }
 
     function resetAllProgress() {
-      const confirm1 = confirm('⚠️ DİKKAT: Tüm çalışma kayıtlarınız, işaretlediğiniz videolar ve takvim sıfırlanacaktır. Devam etmek istiyor musunuz?');
+      const confirm1 = confirm('DİKKAT: Tüm çalışma kayıtlarınız, işaretlediğiniz videolar ve takvim sıfırlanacaktır. Devam etmek istiyor musunuz?');
       if (!confirm1) return;
       const confirm2 = confirm('Son onay: İlerlemenizi geri getiremezsiniz. Sıfırlansın mı?');
       if (!confirm2) return;
@@ -3912,13 +3949,14 @@ export function generateSaaSApp() {
       } catch (e) {}
       saveState();
       updateAllUI();
-      renderSettingsView();
       alert('Tüm veriler başarıyla sıfırlandı.');
     }
 
     // Initial Load
     window.addEventListener('DOMContentLoaded', () => {
       loadState();
+      updateLiveDateTime();
+      setInterval(updateLiveDateTime, 1000);
       updateAllUI();
       updateTimerDisplay();
     });

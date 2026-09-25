@@ -54,7 +54,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
 
     const dayRows = w.days.map(d => {
       if (d.isRestDay) {
-        return `<div class="week-day-row"><span>${d.dayName}</span><span style="color: var(--m3-red-primary); font-weight: 600;">⛔ Dinlenme Günü</span></div>`;
+        return `<div class="week-day-row"><span>${d.dayName}</span><span style="color: var(--m3-red-primary); font-weight: 600;">Dinlenme Günü</span></div>`;
       }
       const bCount = d.blocks?.length || 4;
       return `
@@ -1369,7 +1369,9 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
       <!-- Stress-Free Shift Engine Component -->
       <div class="shift-engine-card">
         <div class="shift-header">
-          <span style="font-size: 1.2rem;">⚡</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
           <span class="shift-title">Stress-Free Otomatik Kaydırma</span>
         </div>
         <p class="shift-desc">
@@ -1711,7 +1713,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
       playChime();
       triggerHaptic(800);
       setTimeout(() => {
-        alert('☕ 20 dakikalık mola tamamlandı! Zihnin dinlendi, bir sonraki video bloğuna geçmeye hazırsın.');
+        alert('20 dakikalık mola tamamlandı! Zihnin dinlendi, bir sonraki video bloğuna geçmeye hazırsın.');
       }, 1000);
     }
 
@@ -1876,16 +1878,16 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
 
         container.innerHTML = \`
           <div class="sunday-rest-card">
-            <div class="sunday-icon">⛔</div>
-            <div class="sunday-title">⛔ PAZAR: ÇALIŞMAK KESİNLİKLE YASAK! (Beyin dinlenmeden öğrenme kalıcı olmaz)</div>
+            <div class="sunday-badge">Dinlenme Günü</div>
+            <div class="sunday-title">PAZAR: ÇALIŞMAK KESİNLİKLE YASAK! (Beyin dinlenmeden öğrenme kalıcı olmaz)</div>
             <p class="sunday-desc">
               Haftanın 6 günü boyunca disiplinle zihnini zorladın. Bilimsel araştırmalar, beynin öğrendiklerini uzun vadeli hafızaya aktarabilmesi için haftada en az bir gün ders çalışmadan dinlenmesi gerektiğini kanıtlamıştır.
             </p>
             <div class="sunday-tips-grid">
-              <div class="sunday-tip-chip">🚶 Açık Havada Yürüyüş</div>
-              <div class="sunday-tip-chip">😴 Kaliteli & Uzun Uyku</div>
-              <div class="sunday-tip-chip">👥 Sevdiklerinle Vakit Geçir</div>
-              <div class="sunday-tip-chip">🎮 Rahatlatıcı Hobiler</div>
+              <div class="sunday-tip-chip">Açık Havada Yürüyüş</div>
+              <div class="sunday-tip-chip">Kaliteli ve Uzun Uyku</div>
+              <div class="sunday-tip-chip">Sevdiklerinle Vakit Geçir</div>
+              <div class="sunday-tip-chip">Rahatlatıcı Hobiler</div>
             </div>
             <button class="btn btn-outline" style="width: 100%;" onclick="previewWeekday()">Pazartesi Programını Önizle</button>
           </div>
@@ -1945,7 +1947,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
           blocksHtml += \`
             <div class="break-card">
               <div class="break-content">
-                <span class="break-icon">☕</span>
+                <span class="break-icon">Mola</span>
                 <div>
                   <div class="break-title">20 dk Mola</div>
                   <div class="break-desc">Beyin dinlenmeden öğrenme kalıcı olmaz.</div>
@@ -2026,7 +2028,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
             <div class="week-details" id="week-details-\${w.weekNum}">
               \${w.days.map((d, dIdx) => {
                 if (d.isRestDay) {
-                  return \`<div class="week-day-row"><span>\${d.dayName}</span><span style="color: var(--m3-red-primary); font-weight: 600;">⛔ Dinlenme Günü</span></div>\`;
+                  return \`<div class="week-day-row"><span>\${d.dayName}</span><span style="color: var(--m3-red-primary); font-weight: 600;">Dinlenme Günü</span></div>\`;
                 }
                 const bCount = d.blocks?.length || 4;
                 const dCompleted = d.blocks?.filter(b => b.video?.id && completedVideos[b.video.id]).length || 0;

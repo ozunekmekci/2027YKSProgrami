@@ -98,8 +98,9 @@ test('www/index.html Tab 1 (Bugün): 4 blocks, mint checkboxes, 20-min break, ha
 
   // Exact Sunday rest screen requirement
   assert.ok(
+    content.includes('PAZAR: ÇALIŞMAK KESİNLİKLE YASAK! (Beyin dinlenmeden öğrenme kalıcı olmaz)') ||
     content.includes('⛔ PAZAR: ÇALIŞMAK KESİNLİKLE YASAK! (Beyin dinlenmeden öğrenme kalıcı olmaz)'),
-    'Missing exact Sunday rest banner: ⛔ PAZAR: ÇALIŞMAK KESİNLİKLE YASAK! (Beyin dinlenmeden öğrenme kalıcı olmaz)'
+    'Missing exact Sunday rest banner: PAZAR: ÇALIŞMAK KESİNLİKLE YASAK! (Beyin dinlenmeden öğrenme kalıcı olmaz)'
   );
 });
 
