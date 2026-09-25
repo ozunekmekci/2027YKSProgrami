@@ -24,9 +24,14 @@ export function generateSaaSApp() {
   <script>
     if ('serviceWorker' in navigator && (location.protocol.startsWith('http') || location.hostname === 'localhost')) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          reg.update();
+        }).catch(err => {
           console.warn('SW registration failed:', err);
         });
+      });
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
       });
     }
   </script>
@@ -137,7 +142,7 @@ export function generateSaaSApp() {
       width: 36px;
       height: 36px;
       border-radius: var(--radius-md);
-      background: linear-gradient(135deg, var(--mint-500), var(--mint-700));
+      background: var(--mint-600);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -215,9 +220,8 @@ export function generateSaaSApp() {
 
     .nav-section-title {
       font-size: 11px;
-      text-transform: uppercase;
       font-weight: 700;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.03em;
       color: var(--slate-400);
       padding: 12px 12px 4px;
     }
@@ -670,8 +674,7 @@ export function generateSaaSApp() {
       color: var(--slate-700);
       padding: 2px 8px;
       border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.02em;
     }
 
     .video-instructor-text {
@@ -1020,8 +1023,7 @@ export function generateSaaSApp() {
       font-size: 11px;
       font-weight: 600;
       color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.02em;
       margin-top: 2px;
     }
 
@@ -2123,8 +2125,8 @@ export function generateSaaSApp() {
                 <!-- Inline Break Timer Card -->
                 <div class="saas-aside-card saas-break-timer-card">
                   <div class="aside-card-header">
-                    <div class="aside-card-title">☕ 20 Dakika Mola İstasyonu</div>
-                    <div class="aside-card-desc">Beyin dinlenmeden öğrenme kalıcı olmaz.</div>
+                    <div class="aside-card-title">20 Dakika Mola İstasyonu</div>
+                    <div class="aside-card-desc">Bloklar arası 20 dakikalık dinlenme periyodu.</div>
                   </div>
 
                   <div class="svg-timer-circle-wrap">

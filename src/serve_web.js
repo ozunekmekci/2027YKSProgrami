@@ -72,12 +72,20 @@ export function startServer(port = (Number(process.env.PORT) || 3000), host = (p
         const ext = path.extname(filePath).toLowerCase();
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
-        res.writeHead(200, {
+        const headers = {
           'Content-Type': contentType,
           'Service-Worker-Allowed': '/',
           'Access-Control-Allow-Origin': '*',
           'Content-Length': data.length
-        });
+        };
+
+        if (ext === '.html' || ext === '.js') {
+          headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+          headers['Pragma'] = 'no-cache';
+          headers['Expires'] = '0';
+        }
+
+        res.writeHead(200, headers);
 
         if (req.method === 'HEAD') {
           res.end();

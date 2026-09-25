@@ -1,4 +1,4 @@
-// YKS 2027 Koçu — Offline-First Service Worker
+// YKS 2027 Koçu — Offline-First Service Worker (v2.2.0-saas)
 const CACHE_NAME = 'yks-kochu-v1';
 
 const CORE_ASSETS = [
@@ -18,7 +18,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate: Purge obsolete caches and claim existing clients
+// Activate: Purge obsolete caches, refresh core assets, and claim existing clients
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
@@ -28,6 +28,9 @@ self.addEventListener('activate', (event) => {
             .filter((name) => name !== CACHE_NAME)
             .map((name) => caches.delete(name))
         );
+      })
+      .then(() => {
+        return caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS));
       })
       .then(() => self.clients.claim())
   );
