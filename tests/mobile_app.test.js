@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const MOBILE_HTML_PATH = 'www/index.html';
+const MOBILE_HTML_PATH = 'www/mobile.html';
 
-test('www/index.html exists and is a valid standalone mobile web application', () => {
+test('www/mobile.html exists and is a valid standalone mobile web application', () => {
   assert.ok(fs.existsSync(MOBILE_HTML_PATH), `${MOBILE_HTML_PATH} does not exist`);
   const content = fs.readFileSync(MOBILE_HTML_PATH, 'utf8');
 

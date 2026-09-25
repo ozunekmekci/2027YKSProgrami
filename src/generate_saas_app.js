@@ -1540,6 +1540,207 @@ export function generateSaaSApp() {
       font-family: inherit;
     }
 
+    /* Settings & Backup View (Task 6) */
+    .settings-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 900px;
+    }
+
+    .settings-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    .settings-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 4px 0 0 0;
+    }
+
+    .settings-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .settings-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .settings-card.danger-zone {
+      border-color: #fecdd3;
+      background: #fff;
+    }
+
+    .settings-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .settings-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: var(--slate-100);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .settings-card-icon.danger {
+      background: #ffe4e6;
+      color: var(--rose-600);
+    }
+
+    .settings-card-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    .settings-card-header p {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 2px 0 0 0;
+    }
+
+    .settings-card-body {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .backup-action-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--slate-100);
+    }
+
+    .backup-action-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .backup-action-row:first-child {
+      padding-top: 0;
+    }
+
+    .action-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .action-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .btn-saas-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--emerald-500);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 16px;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-saas-primary:hover {
+      background: var(--emerald-600);
+    }
+
+    .btn-saas-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-canvas);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-saas-secondary:hover {
+      background: var(--slate-100);
+    }
+
+    .btn-saas-danger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fee2e2;
+      color: var(--rose-600);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid #fecdd3;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-saas-danger:hover {
+      background: #fecdd3;
+    }
+
+    .settings-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+    }
+
+    .settings-stat-item {
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .settings-stat-item .stat-num {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .settings-stat-item .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
       .saas-sidebar {
@@ -1876,7 +2077,124 @@ export function generateSaaSApp() {
 
         <!-- View 4: Preferences & Backup -->
         <div class="saas-tab-view" id="tab-settings">
-          <!-- Populated in Task 6 -->
+          <div class="settings-container">
+            <div class="settings-header">
+              <h2>Veri & Yedekleme Yönetimi</h2>
+              <p>Çalışma verilerinizi cihazlar arasında senkronize edin, yedekleyin veya sıfırlayın.</p>
+            </div>
+
+            <div class="settings-grid">
+              <!-- Card 1: Backup & Restore -->
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>JSON Yedekleme ve İçe Aktarma</h3>
+                    <p>Tüm ilerlemenizi, tamamlanan videoları ve aktif hafta konumunuzu tek bir JSON dosyasında saklayın.</p>
+                  </div>
+                </div>
+
+                <div class="settings-card-body">
+                  <div class="backup-action-row">
+                    <div>
+                      <div class="action-title">Yedek İndir (Dışa Aktar)</div>
+                      <div class="action-desc">Mevcut tüm çalışma geçmişinizi tek tıkla JSON dosyası olarak indirin.</div>
+                    </div>
+                    <button class="btn-saas-primary" onclick="exportBackup()">
+                      <span>JSON Yedek İndir</span>
+                      <span>↓</span>
+                    </button>
+                  </div>
+
+                  <div class="backup-action-row">
+                    <div>
+                      <div class="action-title">Yedekten Geri Yükle (İçe Aktar)</div>
+                      <div class="action-desc">Daha önce indirdiğiniz JSON dosyasını seçerek ilerlemenizi geri yükleyin.</div>
+                    </div>
+                    <div>
+                      <input type="file" id="backup-file-input" accept=".json" style="display: none;" onchange="importBackup(event)" />
+                      <button class="btn-saas-secondary" onclick="document.getElementById('backup-file-input').click()">
+                        <span>Dosya Seç & Yükle</span>
+                        <span>↑</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Workspace Status & Target -->
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>Sistem & Hedef Durumu</h3>
+                    <p>YKS 2027 sınav tarihi ve yerel tarayıcı veri depolama metrikleri.</p>
+                  </div>
+                </div>
+
+                <div class="settings-card-body">
+                  <div class="settings-stat-grid tabular-nums">
+                    <div class="settings-stat-item">
+                      <span class="stat-num" id="settings-completed-count">0 / 766</span>
+                      <span class="stat-label">Tamamlanan Video</span>
+                    </div>
+                    <div class="settings-stat-item">
+                      <span class="stat-num" id="settings-pct-stat">%0</span>
+                      <span class="stat-label">Genel İlerleme</span>
+                    </div>
+                    <div class="settings-stat-item">
+                      <span class="stat-num" id="settings-days-stat">-</span>
+                      <span class="stat-label">19 Haziran 2027'ye Kalan</span>
+                    </div>
+                    <div class="settings-stat-item">
+                      <span class="stat-num">42 Hafta</span>
+                      <span class="stat-label">Toplam Müfredat Programı</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Danger Zone (Reset) -->
+              <div class="settings-card danger-zone">
+                <div class="settings-card-header">
+                  <div class="settings-card-icon danger">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                      <line x1="12" y1="9" x2="12" y2="13"/>
+                      <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 style="color: var(--rose-600);">Tehlikeli Alan (İlerleme Sıfırlama)</h3>
+                    <p>Yerel depolamadaki tüm tamamlanma kayıtlarını ve kaydırılmış takvim durumunu sıfırlar.</p>
+                  </div>
+                </div>
+
+                <div class="settings-card-body">
+                  <div class="backup-action-row">
+                    <div>
+                      <div class="action-title" style="color: var(--rose-600);">Tüm Çalışma İlerlemesini Temizle</div>
+                      <div class="action-desc">Bu işlem geri alınamaz. Sıfırlamadan önce JSON yedeğinizi indirmeniz önerilir.</div>
+                    </div>
+                    <button class="btn-saas-danger" onclick="resetAllProgress()">
+                      <span>İlerlemeyi Sıfırla</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>
@@ -2060,6 +2378,8 @@ export function generateSaaSApp() {
         renderRadarView();
       } else if (tabId === 'tab-curriculum') {
         renderCurriculumView();
+      } else if (tabId === 'tab-settings') {
+        renderSettingsView();
       }
     }
 
@@ -2383,6 +2703,11 @@ export function generateSaaSApp() {
       const currTab = document.getElementById('tab-curriculum');
       if (currTab && currTab.classList.contains('active')) {
         renderCurriculumView();
+      }
+
+      const settingsTab = document.getElementById('tab-settings');
+      if (settingsTab && settingsTab.classList.contains('active')) {
+        renderSettingsView();
       }
     }
 
@@ -2913,6 +3238,104 @@ export function generateSaaSApp() {
         closeCommandPalette();
       }
     });
+
+    // Settings, Backup & Restore Logic (Task 6)
+    function renderSettingsView() {
+      const totalVideos = 766;
+      const completedCount = Object.keys(completedVideos).length;
+      const pct = Math.round((completedCount / totalVideos) * 100);
+
+      const countEl = document.getElementById('settings-completed-count');
+      if (countEl) countEl.textContent = \`\${completedCount} / \${totalVideos}\`;
+
+      const pctEl = document.getElementById('settings-pct-stat');
+      if (pctEl) pctEl.textContent = \`%\${pct}\`;
+
+      const daysEl = document.getElementById('settings-days-stat');
+      const targetDate = new Date('2027-06-19T00:00:00');
+      const now = new Date();
+      const diffMs = targetDate.getTime() - now.getTime();
+      const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+      if (daysEl) daysEl.textContent = \`\${diffDays} Gün\`;
+    }
+
+    function exportBackup() {
+      const backupData = {
+        app: 'YKS 2027 Koçu',
+        version: '1.0.0',
+        exportDate: new Date().toISOString(),
+        completedVideos,
+        activeWeekNum,
+        activeDayIndex,
+        shiftedSchedule: localStorage.getItem('yks_shifted_schedule') ? JSON.parse(localStorage.getItem('yks_shifted_schedule')) : null
+      };
+      const jsonStr = JSON.stringify(backupData, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const dateStr = new Date().toISOString().split('T')[0];
+      a.href = url;
+      a.download = \`yks_2027_yedek_\${dateStr}.json\`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importBackup(event) {
+      const file = event.target?.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!data || typeof data.completedVideos !== 'object') {
+            throw new Error('Geçersiz yedek dosyası şeması!');
+          }
+          completedVideos = data.completedVideos || {};
+          if (typeof data.activeWeekNum === 'number') activeWeekNum = data.activeWeekNum;
+          if (typeof data.activeDayIndex === 'number') activeDayIndex = data.activeDayIndex;
+          if (data.shiftedSchedule && Array.isArray(data.shiftedSchedule)) {
+            currentSchedule = data.shiftedSchedule;
+            localStorage.setItem('yks_shifted_schedule', JSON.stringify(currentSchedule));
+          } else {
+            currentSchedule = JSON.parse(JSON.stringify(BASELINE_CALENDAR));
+            localStorage.removeItem('yks_shifted_schedule');
+          }
+          saveState();
+          updateAllUI();
+          renderSettingsView();
+          alert('✅ Yedek başarıyla geri yüklendi! İlerlemeniz güncellendi.');
+        } catch (err) {
+          alert('❌ Hata: Yedek dosyası okunamadı veya biçimi geçersiz: ' + err.message);
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    function resetAllProgress() {
+      const confirm1 = confirm('⚠️ DİKKAT: Tüm çalışma kayıtlarınız, işaretlediğiniz videolar ve takvim sıfırlanacaktır. Devam etmek istiyor musunuz?');
+      if (!confirm1) return;
+      const confirm2 = confirm('Son onay: İlerlemenizi geri getiremezsiniz. Sıfırlansın mı?');
+      if (!confirm2) return;
+
+      completedVideos = {};
+      activeWeekNum = 1;
+      activeDayIndex = 0;
+      currentSchedule = JSON.parse(JSON.stringify(BASELINE_CALENDAR));
+      try {
+        localStorage.removeItem('yks_completed_videos');
+        localStorage.removeItem('yks_shifted_schedule');
+        localStorage.removeItem('yks_active_week');
+        localStorage.removeItem('yks_active_day');
+      } catch (e) {}
+      saveState();
+      updateAllUI();
+      renderSettingsView();
+      alert('Tüm veriler başarıyla sıfırlandı.');
+    }
 
     // Initial Load
     window.addEventListener('DOMContentLoaded', () => {

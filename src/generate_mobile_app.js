@@ -2475,7 +2475,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const outputPath = path.join(outputDir, 'index.html');
+  const outputPath = path.join(outputDir, 'mobile.html');
   fs.writeFileSync(outputPath, html, 'utf8');
   console.log(`Generated mobile web application: ${outputPath} (${(html.length / 1024).toFixed(1)} KB)`);
   return html;

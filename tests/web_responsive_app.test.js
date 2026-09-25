@@ -35,7 +35,7 @@ const {
 
 const { MemoryStorage } = await import('../dist/web/storage.js');
 
-const INDEX_HTML_PATH = 'www/index.html';
+const INDEX_HTML_PATH = 'www/mobile.html';
 
 // ---------------------------------------------------------------------------
 // 1. TypeScript Strict Compilation & Source Structure
