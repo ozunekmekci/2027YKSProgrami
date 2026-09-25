@@ -35,8 +35,22 @@ export interface StudyBlock {
 
 export interface DaySchedule {
   dayName: string;
+  dateIso?: string;
+  dateFormatted?: string;
+  studyDayNumber?: number;
   isRestDay?: boolean;
   blocks?: StudyBlock[];
+}
+
+export interface WeeklyBlueprint {
+  pazartesi: string[];
+  sali: string[];
+  carsamba: string[];
+  persembe: string[];
+  cuma: string[];
+  cumartesi: string[];
+  pazar?: string[];
+  [key: string]: string[] | undefined;
 }
 
 export interface WeekSchedule {

@@ -1,0 +1,9 @@
+{
+  "pazartesi": ["TYT Türkçe", "TYT Türkçe", "TYT Coğrafya", "TYT Coğrafya"],
+  "sali": ["TYT Matematik", "TYT Matematik", "TYT-AYT Tarih", "TYT-AYT Tarih"],
+  "carsamba": ["TYT Biyoloji", "TYT Biyoloji", "AYT Edebiyat", "AYT Edebiyat"],
+  "persembe": ["TYT Matematik", "TYT Matematik", "TYT Kimya", "TYT Kimya"],
+  "cuma": ["TYT Fizik", "TYT Fizik", "AYT Edebiyat", "AYT Edebiyat"],
+  "cumartesi": ["TYT-AYT Tarih", "TYT-AYT Tarih", "TYT Biyoloji", "Tekrar & Soru Çözümü"],
+  "pazar": []
+}
