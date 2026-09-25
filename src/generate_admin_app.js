@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { generateCalendarDays, shiftSchedulePreservingPast } from './calendar_engine.js';
+import { generateCalendarDays, shiftSchedulePreservingPast, DEFAULT_WEEKLY_BLUEPRINT } from './calendar_engine.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -431,6 +431,146 @@ export function generateAdminApp() {
     .admin-section-card.danger .section-header {
       border-bottom-color: rgba(244, 63, 94, 0.2);
     }
+
+    /* Weekly Blueprint Editor Styles */
+    .blueprint-container {
+      margin-top: 16px;
+    }
+
+    .blueprint-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+    }
+
+    .blueprint-day-column {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .blueprint-day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .blueprint-day-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .blueprint-day-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--mint-600);
+      background: var(--mint-50);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .blueprint-slots-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .blueprint-block-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .blueprint-block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .blueprint-block-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .btn-remove-slot {
+      background: transparent;
+      border: none;
+      color: var(--rose-600);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .btn-remove-slot:hover {
+      color: var(--rose-500);
+      text-decoration: underline;
+    }
+
+    .btn-remove-slot:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      text-decoration: none;
+    }
+
+    .blueprint-subject-select {
+      width: 100%;
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
+      padding: 5px 6px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .blueprint-subject-select:focus {
+      border-color: var(--mint-500);
+    }
+
+    .btn-add-slot {
+      width: 100%;
+      padding: 8px;
+      background: transparent;
+      border: 1px dashed var(--border-strong);
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-add-slot:hover:not(:disabled) {
+      border-color: var(--mint-500);
+      color: var(--mint-600);
+      background: var(--mint-50);
+    }
+
+    .btn-add-slot:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .blueprint-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body>
@@ -581,6 +721,39 @@ export function generateAdminApp() {
       </div>
     </div>
 
+    <!-- Section: Weekly Blueprint Editor -->
+    <div class="admin-section-card">
+      <div class="section-header">
+        <div>
+          <h3>Haftalık Ders ve Blok Şablonu Düzenleyici</h3>
+          <p>Haftanın 6 çalışma günü için blok sayılarını (2-6 blok) ve atanmış dersleri özelleştirin. Pazar günü dinlenmedir.</p>
+        </div>
+        <span class="admin-tag" id="blueprint-status-badge">Standart Şablon</span>
+      </div>
+      <div class="blueprint-container">
+        <div class="blueprint-grid" id="blueprint-grid">
+          <!-- Populated dynamically by renderBlueprintEditor() -->
+        </div>
+        <div class="blueprint-actions">
+          <button class="btn-action-primary" onclick="saveCustomBlueprint()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            <span>Şablonu Kaydet ve Takvime Uygula</span>
+          </button>
+          <button class="btn-action-secondary" onclick="resetDefaultBlueprint()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="1 4 1 10 7 10"/>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+            </svg>
+            <span>Varsayılana Sıfırla</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Section: Course Breakdown -->
     <div class="admin-section-card">
       <div class="section-header">
@@ -639,7 +812,30 @@ export function generateAdminApp() {
   <script>
     const PLAYLISTS_DATA = ${JSON.stringify(playlistsData)};
     const BASELINE_CALENDAR = ${JSON.stringify(calendar)};
+    const DEFAULT_BLUEPRINT = ${JSON.stringify(DEFAULT_WEEKLY_BLUEPRINT)};
 
+    const ALL_SUBJECTS = [
+      'TYT Türkçe',
+      'TYT Matematik',
+      'TYT Fizik',
+      'TYT Kimya',
+      'TYT Biyoloji',
+      'TYT-AYT Tarih',
+      'TYT Coğrafya',
+      'AYT Edebiyat',
+      'AYT Coğrafya'
+    ];
+
+    const BLUEPRINT_DAYS = [
+      { key: 'pazartesi', title: 'Pazartesi' },
+      { key: 'sali', title: 'Salı' },
+      { key: 'carsamba', title: 'Çarşamba' },
+      { key: 'persembe', title: 'Perşembe' },
+      { key: 'cuma', title: 'Cuma' },
+      { key: 'cumartesi', title: 'Cumartesi' }
+    ];
+
+    let currentBlueprint = null;
     let completedVideos = {};
     let activeWeekNum = 1;
     let activeDayIndex = 0;
@@ -662,9 +858,17 @@ export function generateAdminApp() {
         } else {
           currentSchedule = JSON.parse(JSON.stringify(BASELINE_CALENDAR));
         }
+
+        const savedBlueprint = localStorage.getItem('yks_weekly_blueprint');
+        if (savedBlueprint) {
+          currentBlueprint = JSON.parse(savedBlueprint);
+        } else {
+          currentBlueprint = JSON.parse(JSON.stringify(DEFAULT_BLUEPRINT));
+        }
       } catch (e) {
         console.warn('Storage read error:', e);
         currentSchedule = JSON.parse(JSON.stringify(BASELINE_CALENDAR));
+        currentBlueprint = JSON.parse(JSON.stringify(DEFAULT_BLUEPRINT));
       }
     }
 
@@ -771,6 +975,108 @@ export function generateAdminApp() {
           \`;
         }
         tbody.innerHTML = html;
+      }
+
+      renderBlueprintEditor();
+    }
+
+    // Weekly Blueprint Editor
+    function renderBlueprintEditor() {
+      const container = document.getElementById('blueprint-grid');
+      if (!container) return;
+
+      const isCustom = localStorage.getItem('yks_weekly_blueprint') !== null;
+      const badge = document.getElementById('blueprint-status-badge');
+      if (badge) {
+        badge.textContent = isCustom ? 'Özel Şablon Aktif' : 'Standart Şablon';
+        badge.style.color = isCustom ? 'var(--mint-600)' : 'var(--text-secondary)';
+      }
+
+      if (!currentBlueprint) {
+        currentBlueprint = JSON.parse(JSON.stringify(DEFAULT_BLUEPRINT));
+      }
+
+      let html = '';
+      for (const day of BLUEPRINT_DAYS) {
+        const slots = currentBlueprint[day.key] || [];
+        html += '<div class="blueprint-day-column" data-day="' + day.key + '">';
+        html += '<div class="blueprint-day-header">';
+        html += '<span class="blueprint-day-title">' + day.title + '</span>';
+        html += '<span class="blueprint-day-badge tabular-nums">' + slots.length + ' Blok</span>';
+        html += '</div>';
+
+        html += '<div class="blueprint-slots-list">';
+        slots.forEach((subj, idx) => {
+          html += '<div class="blueprint-block-card">';
+          html += '<div class="blueprint-block-header">';
+          html += '<span class="blueprint-block-label">' + (idx + 1) + '. Blok</span>';
+          html += '<button type="button" class="btn-remove-slot" onclick="removeBlueprintBlock(\'' + day.key + '\', ' + idx + ')" ' + (slots.length <= 2 ? 'disabled title="Günde en az 2 blok olmalıdır"' : '') + '>Sil</button>';
+          html += '</div>';
+          html += '<select class="blueprint-subject-select" onchange="updateBlueprintSlot(\'' + day.key + '\', ' + idx + ', this.value)">';
+          for (const s of ALL_SUBJECTS) {
+            const sel = (s === subj) ? 'selected' : '';
+            html += '<option value="' + s + '" ' + sel + '>' + s + '</option>';
+          }
+          html += '</select>';
+          html += '</div>';
+        });
+        html += '</div>';
+
+        html += '<button type="button" class="btn-add-slot" onclick="addBlueprintBlock(\'' + day.key + '\')" ' + (slots.length >= 6 ? 'disabled title="Günde en fazla 6 blok olabilir"' : '') + '>+ Blok Ekle</button>';
+        html += '</div>';
+      }
+      container.innerHTML = html;
+    }
+
+    function updateBlueprintSlot(dayKey, idx, newSubj) {
+      if (currentBlueprint && currentBlueprint[dayKey]) {
+        currentBlueprint[dayKey][idx] = newSubj;
+        renderBlueprintEditor();
+      }
+    }
+
+    function addBlueprintBlock(dayKey) {
+      if (currentBlueprint && currentBlueprint[dayKey] && currentBlueprint[dayKey].length < 6) {
+        currentBlueprint[dayKey].push('TYT Türkçe');
+        renderBlueprintEditor();
+      }
+    }
+
+    function removeBlueprintBlock(dayKey, idx) {
+      if (currentBlueprint && currentBlueprint[dayKey] && currentBlueprint[dayKey].length > 2) {
+        currentBlueprint[dayKey].splice(idx, 1);
+        renderBlueprintEditor();
+      }
+    }
+
+    function saveCustomBlueprint() {
+      if (!currentBlueprint) return;
+      for (const day of BLUEPRINT_DAYS) {
+        const slots = currentBlueprint[day.key] || [];
+        if (slots.length < 2 || slots.length > 6) {
+          alert(day.title + ' için blok sayısı 2 ile 6 arasında olmalıdır.');
+          return;
+        }
+      }
+      try {
+        localStorage.setItem('yks_weekly_blueprint', JSON.stringify(currentBlueprint));
+      } catch (e) {
+        console.warn('Storage save error:', e);
+      }
+      triggerAdminShift();
+      renderBlueprintEditor();
+      alert('Haftalık şablon kaydedildi ve takvim yeni blok düzenine göre güncellendi.');
+    }
+
+    function resetDefaultBlueprint() {
+      if (confirm('Haftalık ders şablonu varsayılana sıfırlansın mı?')) {
+        try {
+          localStorage.removeItem('yks_weekly_blueprint');
+        } catch (e) {}
+        currentBlueprint = JSON.parse(JSON.stringify(DEFAULT_BLUEPRINT));
+        renderBlueprintEditor();
+        triggerAdminShift();
+        alert('Haftalık şablon varsayılana döndürüldü.');
       }
     }
 
@@ -1097,6 +1403,8 @@ export function generateAdminApp() {
         localStorage.removeItem('yks_active_week');
         localStorage.removeItem('yks_active_day');
         localStorage.removeItem('yks_shifted_schedule');
+        localStorage.removeItem('yks_weekly_blueprint');
+        currentBlueprint = JSON.parse(JSON.stringify(DEFAULT_BLUEPRINT));
       } catch (e) {
         console.warn('Storage clear error:', e);
       }

@@ -45,3 +45,13 @@ test('www/index.html student interface is emoji-free, date-aware, and has no stu
   assert.ok(html.includes('Programı Dengele'), 'Must have renamed Programı Dengele button');
   assert.ok(!html.includes('Stressiz Kaydır'), 'Must not contain old Stressiz Kaydır text');
 });
+
+test('www/admin.html includes Weekly Blueprint Editor with slot customization controls', () => {
+  const html = fs.readFileSync('www/admin.html', 'utf8');
+  assert.ok(html.includes('Haftalık Ders ve Blok Şablonu'), 'Must contain Weekly Blueprint Editor heading');
+  assert.ok(html.includes('blueprint-day-column'), 'Must contain day columns for blueprint');
+  assert.ok(html.includes('addBlueprintBlock'), 'Must have addBlueprintBlock function');
+  assert.ok(html.includes('removeBlueprintBlock'), 'Must have removeBlueprintBlock function');
+  assert.ok(html.includes('saveCustomBlueprint'), 'Must have saveCustomBlueprint function');
+  assert.ok(html.includes('resetDefaultBlueprint'), 'Must have resetDefaultBlueprint function');
+});
