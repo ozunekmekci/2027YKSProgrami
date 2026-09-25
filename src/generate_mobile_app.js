@@ -1373,7 +1373,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
           <span class="shift-title">Stress-Free Otomatik Kaydırma</span>
         </div>
         <p class="shift-desc">
-          Planın aksaması seni asla yıldırmasın! Kaçırdığın veya izleyemediğin günlerin videolarını bugünden itibaren kronolojik sırayla ileri kaydır. Sıfır suçluluk, sıfır stres!
+          İzlenmeyen veya ertelenen dersleri bugünden itibaren kronolojik sırayla sonraki haftalara dağıtır.
         </p>
         <div class="shift-actions">
           <button class="btn btn-shift" onclick="triggerShiftEngine()">
@@ -2106,7 +2106,7 @@ export function generateMobileAppHtml(dataPath = 'playlists_data_tr.json', outpu
       renderRadarTab();
       updateTopBar();
 
-      alert('✨ Program başarıyla güncellendi! Sıfır suçluluk, sıfır stres: Kalan tüm videolar bugünden itibaren kronolojik sırayla yeniden düzenlendi. Hedef 19 Haziran 2027!');
+      alert('Program güncellendi. Kalan videolar bugünden itibaren takvime yeniden dağıtıldı.');
     }
 
     function shiftSchedule(queues) {

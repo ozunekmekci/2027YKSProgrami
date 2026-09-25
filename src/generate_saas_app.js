@@ -723,22 +723,220 @@ export function generateSaaSApp() {
       cursor: pointer;
     }
 
-    .btn-watch-youtube {
-      display: inline-flex;
+    .video-card-action-btns {
+      display: flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 16px;
-      background-color: #dc2626;
-      color: var(--white);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 600;
-      border-radius: var(--radius-md);
-      transition: background 0.15s;
     }
 
-    .btn-watch-youtube:hover {
-      background-color: #b91c1c;
+    .btn-watch-youtube-square {
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      border-radius: var(--radius-md);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg-canvas);
+      color: #ef4444;
+      border: 1px solid var(--border-light);
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .btn-watch-youtube-square:hover {
+      background-color: #fef2f2;
+      border-color: #fca5a5;
+      color: #dc2626;
+      transform: translateY(-1px);
+    }
+
+    .btn-watch-youtube-square.mini {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-toggle-embed {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-toggle-embed:hover {
+      background: var(--slate-100);
+      color: var(--text-main);
+      border-color: var(--slate-300);
+    }
+
+    /* Embedded Video Player Styles */
+    .video-embed-container {
+      margin: 12px 0 16px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--slate-950);
+      border: 1px solid var(--border-light);
+      transition: all 0.2s ease;
+    }
+
+    .video-embed-container.collapsed {
+      display: none;
+    }
+
+    .video-embed-ratio {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    }
+
+    .video-embed-iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: var(--radius-md);
+    }
+
+    /* In-Site Video Theater Modal */
+    .video-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 2100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .video-modal-overlay.open {
+      display: flex;
+    }
+
+    .video-modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 860px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: modalFadeIn 0.15s ease-out;
+    }
+
+    .video-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-light);
+      background: var(--bg-surface);
+    }
+
+    .video-modal-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .video-modal-instructor {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .modal-close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-light);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--slate-100);
+      color: var(--text-main);
+    }
+
+    .video-modal-player-wrap {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 */
+      background: #000;
+    }
+
+    .video-modal-player-wrap iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .video-modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-light);
+      gap: 16px;
+    }
+
+    .video-modal-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    .table-play-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--emerald-600);
+      background: #ecfdf5;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .table-play-btn:hover {
+      background: #d1fae5;
     }
 
     /* Aside Column (KPI & Break Timer) */
@@ -2224,6 +2422,45 @@ export function generateSaaSApp() {
     </div>
   </div>
 
+  <!-- In-Site Video Theater Modal -->
+  <div class="video-modal-overlay" id="in-site-video-modal" onclick="onVideoModalOverlayClick(event)">
+    <div class="video-modal-card">
+      <div class="video-modal-header">
+        <div class="video-modal-meta">
+          <span class="subject-badge" id="video-modal-badge">Ders</span>
+          <span class="video-modal-instructor" id="video-modal-instructor"></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <a class="btn-watch-youtube-square" id="video-modal-external-link" href="#" target="_blank" rel="noopener noreferrer" data-intent="" onclick="handleYouTubeModalClick(event)" title="YouTube'da Aç (Yeni Sekme)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+          </a>
+          <button class="modal-close-btn" onclick="closeInSiteVideoModal()" title="Kapat (ESC)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="video-modal-player-wrap">
+        <iframe id="video-modal-iframe"
+                src=""
+                title="Ders Videosu"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+      </div>
+      <div class="video-modal-footer">
+        <div class="video-modal-title" id="video-modal-title"></div>
+        <label class="saas-checkbox-label">
+          <input type="checkbox" class="saas-checkbox-input" id="video-modal-checkbox" onchange="onVideoModalCheckboxToggle(this.checked)">
+          <span>Tamamlandı</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Embedded Curriculum & Baseline Schedule
     const PLAYLISTS_DATA = ${JSON.stringify(playlistsData)};
@@ -2512,6 +2749,8 @@ export function generateSaaSApp() {
         totalDurationMin += durMin;
         const badgeClass = getSubjectBadgeClass(b.subject);
 
+        const hasRealVideo = Boolean(v.id && !v.id.startsWith('tekrar-'));
+
         html += \`
           <div class="saas-video-card \${isDone ? 'completed' : ''}" id="video-card-\${idx}">
             <div class="video-card-top-row">
@@ -2525,6 +2764,19 @@ export function generateSaaSApp() {
 
             <div class="video-card-title">\${escapeHtml(v.title)}</div>
 
+            \${hasRealVideo ? \`
+              <div class="video-embed-container" id="embed-wrap-\${idx}">
+                <div class="video-embed-ratio">
+                  <iframe class="video-embed-iframe"
+                          src="https://www.youtube-nocookie.com/embed/\${v.id}?enablejsapi=1&rel=0"
+                          title="\${escapeHtml(v.title)}"
+                          loading="lazy"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowfullscreen></iframe>
+                </div>
+              </div>
+            \` : ''}
+
             <div class="video-card-actions">
               <label class="saas-checkbox-label" for="chk-\${activeWeekNum}-\${activeDayIndex}-\${idx}">
                 <input type="checkbox" class="saas-checkbox-input" id="chk-\${activeWeekNum}-\${activeDayIndex}-\${idx}"
@@ -2533,14 +2785,27 @@ export function generateSaaSApp() {
                 <span>\${isDone ? 'Tamamlandı' : 'İzlendi olarak işaretle'}</span>
               </label>
 
-              \${v.id ? \`
-                <a class="btn-watch-youtube" href="https://www.youtube.com/watch?v=\${v.id}" target="_blank" rel="noopener noreferrer">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                  </svg>
-                  <span>YouTube'da İzle</span>
-                </a>
-              \` : ''}
+              <div style="display: flex; align-items: center; gap: 8px;">
+                \${hasRealVideo ? \`
+                  <button type="button" class="btn-toggle-embed" onclick="toggleCardEmbed('\${idx}')" id="btn-toggle-embed-\${idx}" title="Oynatıcıyı Gizle / Göster">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Oynatıcı</span>
+                  </button>
+                  <a class="btn-watch-youtube-square"
+                     href="https://www.youtube.com/watch?v=\${v.id}"
+                     data-intent="vnd.youtube:\${v.id}"
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     onclick="handleYouTubeClick(event, '\${v.id}')"
+                     title="YouTube'da Aç (Harici)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </a>
+                \` : ''}
+              </div>
             </div>
           </div>
         \`;
@@ -2621,7 +2886,7 @@ export function generateSaaSApp() {
           if (btn) btn.textContent = 'Molayı Başlat';
           if (label) label.textContent = 'Mola Tamamlandı!';
           playChime();
-          alert('☕ 20 dakikalık mola tamamlandı! Zihnin yenilendi, sonraki bloğa hazırsın.');
+          alert('20 dakikalık mola tamamlandı. Sıradaki bloğa başlayabilirsiniz.');
         }
       }, 200);
       updateTimerDisplay();
@@ -2841,7 +3106,7 @@ export function generateSaaSApp() {
     function triggerShiftEngine() {
       const shifted = shiftSchedule(PLAYLISTS_DATA, completedVideos);
       if (!shifted || shifted.length === 0) {
-        alert('🎉 Tebrikler! Tüm videolar tamamlanmış veya kaydırılacak video kalmamış.');
+        alert('Tüm videolar tamamlandı veya kaydırılacak ders bulunamadı.');
         return;
       }
       currentSchedule = shifted;
@@ -2855,7 +3120,7 @@ export function generateSaaSApp() {
       saveState();
       updateAllUI();
       renderRadarView();
-      alert('⚡ Stressiz Kaydırma Motoru Çalıştırıldı!\\nİzlenmemiş tüm videolar bugünden itibaren sıralı olarak sonraki haftalara yeniden dağıtıldı.');
+      alert('Program güncellendi. Kalan videolar bugünden itibaren takvime yeniden dağıtıldı.');
     }
 
     function resetSchedule() {
@@ -3114,10 +3379,32 @@ export function generateSaaSApp() {
               </label>
             </td>
             <td style="text-align: right;">
-              <a href="\${watchUrl}" target="_blank" rel="noopener noreferrer" class="table-action-btn">
-                <span>İzle</span>
-                <span>↗</span>
-              </a>
+              <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 6px;">
+                <button type="button"
+                        class="table-play-btn"
+                        data-video-id="\${v.id}"
+                        data-title="\${escapeHtml(v.title)}"
+                        data-subject="\${escapeHtml(item.subject)}"
+                        data-instructor="\${escapeHtml(item.instructor)}"
+                        onclick="onPlayTableVideo(this)"
+                        title="Sitede Oynat">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <span>Oynat</span>
+                </button>
+                <a class="btn-watch-youtube-square mini"
+                   href="https://www.youtube.com/watch?v=\${v.id}"
+                   data-intent="vnd.youtube:\${v.id}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   onclick="handleYouTubeClick(event, '\${v.id}')"
+                   title="YouTube'da Aç (Harici)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  </svg>
+                </a>
+              </div>
             </td>
           </tr>
         \`;
@@ -3205,7 +3492,12 @@ export function generateSaaSApp() {
         const watchUrl = v.url || \`https://www.youtube.com/watch?v=\${v.id}\`;
 
         html += \`
-          <div class="palette-result-item" onclick="onPaletteSelectVideo('\${v.id}', '\${watchUrl}')">
+          <div class="palette-result-item"
+               data-video-id="\${v.id}"
+               data-title="\${escapeHtml(v.title)}"
+               data-subject="\${escapeHtml(item.subj)}"
+               data-instructor="\${escapeHtml(item.instructor)}"
+               onclick="onPaletteSelectVideo(this)">
             <div class="palette-item-left">
               <span class="subject-badge \${badgeClass}">\${item.subj}</span>
               <span class="palette-item-title">\${escapeHtml(v.title)}</span>
@@ -3224,9 +3516,99 @@ export function generateSaaSApp() {
       listEl.innerHTML = html;
     }
 
-    function onPaletteSelectVideo(videoId, watchUrl) {
+    function onPaletteSelectVideo(el) {
       closeCommandPalette();
-      window.open(watchUrl, '_blank', 'noopener,noreferrer');
+      const videoId = el.getAttribute('data-video-id');
+      const title = el.getAttribute('data-title');
+      const subject = el.getAttribute('data-subject');
+      const instructor = el.getAttribute('data-instructor');
+      openInSiteVideoModal(videoId, title, subject, instructor);
+    }
+
+    function onPlayTableVideo(btn) {
+      const videoId = btn.getAttribute('data-video-id');
+      const title = btn.getAttribute('data-title');
+      const subject = btn.getAttribute('data-subject');
+      const instructor = btn.getAttribute('data-instructor');
+      openInSiteVideoModal(videoId, title, subject, instructor);
+    }
+
+    // In-Site Video Theater Modal & Intent Logic
+    let currentModalVideoId = null;
+
+    function openInSiteVideoModal(videoId, title, subject, instructor) {
+      if (!videoId) return;
+      currentModalVideoId = videoId;
+      const modal = document.getElementById('in-site-video-modal');
+      const iframe = document.getElementById('video-modal-iframe');
+      const titleEl = document.getElementById('video-modal-title');
+      const badgeEl = document.getElementById('video-modal-badge');
+      const instructorEl = document.getElementById('video-modal-instructor');
+      const chkEl = document.getElementById('video-modal-checkbox');
+      const extLink = document.getElementById('video-modal-external-link');
+
+      if (!modal || !iframe) return;
+
+      if (titleEl) titleEl.textContent = title || 'Ders Videosu';
+      if (badgeEl) {
+        badgeEl.textContent = subject || 'Ders';
+        badgeEl.className = 'subject-badge ' + getSubjectBadgeClass(subject || '');
+      }
+      if (instructorEl) instructorEl.textContent = instructor || '';
+      if (chkEl) chkEl.checked = Boolean(completedVideos[videoId]);
+      if (extLink) {
+        extLink.href = \`https://www.youtube.com/watch?v=\${videoId}\`;
+        extLink.setAttribute('data-intent', \`vnd.youtube:\${videoId}\`);
+      }
+
+      iframe.src = \`https://www.youtube-nocookie.com/embed/\${videoId}?autoplay=1&rel=0&enablejsapi=1\`;
+      modal.classList.add('open');
+    }
+
+    function closeInSiteVideoModal() {
+      const modal = document.getElementById('in-site-video-modal');
+      const iframe = document.getElementById('video-modal-iframe');
+      if (modal) modal.classList.remove('open');
+      if (iframe) iframe.src = '';
+      currentModalVideoId = null;
+    }
+
+    function onVideoModalOverlayClick(e) {
+      if (e.target && e.target.id === 'in-site-video-modal') {
+        closeInSiteVideoModal();
+      }
+    }
+
+    function onVideoModalCheckboxToggle(checked) {
+      if (currentModalVideoId) {
+        toggleVideo(currentModalVideoId, checked);
+      }
+    }
+
+    function handleYouTubeModalClick(e) {
+      if (!currentModalVideoId) return;
+      handleYouTubeClick(e, currentModalVideoId);
+    }
+
+    function toggleCardEmbed(idx) {
+      const wrap = document.getElementById(\`embed-wrap-\${idx}\`);
+      const btn = document.getElementById(\`btn-toggle-embed-\${idx}\`);
+      if (!wrap) return;
+      if (wrap.classList.contains('collapsed')) {
+        wrap.classList.remove('collapsed');
+        if (btn) btn.classList.remove('active');
+      } else {
+        wrap.classList.add('collapsed');
+        if (btn) btn.classList.add('active');
+      }
+    }
+
+    function handleYouTubeClick(e, videoId) {
+      if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+        e.preventDefault();
+        window.location.href = \`vnd.youtube:\${videoId}\`;
+        return;
+      }
     }
 
     // Keyboard Shortcuts (Ctrl+K / Cmd+K, Escape)
@@ -3236,6 +3618,7 @@ export function generateSaaSApp() {
         openCommandPalette();
       } else if (e.key === 'Escape') {
         closeCommandPalette();
+        closeInSiteVideoModal();
       }
     });
 
@@ -3306,9 +3689,9 @@ export function generateSaaSApp() {
           saveState();
           updateAllUI();
           renderSettingsView();
-          alert('✅ Yedek başarıyla geri yüklendi! İlerlemeniz güncellendi.');
+          alert('Yedek başarıyla geri yüklendi.');
         } catch (err) {
-          alert('❌ Hata: Yedek dosyası okunamadı veya biçimi geçersiz: ' + err.message);
+          alert('Yedek dosyası okunamadı veya biçimi geçersiz: ' + err.message);
         }
         event.target.value = '';
       };

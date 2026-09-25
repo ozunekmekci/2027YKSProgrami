@@ -330,7 +330,7 @@ export class AppController {
       this.updateTopBar();
 
       if (typeof window !== 'undefined' && window.alert) {
-        window.alert('✨ Program başarıyla güncellendi! Sıfır suçluluk, sıfır stres: Kalan tüm videolar bugünden itibaren kronolojik sırayla yeniden düzenlendi. Hedef 19 Haziran 2027!');
+        window.alert('Program güncellendi. Kalan videolar bugünden itibaren takvime yeniden dağıtıldı.');
       }
     }
 
