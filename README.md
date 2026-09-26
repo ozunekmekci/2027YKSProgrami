@@ -215,7 +215,7 @@ Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
    ```bash
    npm test
    ```
-   *107 otomatik birim testi veri bütünlüğünü, tarih çapalı takvim motorunu, FIFO konu ilerlemesini, SaaS çalışma stüdyosunu, admin panelini, Excel sayfalarını, HTML takip panosunu, mobil uygulamayı, PWA altyapısını ve yerel sunucuyu doğrular.*
+   *112 otomatik birim testi veri bütünlüğünü, müfredat ünitelerini, projeksiyon motorunu, tarih çapalı takvim motorunu, FIFO konu ilerlemesini, SaaS çalışma stüdyosunu, Gantt matrisini, admin panelini, Excel sayfalarını, HTML takip panosunu, mobil uygulamayı, PWA altyapısını ve yerel sunucuyu doğrular.*
 
 5. **Web ve Mobil Varlıklarını Derleyin:**
    ```bash
@@ -266,6 +266,13 @@ Sistemin kalbinde, öğrencinin çalışma disiplinini korurken beklenmeyen aksa
 ### 4. Dinamik Yönetim Paneli (`www/admin.html`)
 - Haftalık ders dağılım şablonlarını, günlük blok sayılarını ve ders sıralarını kod değiştirmeden tarayıcı üzerinden özelleştirme imkanı.
 
+### 5. Müfredat Yol Haritası ve Gelecek Projeksiyonu (İnteraktif Gantt Matrisi)
+- **42 Haftalık Çok Şeritli Gantt Matrisi:** 9 dersin tamamını pedagojik ünitelere ayrılmış olarak (örneğin Tarih için İlk Türk Devletleri, Osmanlı Devleti, İnkılap Tarihi; Türkçe için Ses Bilgisi, Cümlede Anlam, Paragraf) görselleştirir.
+- **Dinamik Bitiş Tarihi Projeksiyonu:** Öğrencinin güncel çalışma hızına ve haftalık şablonuna göre her bir ünitenin hangi haftada ve hangi takvim gününde biteceğini, tüm dersin ne zaman tamamlanacağını milisaniyesine kadar hesaplar.
+- **YKS 2027 Erken Bitiş Göstergesi:** 19 Haziran 2027 sınav tarihi baz alınarak, müfredatın sınavdan kaç hafta önce biteceği ("3 Hafta Erken") ve kalan sürenin genel denemelere nasıl kaldığı üst KPI kartlarında canlı olarak özetlenir.
+- **Kılavuz Çizgileri ve Canlı İpucu Kartları:** Matris üzerinde mevcut aktif haftayı gösteren "Bugün" çizgisi ve 19 Haziran 2027 YKS çizgisi yer alır. Ünite şeritleri üzerine gelindiğinde video aralığı, hafta aralığı ve bitiş tarihi yüzen kartta gösterilir.
+- **Tek Dokunuşla Ayrıntı Paneli (Drilldown):** Matristeki herhangi bir üniteye tıklandığında alt panelde o ünitenin tüm videoları, dakikaları ve tamamlama kutucukları listelenir; doğrudan gömülü video oynatıcıyla izlenebilir.
+
 ---
 
 ## Sürüm Yönetimi (Version 1.0.0 & V2 Geliştirme Dalı)
@@ -311,18 +318,24 @@ Bu proje uzun soluklu bir maratonu desteklemek üzere sürüm izolasyonu prensib
 │   ├── default_blueprint.json       # Varsayılan haftalık ders dağıtım şablonu
 │   ├── build_excel.js               # ExcelJS tabanlı çok sayfalı XLSX üreticisi
 │   ├── generate_dashboard.js        # Standalone masaüstü HTML dashboard derleyicisi
-│   ├── generate_saas_app.js         # SaaS çalışma stüdyosu ve PWA derleyicisi
+│   ├── generate_saas_app.js         # SaaS çalışma stüdyosu, Gantt matrisi ve PWA derleyicisi
 │   ├── generate_admin_app.js        # Dinamik yönetim paneli derleyicisi
 │   ├── generate_mobile_app.js       # Material 3 mobil uygulama üreticisi & derleyicisi
 │   ├── serve_web.js                 # Sıfır bağımlılıklı yerel statik PWA dev sunucusu
+│   ├── data/
+│   │   └── curriculum_units.json    # 9 ders ve 766 videonun pedagojik üniteler sözlüğü
 │   └── web/                         # Modüler TypeScript Web & PWA mimarisi
-│       ├── types.ts                 # Domain arayüzleri ve veri tipi sözleşmeleri
+│       ├── types.ts                 # Domain arayüzleri ve projeksiyon veri tipi sözleşmeleri
+│       ├── projection_engine.ts     # Müfredat üniteleri bitiş projeksiyonu motoru
 │       ├── shift_engine.ts          # Telafi ve blok kaydırma algoritması
 │       ├── timer.ts                 # Web Audio API 20 dk mola sayacı ve çift tonlu zil
 │       ├── storage.ts               # LocalStorage kalıcılığı ve JSON yedekleme/geri yükleme
 │       └── app.ts                   # UI kontrolcüsü, sekme ve PWA yükleme yönetimi
 └── tests/
     ├── test_data_integrity.test.js  # 766 video ve oynatma listesi veri doğrulama testi
+    ├── curriculum_units_data.test.js# 9 ders müfredat üniteleri bütünlüğü ve kapsama testi
+    ├── projection_engine.test.js    # Dinamik hafta ve tarih projeksiyon motoru testleri
+    ├── saas_projection_view.test.js # Gantt matrisi, kılavuzlar ve drilldown arayüz testi
     ├── calendar_engine.test.js      # Takvim mantığı, geçişler ve blok bütünlüğü testleri
     ├── date_anchored_calendar_and_blueprint.test.js # Tarih çapası ve dinamik şablon testleri
     ├── systematic_debug_regression.test.js # Hafta 1 Cumartesi ve FIFO ilerleme regresyon testleri
