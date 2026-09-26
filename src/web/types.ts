@@ -119,6 +119,8 @@ export interface UnitProjection {
   totalVideos: number;
   startWeek: number;
   endWeek: number;
+  startFrac?: number;
+  endFrac?: number;
   startDate: string;
   endDate: string;
   startDateIso: string;

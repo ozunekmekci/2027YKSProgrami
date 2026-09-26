@@ -20,12 +20,19 @@ test('projection_engine calculates accurate start and end weeks and dates for al
   assert.ok(tarih, 'TYT-AYT Tarih projection must exist');
   assert.equal(tarih.units.length, 9, 'Tarih must have exactly 9 units');
 
-  for (const u of tarih.units) {
-    assert.ok(u.startWeek <= u.endWeek, `Unit ${u.title} startWeek (${u.startWeek}) must be <= endWeek (${u.endWeek})`);
-    assert.ok(u.startDateIso <= u.endDateIso, `Unit ${u.title} startDateIso must be <= endDateIso`);
-    assert.ok(u.startDate, `Unit ${u.title} must have formatted startDate`);
-    assert.ok(u.endDate, `Unit ${u.title} must have formatted endDate`);
-    assert.ok(['upcoming', 'in_progress', 'completed'].includes(u.status), `Valid status for ${u.title}`);
+  for (const subj of report.subjects) {
+    let prevEndFrac = -1;
+    for (const u of subj.units) {
+      assert.ok(u.startWeek <= u.endWeek, `Unit ${u.title} startWeek (${u.startWeek}) must be <= endWeek (${u.endWeek})`);
+      assert.ok(typeof u.startFrac === 'number' && typeof u.endFrac === 'number', 'Must define numeric startFrac and endFrac');
+      assert.ok(u.startFrac < u.endFrac, `Unit ${u.title} startFrac (${u.startFrac}) must be < endFrac (${u.endFrac})`);
+      assert.ok(u.startFrac >= prevEndFrac - 0.0001, `Unit ${u.title} startFrac (${u.startFrac}) must not overlap previous endFrac (${prevEndFrac})`);
+      assert.ok(u.startDateIso <= u.endDateIso, `Unit ${u.title} startDateIso must be <= endDateIso`);
+      assert.ok(u.startDate, `Unit ${u.title} must have formatted startDate`);
+      assert.ok(u.endDate, `Unit ${u.title} must have formatted endDate`);
+      assert.ok(['upcoming', 'in_progress', 'completed'].includes(u.status), `Valid status for ${u.title}`);
+      prevEndFrac = u.endFrac;
+    }
   }
 
   // Check specific Tarih Ottoman unit: "Klasik Çağda Osmanlı Devleti (Kuruluş ve Yükselme)"

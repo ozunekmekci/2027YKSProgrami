@@ -70,8 +70,14 @@ export function generateSaaSApp() {
       --bg-page:    var(--slate-50);
       --bg-surface: var(--white);
       --bg-subtle:  var(--slate-100);
+      --bg-canvas:  var(--slate-50);
       --border:     var(--slate-200);
+      --border-light: var(--slate-200);
+      --border-medium: var(--slate-300);
+      --border-subtle: var(--slate-100);
       --border-strong: var(--slate-300);
+      --brand-navy: var(--slate-900);
+      --rose-600:   #e11d48;
 
       --text-main:      var(--slate-900);
       --text-secondary: var(--slate-600);
@@ -2202,6 +2208,7 @@ export function generateSaaSApp() {
     .gantt-scroll-area {
       overflow-x: auto;
       overflow-y: visible;
+      padding-top: 28px;
       padding-bottom: 12px;
       position: relative;
     }
@@ -2243,14 +2250,20 @@ export function generateSaaSApp() {
     }
 
     .gantt-week-label {
-      padding: 3px 0;
-      border-radius: 2px;
+      padding: 4px 0;
+      border-radius: 3px;
       background: var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      user-select: none;
     }
 
     .gantt-week-label.is-active-week {
-      background: var(--brand-navy);
-      color: white;
+      background: var(--brand-navy) !important;
+      color: #ffffff !important;
+      font-weight: 700;
+      border-color: var(--brand-navy) !important;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
     }
 
     .gantt-rows-container {
@@ -2274,6 +2287,7 @@ export function generateSaaSApp() {
       flex-direction: column;
       gap: 2px;
       padding-right: 12px;
+      flex-shrink: 0;
     }
 
     .gantt-subject-title {
@@ -2292,18 +2306,19 @@ export function generateSaaSApp() {
 
     .gantt-row-track {
       flex: 1;
-      height: 34px;
-      display: grid;
-      grid-template-columns: repeat(42, 1fr);
-      gap: 2px;
+      height: 38px;
       position: relative;
       background: var(--bg-canvas);
+      background-image: linear-gradient(to right, transparent calc(100% - 1px), var(--border-subtle) calc(100% - 1px));
+      background-size: calc(100% / 42) 100%;
       border-radius: var(--radius-sm);
-      padding: 2px;
+      border: 1px solid var(--border-light);
     }
 
     .unit-segment {
-      height: 100%;
+      position: absolute;
+      top: 3px;
+      bottom: 3px;
       border-radius: 4px;
       display: flex;
       align-items: center;
@@ -2312,18 +2327,25 @@ export function generateSaaSApp() {
       font-size: 10.5px;
       font-weight: 600;
       cursor: pointer;
-      position: relative;
-      transition: filter 0.15s ease, transform 0.15s ease;
+      transition: filter 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
       overflow: hidden;
       white-space: nowrap;
-      text-overflow: ellipsis;
       user-select: none;
+      box-sizing: border-box;
+      min-width: 6px;
     }
 
     .unit-segment:hover {
       filter: brightness(0.92);
       transform: translateY(-1px);
       z-index: 10;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+
+    .unit-segment.is-selected {
+      outline: 2px solid #2563eb;
+      outline-offset: 1px;
+      z-index: 8;
     }
 
     .unit-segment-title {
@@ -2331,12 +2353,14 @@ export function generateSaaSApp() {
       text-overflow: ellipsis;
       white-space: nowrap;
       margin-right: 4px;
+      font-weight: 600;
     }
 
     .unit-segment-pct {
       font-size: 9.5px;
       font-weight: 700;
       opacity: 0.85;
+      flex-shrink: 0;
     }
 
     .unit-segment.status-completed {
@@ -2349,18 +2373,18 @@ export function generateSaaSApp() {
     }
 
     .unit-segment.status-upcoming {
-      opacity: 0.72;
+      opacity: 0.88;
     }
 
-    /* Subject color themes */
-    .theme-tarih { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-    .theme-turkce { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-    .theme-matematik { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
-    .theme-cografya { background: #ecfccb; color: #3f6212; border: 1px solid #d9f99d; }
-    .theme-fizik { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
-    .theme-kimya { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
-    .theme-biyoloji { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-    .theme-edebiyat { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
+    /* High-contrast subject themes */
+    .theme-tarih { background: #fef3c7; color: #78350f; border: 1px solid #fcd34d; }
+    .theme-turkce { background: #d1fae5; color: #064e3b; border: 1px solid #6ee7b7; }
+    .theme-matematik { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; }
+    .theme-cografya { background: #ecfccb; color: #365314; border: 1px solid #bef264; }
+    .theme-fizik { background: #e0e7ff; color: #312e81; border: 1px solid #a5b4fc; }
+    .theme-kimya { background: #f3e8ff; color: #581c87; border: 1px solid #d8b4fe; }
+    .theme-biyoloji { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
+    .theme-edebiyat { background: #ffe4e6; color: #881337; border: 1px solid #fda4af; }
 
     /* Guide lines */
     .gantt-today-guide {
@@ -2375,15 +2399,27 @@ export function generateSaaSApp() {
 
     .gantt-today-flag {
       position: absolute;
-      top: -20px;
+      top: -24px;
       transform: translateX(-50%);
       background: var(--brand-navy);
-      color: white;
-      font-size: 9.5px;
+      color: #ffffff;
+      font-size: 10px;
       font-weight: 700;
-      padding: 1px 5px;
-      border-radius: 3px;
+      padding: 2px 7px;
+      border-radius: 4px;
       white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.2);
+    }
+
+    .gantt-today-flag::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 4px 4px 0 4px;
+      border-style: solid;
+      border-color: var(--brand-navy) transparent transparent transparent;
     }
 
     .gantt-yks-guide {
@@ -2398,15 +2434,27 @@ export function generateSaaSApp() {
 
     .gantt-yks-flag {
       position: absolute;
-      top: -20px;
+      top: -24px;
       transform: translateX(-50%);
       background: var(--rose-600);
-      color: white;
-      font-size: 9.5px;
+      color: #ffffff;
+      font-size: 10px;
       font-weight: 700;
-      padding: 1px 5px;
-      border-radius: 3px;
+      padding: 2px 7px;
+      border-radius: 4px;
       white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(225, 29, 72, 0.2);
+    }
+
+    .gantt-yks-flag::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 4px 4px 0 4px;
+      border-style: solid;
+      border-color: var(--rose-600) transparent transparent transparent;
     }
 
     /* Drilldown Panel */
@@ -2936,7 +2984,7 @@ export function generateSaaSApp() {
                 <div class="gantt-legend">
                   <div class="legend-item">
                     <span class="legend-box" style="background: var(--brand-navy);"></span>
-                    <span>Aktif Hafta Göstergesi</span>
+                    <span>Aktif Hafta (H1)</span>
                   </div>
                   <div class="legend-item">
                     <span class="legend-box" style="background: var(--rose-600);"></span>
@@ -2949,6 +2997,10 @@ export function generateSaaSApp() {
                   <div class="legend-item">
                     <span class="legend-box" style="background: var(--bg-canvas); border: 2px solid var(--brand-navy);"></span>
                     <span>Çalışılan Ünite</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-box" style="background: var(--bg-canvas); outline: 2px solid #2563eb; outline-offset: 1px;"></span>
+                    <span>Seçili / İncelenen</span>
                   </div>
                 </div>
                 <div style="font-size: 12px; color: var(--text-muted);">
@@ -4492,12 +4544,14 @@ export function generateSaaSApp() {
       const scheduledBySubject = {};
       for (const week of schedule) {
         const wNum = week.weekNum;
-        for (const day of (week.days || [])) {
+        for (let dIdx = 0; dIdx < (week.days || []).length; dIdx++) {
+          const day = week.days[dIdx];
           if (day.isRestDay || !day.blocks) continue;
           const dateIso = day.dateIso || '';
           const dateFormatted = day.dateFormatted || '';
 
-          for (const b of day.blocks) {
+          for (let bIdx = 0; bIdx < day.blocks.length; bIdx++) {
+            const b = day.blocks[bIdx];
             if (!b || !b.subject || !b.video) continue;
             const subj = b.subject;
             const v = b.video;
@@ -4510,6 +4564,8 @@ export function generateSaaSApp() {
             }
             scheduledBySubject[subj].push({
               weekNum: wNum,
+              dayIndex: dIdx,
+              blockIndex: bIdx,
               dateIso,
               dateFormatted,
               videoIndex: vIndex,
@@ -4557,6 +4613,8 @@ export function generateSaaSApp() {
 
           let startWeek = 1;
           let endWeek = 1;
+          let startFrac = 0;
+          let endFrac = 1;
           let startDate = '';
           let endDate = '';
           let startDateIso = '';
@@ -4569,6 +4627,11 @@ export function generateSaaSApp() {
             endDate = entries[entries.length - 1].dateFormatted;
             startDateIso = entries[0].dateIso;
             endDateIso = entries[entries.length - 1].dateIso;
+
+            const first = entries[0];
+            const last = entries[entries.length - 1];
+            startFrac = (first.weekNum - 1) + (first.dayIndex * 4 + first.blockIndex) / 24;
+            endFrac = (last.weekNum - 1) + (last.dayIndex * 4 + last.blockIndex + 1) / 24;
 
             if (startWeek < subjMinWeek) {
               subjMinWeek = startWeek;
@@ -4602,6 +4665,8 @@ export function generateSaaSApp() {
             totalVideos: uTotal,
             startWeek,
             endWeek,
+            startFrac,
+            endFrac,
             startDate,
             endDate,
             startDateIso,
@@ -4706,22 +4771,21 @@ export function generateSaaSApp() {
         weeksHeaderEl.innerHTML = headerHtml;
       }
 
-      // 3. Position Guide Lines
+      // 3. Position Guide Lines (Fluid & Responsive)
       const todayGuide = document.getElementById('gantt-today-line');
       const todayFlag = document.getElementById('gantt-today-flag');
       if (todayGuide) {
-        const leftPct = 220 + ((activeWeekNum - 0.5) / 42) * (1100 - 220);
+        const progressFrac = Math.max(0, Math.min(42, activeWeekNum - 0.5)) / 42;
         todayGuide.style.display = 'block';
-        todayGuide.style.left = leftPct + 'px';
+        todayGuide.style.left = 'calc(220px + (100% - 220px) * ' + progressFrac.toFixed(4) + ')';
         if (todayFlag) todayFlag.textContent = 'Hafta ' + activeWeekNum;
       }
 
       const yksGuide = document.getElementById('gantt-yks-line');
       if (yksGuide) {
-        const yksWeek = 38.5; // Mid June 2027
-        const leftPct = 220 + ((yksWeek - 0.5) / 42) * (1100 - 220);
+        const yksFrac = 38.5 / 42; // Mid June 2027
         yksGuide.style.display = 'block';
-        yksGuide.style.left = leftPct + 'px';
+        yksGuide.style.left = 'calc(220px + (100% - 220px) * ' + yksFrac.toFixed(4) + ')';
       }
 
       // 4. Render Gantt Rows for Each Course
@@ -4743,19 +4807,26 @@ export function generateSaaSApp() {
             '<div class="gantt-row-track">';
 
           for (const u of subjProj.units) {
-            const startCol = Math.max(1, Math.min(42, u.startWeek));
-            const endCol = Math.max(startCol, Math.min(42, u.endWeek));
-            const span = Math.max(1, endCol - startCol + 1);
+            const leftPct = (u.startFrac / 42) * 100;
+            const widthPct = ((u.endFrac - u.startFrac) / 42) * 100;
+            const safeLeft = Math.max(0, Math.min(99.5, leftPct));
+            const safeWidth = Math.min(100 - safeLeft, Math.max(0.6, widthPct));
+            const isSelected = selectedProjectionUnitId === u.id;
 
-            rowsHtml += '<div class="unit-segment ' + themeClass + ' status-' + u.status + '"' +
-              ' style="grid-column: ' + startCol + ' / span ' + span + ';"' +
+            let badgeHtml = '';
+            if (u.progressPercent > 0) {
+              badgeHtml = '<span class="unit-segment-pct tabular-nums">%' + u.progressPercent + '</span>';
+            }
+
+            rowsHtml += '<div class="unit-segment ' + themeClass + ' status-' + u.status + (isSelected ? ' is-selected' : '') + '"' +
+              ' style="left: ' + safeLeft.toFixed(3) + '%; width: calc(' + safeWidth.toFixed(3) + '% - 1.5px);"' +
               ' data-unit-id="' + escapeHtml(u.id) + '"' +
               ' data-subject="' + escapeHtml(subjProj.subject) + '"' +
               ' onclick="selectUnitForDrilldown(this.dataset.unitId, this.dataset.subject)"' +
               ' onmouseenter="showGanttTooltip(event, this.dataset.unitId, this.dataset.subject)"' +
               ' onmouseleave="hideGanttTooltip()">' +
               '<span class="unit-segment-title">' + escapeHtml(u.title) + '</span>' +
-              '<span class="unit-segment-pct tabular-nums">%' + u.progressPercent + '</span>' +
+              badgeHtml +
             '</div>';
           }
 
@@ -4773,6 +4844,10 @@ export function generateSaaSApp() {
     function selectUnitForDrilldown(unitId, subject) {
       selectedProjectionUnitId = unitId;
       selectedProjectionSubject = subject;
+
+      document.querySelectorAll('.unit-segment.is-selected').forEach(el => el.classList.remove('is-selected'));
+      const clickedEl = document.querySelector('.unit-segment[data-unit-id="' + unitId + '"]');
+      if (clickedEl) clickedEl.classList.add('is-selected');
 
       const report = calculateCurriculumProjectionClient(
         currentSchedule,
@@ -4846,6 +4921,7 @@ export function generateSaaSApp() {
       if (panel) panel.style.display = 'none';
       selectedProjectionUnitId = null;
       selectedProjectionSubject = null;
+      document.querySelectorAll('.unit-segment.is-selected').forEach(el => el.classList.remove('is-selected'));
     }
 
     function filterProjectionView(val) {

@@ -14,6 +14,8 @@ import type {
 
 interface VideoScheduleEntry {
   weekNum: number;
+  dayIndex: number;
+  blockIndex: number;
   dateIso: string;
   dateFormatted: string;
   videoIndex: number;
@@ -44,13 +46,17 @@ export function calculateCurriculumProjection(
 
   for (const week of calendarWeeks) {
     const wNum = week.weekNum;
-    for (const day of (week.days || [])) {
+    const days = week.days || [];
+    for (let dIdx = 0; dIdx < days.length; dIdx++) {
+      const day = days[dIdx];
       if (day.isRestDay || !day.blocks) continue;
 
       const dateIso = day.dateIso || '';
       const dateFormatted = day.dateFormatted || '';
+      const blocks = day.blocks || [];
 
-      for (const block of day.blocks) {
+      for (let bIdx = 0; bIdx < blocks.length; bIdx++) {
+        const block = blocks[bIdx];
         if (!block || !block.subject || !block.video) continue;
         const subj = block.subject;
         const v = block.video;
@@ -66,6 +72,8 @@ export function calculateCurriculumProjection(
 
         scheduledVideosBySubject[subj].push({
           weekNum: wNum,
+          dayIndex: dIdx,
+          blockIndex: bIdx,
           dateIso,
           dateFormatted,
           videoIndex: vIndex,
@@ -120,6 +128,8 @@ export function calculateCurriculumProjection(
 
       let startWeek = 1;
       let endWeek = 1;
+      let startFrac = 0;
+      let endFrac = 1;
       let startDateIso = '';
       let endDateIso = '';
       let startDate = '';
@@ -132,6 +142,11 @@ export function calculateCurriculumProjection(
         endDateIso = matchingEntries[matchingEntries.length - 1].dateIso;
         startDate = matchingEntries[0].dateFormatted;
         endDate = matchingEntries[matchingEntries.length - 1].dateFormatted;
+
+        const first = matchingEntries[0];
+        const last = matchingEntries[matchingEntries.length - 1];
+        startFrac = (first.weekNum - 1) + (first.dayIndex * 4 + first.blockIndex) / 24;
+        endFrac = (last.weekNum - 1) + (last.dayIndex * 4 + last.blockIndex + 1) / 24;
 
         if (startWeek < subjMinWeek) {
           subjMinWeek = startWeek;
@@ -172,6 +187,8 @@ export function calculateCurriculumProjection(
         totalVideos: totalVideosInUnit,
         startWeek,
         endWeek,
+        startFrac,
+        endFrac,
         startDate,
         endDate,
         startDateIso,
