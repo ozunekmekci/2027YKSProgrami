@@ -3052,7 +3052,7 @@ export function generateSaaSApp() {
         <iframe id="video-modal-iframe"
                 src=""
                 title="Ders Videosu"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen></iframe>
       </div>
       <div class="video-modal-footer">
@@ -3482,7 +3482,7 @@ export function generateSaaSApp() {
                           src="https://www.youtube-nocookie.com/embed/\${v.id}?enablejsapi=1&rel=0"
                           title="\${escapeHtml(v.title)}"
                           loading="lazy"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           allowfullscreen></iframe>
                 </div>
               </div>
@@ -4749,10 +4749,10 @@ export function generateSaaSApp() {
 
             rowsHtml += '<div class="unit-segment ' + themeClass + ' status-' + u.status + '"' +
               ' style="grid-column: ' + startCol + ' / span ' + span + ';"' +
-              ' data-unit-id="' + u.id + '"' +
+              ' data-unit-id="' + escapeHtml(u.id) + '"' +
               ' data-subject="' + escapeHtml(subjProj.subject) + '"' +
-              ' onclick="selectUnitForDrilldown(\'' + u.id + '\', \'' + escapeHtml(subjProj.subject) + '\')"' +
-              ' onmouseenter="showGanttTooltip(event, \'' + u.id + '\', \'' + escapeHtml(subjProj.subject) + '\')"' +
+              ' onclick="selectUnitForDrilldown(this.dataset.unitId, this.dataset.subject)"' +
+              ' onmouseenter="showGanttTooltip(event, this.dataset.unitId, this.dataset.subject)"' +
               ' onmouseleave="hideGanttTooltip()">' +
               '<span class="unit-segment-title">' + escapeHtml(u.title) + '</span>' +
               '<span class="unit-segment-pct tabular-nums">%' + u.progressPercent + '</span>' +
@@ -4820,7 +4820,8 @@ export function generateSaaSApp() {
             '<input type="checkbox"' +
                    ' class="saas-checkbox-input"' +
                    (isDone ? ' checked' : '') +
-                   ' onchange="toggleVideo(\'' + v.id + '\', this.checked)"' +
+                   ' data-video-id="' + escapeHtml(v.id) + '"' +
+                   ' onchange="toggleVideo(this.dataset.videoId, this.checked)"' +
                    ' title="Tamamlandı olarak işaretle" />' +
             '<div class="drilldown-video-info">' +
               '<div class="drilldown-video-title" title="' + escapeHtml(v.title) + '">' + escapeHtml(v.title) + '</div>' +
@@ -4828,7 +4829,9 @@ export function generateSaaSApp() {
             '</div>' +
           '</div>' +
           '<button class="btn-play-video-square"' +
-                  ' onclick="openInSiteVideoModal(\'' + v.id + '\', \'' + escapeHtml(v.title) + '\')">' +
+                  ' data-video-id="' + escapeHtml(v.id) + '"' +
+                  ' data-video-title="' + escapeHtml(v.title) + '"' +
+                  ' onclick="openInSiteVideoModal(this.dataset.videoId, this.dataset.videoTitle)">' +
             '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">' +
               '<polygon points="5 3 19 12 5 21 5 3"/>' +
             '</svg>' +

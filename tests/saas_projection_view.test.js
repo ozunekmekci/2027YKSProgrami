@@ -21,3 +21,17 @@ test('www/index.html includes projection tab, interactive Gantt matrix, and dril
   const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
   assert.ok(!emojiRegex.test(html), 'www/index.html must not contain emojis');
 });
+
+test('www/index.html scripts must be syntactically valid JavaScript', async () => {
+  const vm = await import('node:vm');
+  const html = fs.readFileSync(path.resolve(process.cwd(), 'www/index.html'), 'utf8');
+  const matches = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+  assert.ok(matches.length >= 2, 'Must have at least 2 script tags in index.html');
+
+  for (let i = 0; i < matches.length; i++) {
+    const code = matches[i][1];
+    assert.doesNotThrow(() => {
+      new vm.Script(code);
+    }, `Script index ${i} must compile cleanly without SyntaxError`);
+  }
+});
