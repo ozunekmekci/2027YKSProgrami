@@ -527,7 +527,12 @@
     }
 
     .day-tab-btn {
-      padding: 8px 14px;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 6px 12px;
       border: 1px solid transparent;
       border-radius: var(--radius-md);
       background-color: var(--bg-subtle);
@@ -536,6 +541,13 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s;
+      line-height: 1.2;
+    }
+
+    .day-tab-date {
+      font-size: 11px;
+      font-weight: 500;
+      opacity: 0.8;
     }
 
     .day-tab-btn:hover {
@@ -546,6 +558,11 @@
     .day-tab-btn.active {
       background-color: var(--mint-500);
       color: var(--white);
+    }
+
+    .day-tab-btn.is-rest-tab:not(.active) {
+      opacity: 0.8;
+      color: var(--slate-500);
     }
 
     .day-tab-btn.day-done:not(.active) {
@@ -560,7 +577,7 @@
       display: inline-block;
       width: 6px;
       height: 6px;
-      margin-left: 6px;
+      margin-top: 2px;
       vertical-align: middle;
       border-radius: 50%;
       background-color: var(--mint-500);
@@ -2238,13 +2255,7 @@
                   <!-- 1..42 populated dynamically -->
                 </select>
                 <div class="day-tab-buttons" id="studio-day-tabs">
-                  <button class="day-tab-btn active" onclick="setStudioDay(0)">Pazartesi</button>
-                  <button class="day-tab-btn" onclick="setStudioDay(1)">Salı</button>
-                  <button class="day-tab-btn" onclick="setStudioDay(2)">Çarşamba</button>
-                  <button class="day-tab-btn" onclick="setStudioDay(3)">Perşembe</button>
-                  <button class="day-tab-btn" onclick="setStudioDay(4)">Cuma</button>
-                  <button class="day-tab-btn" onclick="setStudioDay(5)">Cumartesi</button>
-                  <button class="day-tab-btn" onclick="setStudioDay(6)">Pazar</button>
+                  <!-- Dynamically populated by renderStudioDayTabs -->
                 </div>
               </div>
               <div class="studio-nav-right">
@@ -2715,6 +2726,48 @@
       return badges[subject] || 'badge-genel';
     }
 
+    // Render Studio Day Tabs Dynamically
+    function renderStudioDayTabs(weekData) {
+      const tabsContainer = document.getElementById('studio-day-tabs');
+      if (!tabsContainer || !weekData || !weekData.days) return;
+
+      const realNow = new Date();
+      const realIso = toIsoDate(realNow);
+      const realDayOfWeek = (realNow.getDay() + 6) % 7;
+
+      let html = '';
+      weekData.days.forEach((d, idx) => {
+        const isActive = (idx === activeDayIndex);
+        const isToday = d.dateIso ? (d.dateIso === realIso) : (idx === realDayOfWeek);
+        const isRest = Boolean(d.isRestDay);
+
+        let isDone = false;
+        if (!isRest && d.blocks && d.blocks.length > 0) {
+          isDone = d.blocks.every(b => {
+            const vid = b.video?.id;
+            return vid && !vid.startsWith('tekrar-') ? Boolean(completedVideos[vid]) : true;
+          });
+        }
+
+        const classList = ['day-tab-btn'];
+        if (isActive) classList.push('active');
+        if (isToday) classList.push('is-real-today');
+        if (isDone) classList.push('day-done');
+        if (isRest) classList.push('is-rest-tab');
+
+        const shortDate = d.dateIso ? (d.dateIso.slice(8, 10) + ' ' + (TURKISH_MONTHS[parseInt(d.dateIso.slice(5, 7), 10) - 1] || '').slice(0, 3)) : '';
+        const dayLabel = d.dayName || ('Gün ' + (idx + 1));
+        const titleStr = isToday ? (dayLabel + ' (Bugün)') : (d.dateFormatted || dayLabel);
+
+        html += `<button class="${classList.join(' ')}" onclick="setStudioDay(${idx})" title="${escapeHtml(titleStr)}">
+          <span class="day-tab-name">${escapeHtml(dayLabel)}</span>
+          ${shortDate ? `<span class="day-tab-date tabular-nums">${escapeHtml(shortDate)}</span>` : ''}
+        </button>`;
+      });
+
+      tabsContainer.innerHTML = html;
+    }
+
     // Render Studio Day (Task 2)
     function renderStudioDay() {
       const weekData = currentSchedule.find(w => w.weekNum === activeWeekNum) || currentSchedule[0];
@@ -2733,37 +2786,8 @@
         weekSelect.value = String(activeWeekNum);
       }
 
-      // Real-time date awareness
-      const realNow = new Date();
-      const realDayIdx = (realNow.getDay() + 6) % 7; // 0=Mon..6=Sun
-      const realTodayFormatted = realNow.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
-
-      // Update day tabs active state and completed indicators
-      const dayTabBtns = document.querySelectorAll('.day-tab-btn');
-      dayTabBtns.forEach((btn, idx) => {
-        if (idx === activeDayIndex) btn.classList.add('active');
-        else btn.classList.remove('active');
-
-        if (idx === realDayIdx) {
-          btn.classList.add('is-real-today');
-          btn.title = btn.textContent + ' (Bugün)';
-        } else {
-          btn.classList.remove('is-real-today');
-          btn.removeAttribute('title');
-        }
-
-        const d = weekData?.days?.[idx];
-        if (d && !d.isRestDay && d.blocks?.length > 0) {
-          const isDayDone = d.blocks.every(b => {
-            const vid = b.video?.id;
-            return vid && !vid.startsWith('tekrar-') ? Boolean(completedVideos[vid]) : true;
-          });
-          if (isDayDone) btn.classList.add('day-done');
-          else btn.classList.remove('day-done');
-        } else {
-          btn.classList.remove('day-done');
-        }
-      });
+      // Render day tabs dynamically
+      renderStudioDayTabs(weekData);
 
       const blocksContainer = document.getElementById('studio-blocks-column');
       const asideColumn = document.getElementById('studio-aside-column');
@@ -2771,18 +2795,19 @@
       if (!blocksContainer) return;
 
       // Sunday rest state
-      if (!dayData || dayData.isRestDay || activeDayIndex === 6) {
+      if (!dayData || dayData.isRestDay) {
         if (asideColumn) asideColumn.style.display = 'none';
         if (contentArea) contentArea.classList.add('is-sunday');
+        const restDayName = (dayData?.dayName || 'PAZAR').toUpperCase();
         blocksContainer.innerHTML = `
           <div class="sunday-rest-card">
             <div class="sunday-rest-badge">Dinlenme Günü</div>
             <div class="sunday-rest-title">PAZAR: ÇALIŞMAK KESİNLİKLE YASAK!</div>
             <div class="sunday-rest-text">
               Bugün beyninizi dinlendirme ve yenilenme günüdür. YKS uzun soluklu bir maratondur; düzenli dinlenme olmadan öğrenilen bilgiler kalıcı hafızaya aktarılamaz.
-              Pazartesi günü zinde ve odaklanmış bir şekilde 4 blokluk yeni haftaya başlayacaksınız.
+              Bir sonraki çalışma gününde zinde ve odaklanmış bir şekilde 4 blokluk yeni derslerinize başlayacaksınız.
             </div>
-            <button class="btn-preview-weekday" onclick="setStudioDay(0)">Pazartesi Programını Önizle</button>
+            <button class="btn-preview-weekday" onclick="navigateStudioDay(1)">Sonraki Çalışma Gününü Önizle</button>
           </div>
         `;
         return;
@@ -3062,8 +3087,11 @@
       }
 
       const dayNames = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+      const curWeekData = currentSchedule.find(w => w.weekNum === activeWeekNum) || currentSchedule[0];
+      const curDay = curWeekData?.days?.[activeDayIndex];
+      const curDayName = curDay?.dayName || dayNames[activeDayIndex] || ('Gün ' + (activeDayIndex + 1));
       const sidebarTag = document.getElementById('sidebar-active-tag');
-      if (sidebarTag) sidebarTag.textContent = `Hafta ${activeWeekNum} • ${dayNames[activeDayIndex]}`;
+      if (sidebarTag) sidebarTag.textContent = `Hafta ${activeWeekNum} • ${curDayName}`;
 
       renderStudioDay();
       updateTargetCountdown();
@@ -3367,18 +3395,21 @@
       const maxWeeks = 52;
       const newWeeks = [];
 
+      // Ordered study templates from weekly blueprint (excluding Sunday)
+      const standardStudyDayKeys = ['pazartesi', 'sali', 'carsamba', 'persembe', 'cuma', 'cumartesi'];
+      const activeStudyKeys = standardStudyDayKeys.filter(k => Array.isArray(blueprint[k]) && blueprint[k].length > 0);
+
       while (weekNum <= maxWeeks) {
         const days = [];
         let hasAnyVideoThisWeek = false;
 
         for (let dIdx = 0; dIdx < 7; dIdx++) {
           const dayOfWeek = currentDate.getUTCDay();
-          const dayKey = DAY_KEY_MAP[dayOfWeek];
           const dayName = TURKISH_DAY_NAMES[dayOfWeek];
           const dateIso = toIsoDate(currentDate);
           const dateFormatted = formatTurkishDate(currentDate);
 
-          const isRestDay = (dayOfWeek === 0 || !blueprint[dayKey] || blueprint[dayKey].length === 0);
+          const isRestDay = (dayOfWeek === 0 || activeStudyKeys.length === 0);
 
           if (isRestDay) {
             days.push({
@@ -3389,7 +3420,9 @@
               blocks: []
             });
           } else {
-            const slots = blueprint[dayKey] || [];
+            const templateIndex = (studyDayNumber - 1) % activeStudyKeys.length;
+            const studyTemplateKey = activeStudyKeys[templateIndex];
+            const slots = blueprint[studyTemplateKey] || [];
             const blocks = [];
 
             for (let bIdx = 0; bIdx < slots.length; bIdx++) {
@@ -3429,6 +3462,7 @@
               dateIso,
               dateFormatted,
               studyDayNumber,
+              blueprintOriginDay: studyTemplateKey,
               isRestDay: false,
               blocks
             });
@@ -3538,11 +3572,11 @@
       `;
 
       targetWeek.days.forEach((d, dayIdx) => {
-        if (d.isRestDay || dayIdx === 6) {
+        if (d.isRestDay) {
           matrixHtml += `
             <div class="matrix-day-card rest-day">
               <div class="matrix-day-header">
-                <span class="matrix-day-name">Pazar</span>
+                <span class="matrix-day-name">${escapeHtml(d.dayName || 'Pazar')}</span>
                 <span class="subject-badge badge-tarih">Dinlenme</span>
               </div>
               <p style="font-size: 13px; color: var(--rose-500); font-weight: 600; padding: 20px 0; text-align: center;">
@@ -3993,8 +4027,27 @@
 
     function goToRealToday() {
       const now = new Date();
-      const realDayIdx = (now.getDay() + 6) % 7;
-      activeDayIndex = realDayIdx;
+      const todayIso = toIsoDate(now);
+
+      let found = false;
+      for (const w of currentSchedule) {
+        if (!w.days) continue;
+        for (let dIdx = 0; dIdx < w.days.length; dIdx++) {
+          if (w.days[dIdx].dateIso === todayIso) {
+            activeWeekNum = w.weekNum;
+            activeDayIndex = dIdx;
+            found = true;
+            break;
+          }
+        }
+        if (found) break;
+      }
+
+      if (!found) {
+        const realDayIdx = (now.getDay() + 6) % 7;
+        activeDayIndex = realDayIdx;
+      }
+
       saveState();
       updateAllUI();
       switchSaaSTab('tab-today');

@@ -78,18 +78,22 @@ export function generateCalendarDays(playlistData, options = {}) {
     let currentDate = parseIsoDate(options.startDate);
     let studyDayNumber = 1;
 
+    // Ordered study templates from weekly blueprint (excluding Sunday)
+    const standardStudyDayKeys = ['pazartesi', 'sali', 'carsamba', 'persembe', 'cuma', 'cumartesi'];
+    const activeStudyKeys = standardStudyDayKeys.filter(k => Array.isArray(blueprint[k]) && blueprint[k].length > 0);
+
     while (weekNum <= maxWeeks) {
       const days = [];
       let hasAnyVideoThisWeek = false;
 
       for (let dIdx = 0; dIdx < 7; dIdx++) {
         const dayOfWeek = currentDate.getUTCDay();
-        const dayKey = DAY_KEY_MAP[dayOfWeek];
         const dayName = TURKISH_DAY_NAMES[dayOfWeek];
         const dateIso = toIsoDate(currentDate);
         const dateFormatted = formatTurkishDate(currentDate);
 
-        const isRestDay = (dayOfWeek === 0 || !blueprint[dayKey] || blueprint[dayKey].length === 0);
+        // Sunday is always a non-negotiable Rest Day (or if no active study keys defined)
+        const isRestDay = (dayOfWeek === 0 || activeStudyKeys.length === 0);
 
         if (isRestDay) {
           days.push({
@@ -100,7 +104,10 @@ export function generateCalendarDays(playlistData, options = {}) {
             blocks: []
           });
         } else {
-          const slots = blueprint[dayKey] || [];
+          // Take the next study day template in the rolling cycle
+          const templateIndex = (studyDayNumber - 1) % activeStudyKeys.length;
+          const studyTemplateKey = activeStudyKeys[templateIndex];
+          const slots = blueprint[studyTemplateKey] || [];
           const blocks = [];
 
           for (let bIdx = 0; bIdx < slots.length; bIdx++) {
@@ -140,6 +147,7 @@ export function generateCalendarDays(playlistData, options = {}) {
             dateIso,
             dateFormatted,
             studyDayNumber,
+            blueprintOriginDay: studyTemplateKey,
             isRestDay: false,
             blocks
           });

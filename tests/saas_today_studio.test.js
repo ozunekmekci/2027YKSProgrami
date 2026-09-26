@@ -14,3 +14,11 @@ test('Study Studio renders 2-column layout with 4 video cards and inline break t
   assert.ok(html.includes('playChime'), 'Must define Web Audio playChime function');
   assert.ok(html.includes('587.33') && html.includes('880'), 'Must use D5 (587.33 Hz) and A5 (880 Hz) chime frequencies');
 });
+
+test('Study Studio dynamically renders day tabs without static hardcoded Monday buttons or activeDayIndex===6 bugs', () => {
+  const html = generateSaaSApp();
+  assert.ok(html.includes('renderStudioDayTabs'), 'Must define renderStudioDayTabs function');
+  assert.ok(!html.includes('onclick="setStudioDay(0)">Pazartesi</button>'), 'Must not have hardcoded static Pazartesi day tab button in HTML template');
+  assert.ok(!html.includes('activeDayIndex === 6'), 'Must not treat day index 6 as hardcoded Sunday in renderStudioDay');
+  assert.ok(!html.includes('dayIdx === 6'), 'Must not treat day index 6 as hardcoded Sunday in renderRadarView');
+});
