@@ -1,5 +1,5 @@
-// YKS 2027 Koçu — Offline-First Service Worker (v3.4.0-monday-anchored-20260926)
-const CACHE_NAME = 'yks-kochu-v1';
+// YKS 2027 Koçu — Offline-First Service Worker (v3.5.0-network-first-nav)
+const CACHE_NAME = 'yks-kochu-v2';
 
 const CORE_ASSETS = [
   './',
@@ -37,7 +37,8 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Cache-First strategy for local assets with navigation offline fallback
+// Fetch: Network-First for navigation requests (instant updates without Ctrl+F5)
+// and Cache-First for static assets with offline fallback.
 self.addEventListener('fetch', (event) => {
   // Only intercept GET requests
   if (event.request.method !== 'GET') {
@@ -57,6 +58,29 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Network-First for page navigation (HTML requests)
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME)
+              .then((cache) => cache.put(event.request, responseToCache).catch(() => {}))
+              .catch(() => {});
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match('./index.html').then((fallback) => {
+            return fallback || caches.match('./');
+          });
+        })
+    );
+    return;
+  }
+
+  // Cache-First for static assets
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -65,7 +89,6 @@ self.addEventListener('fetch', (event) => {
 
       return fetch(event.request)
         .then((networkResponse) => {
-          // Put successful same-origin responses into cache
           const origin = self.location ? self.location.origin : '';
           if (
             networkResponse &&
@@ -78,14 +101,6 @@ self.addEventListener('fetch', (event) => {
               .catch(() => {});
           }
           return networkResponse;
-        })
-        .catch(() => {
-          // Offline fallback for navigation requests
-          if (event.request.mode === 'navigate') {
-            return caches.match('./index.html').then((fallback) => {
-              return fallback || caches.match('./');
-            });
-          }
         });
     })
   );
