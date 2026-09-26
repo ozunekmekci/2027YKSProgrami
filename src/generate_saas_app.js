@@ -9,6 +9,8 @@ const __dirname = path.dirname(__filename);
 export function generateSaaSApp() {
   const dataPath = path.resolve(__dirname, '../playlists_data_tr.json');
   const playlistsData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  const unitsPath = path.resolve(__dirname, './data/curriculum_units.json');
+  const curriculumUnits = JSON.parse(fs.readFileSync(unitsPath, 'utf8'));
   const calendar = generateCalendarDays(playlistsData, { startDate: '2026-09-26' });
 
   const html = `<!DOCTYPE html>
@@ -2089,6 +2091,432 @@ export function generateSaaSApp() {
       color: var(--text-muted);
     }
 
+    /* ---------------------------------------------------- */
+    /* PROJECTION & GANTT ROADMAP VIEW                      */
+    /* ---------------------------------------------------- */
+    .projection-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .projection-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      padding: 16px 20px;
+      border-radius: var(--radius-lg);
+    }
+
+    .projection-title-wrap h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .projection-title-wrap p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .projection-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .projection-kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .projection-kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .projection-kpi-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .projection-kpi-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .gantt-matrix-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .gantt-controls-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .gantt-legend {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      border: 1px solid var(--border-medium);
+    }
+
+    .gantt-scroll-area {
+      overflow-x: auto;
+      overflow-y: visible;
+      padding-bottom: 12px;
+      position: relative;
+    }
+
+    .gantt-matrix-table {
+      min-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .gantt-timeline-header {
+      display: flex;
+      border-bottom: 2px solid var(--border-medium);
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .gantt-col-header-subject {
+      width: 220px;
+      min-width: 220px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .gantt-col-header-weeks {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(42, 1fr);
+      gap: 2px;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .gantt-week-label {
+      padding: 3px 0;
+      border-radius: 2px;
+      background: var(--bg-canvas);
+    }
+
+    .gantt-week-label.is-active-week {
+      background: var(--brand-navy);
+      color: white;
+    }
+
+    .gantt-rows-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+
+    .gantt-row {
+      display: flex;
+      align-items: center;
+      height: 46px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .gantt-row-label {
+      width: 220px;
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-right: 12px;
+    }
+
+    .gantt-subject-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .gantt-subject-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .gantt-row-track {
+      flex: 1;
+      height: 34px;
+      display: grid;
+      grid-template-columns: repeat(42, 1fr);
+      gap: 2px;
+      position: relative;
+      background: var(--bg-canvas);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+    }
+
+    .unit-segment {
+      height: 100%;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px;
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      transition: filter 0.15s ease, transform 0.15s ease;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      user-select: none;
+    }
+
+    .unit-segment:hover {
+      filter: brightness(0.92);
+      transform: translateY(-1px);
+      z-index: 10;
+    }
+
+    .unit-segment-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+
+    .unit-segment-pct {
+      font-size: 9.5px;
+      font-weight: 700;
+      opacity: 0.85;
+    }
+
+    .unit-segment.status-completed {
+      opacity: 0.95;
+    }
+
+    .unit-segment.status-in_progress {
+      box-shadow: 0 0 0 2px var(--brand-navy);
+      z-index: 5;
+    }
+
+    .unit-segment.status-upcoming {
+      opacity: 0.72;
+    }
+
+    /* Subject color themes */
+    .theme-tarih { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .theme-turkce { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .theme-matematik { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+    .theme-cografya { background: #ecfccb; color: #3f6212; border: 1px solid #d9f99d; }
+    .theme-fizik { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+    .theme-kimya { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+    .theme-biyoloji { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .theme-edebiyat { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
+
+    /* Guide lines */
+    .gantt-today-guide {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--brand-navy);
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .gantt-today-flag {
+      position: absolute;
+      top: -20px;
+      transform: translateX(-50%);
+      background: var(--brand-navy);
+      color: white;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    .gantt-yks-guide {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--rose-600);
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .gantt-yks-flag {
+      position: absolute;
+      top: -20px;
+      transform: translateX(-50%);
+      background: var(--rose-600);
+      color: white;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    /* Drilldown Panel */
+    .projection-drilldown-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .drilldown-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 12px;
+    }
+
+    .drilldown-title-wrap h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .drilldown-title-wrap p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .drilldown-video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .drilldown-video-item {
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .drilldown-video-item.is-done {
+      border-color: #a7f3d0;
+      background: #f0fdf4;
+    }
+
+    .drilldown-video-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    .drilldown-video-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .drilldown-video-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Floating Tooltip */
+    .gantt-tooltip {
+      position: fixed;
+      z-index: 1000;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      line-height: 1.4;
+      pointer-events: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: none;
+      max-width: 320px;
+    }
+
+    .gantt-tooltip-title {
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #38bdf8;
+    }
+
+    .gantt-tooltip-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #cbd5e1;
+      font-size: 11.5px;
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
       .saas-sidebar {
@@ -2196,6 +2624,17 @@ export function generateSaaSApp() {
           </span>
           <span>Müfredat Tablosu</span>
           <span class="nav-btn-shortcut">3</span>
+        </button>
+        <button class="nav-btn" id="nav-btn-projection" data-tab="projection" onclick="switchSaaSTab('view-projection')">
+          <span class="nav-btn-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+          </span>
+          <span>Yol Haritası</span>
+          <span class="nav-btn-shortcut">4</span>
         </button>
       </nav>
 
@@ -2443,6 +2882,122 @@ export function generateSaaSApp() {
             </div>
           </div>
         </div>
+
+        <!-- View 4: Curriculum Milestone Projection (Yol Haritası & Gantt) -->
+        <div class="saas-tab-view" id="view-projection" data-tab="projection">
+          <div class="projection-container">
+            <!-- Header Bar -->
+            <div class="projection-header-bar">
+              <div class="projection-title-wrap">
+                <h2>Müfredat Yol Haritası ve Gelecek Projeksiyonu</h2>
+                <p>9 Ders • 766 Video • Ünitelerin kesin başlangıç ve tahmini bitiş haftaları, takvim tarihleri ve ilerleme durumu.</p>
+              </div>
+              <div class="toolbar-filters">
+                <div class="filter-group">
+                  <label for="projection-subject-filter">Ders Filtresi:</label>
+                  <select id="projection-subject-filter" onchange="filterProjectionView(this.value)">
+                    <option value="all">Tüm Dersler (9 Ders)</option>
+                    <option value="TYT Türkçe">TYT Türkçe</option>
+                    <option value="TYT-AYT Tarih">TYT-AYT Tarih</option>
+                    <option value="TYT Coğrafya">TYT Coğrafya</option>
+                    <option value="AYT Coğrafya">AYT Coğrafya</option>
+                    <option value="TYT Matematik">TYT Matematik</option>
+                    <option value="TYT Biyoloji">TYT Biyoloji</option>
+                    <option value="TYT Fizik">TYT Fizik</option>
+                    <option value="TYT Kimya">TYT Kimya</option>
+                    <option value="AYT Edebiyat">AYT Edebiyat</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Top KPI Grid -->
+            <div class="projection-kpi-grid">
+              <div class="projection-kpi-card">
+                <span class="projection-kpi-label">YKS 2027 Hedef Projeksiyonu</span>
+                <span class="projection-kpi-value tabular-nums" id="projection-kpi-target">Hesaplanıyor...</span>
+                <span class="projection-kpi-desc" id="projection-kpi-target-desc">19 Haziran 2027 sınav tarihine göre</span>
+              </div>
+              <div class="projection-kpi-card">
+                <span class="projection-kpi-label">Şu An Odaktaki Ünite</span>
+                <span class="projection-kpi-value" id="projection-kpi-active" style="font-size: 16px;">Yükleniyor...</span>
+                <span class="projection-kpi-desc" id="projection-kpi-active-desc">Aktif çalışma haftası odak noktası</span>
+              </div>
+              <div class="projection-kpi-card">
+                <span class="projection-kpi-label">Ünite Tamamlanma Oranı</span>
+                <span class="projection-kpi-value tabular-nums" id="projection-kpi-units">0 / 68 Ünite</span>
+                <span class="projection-kpi-desc" id="projection-kpi-units-desc">%0 tamamlandı</span>
+              </div>
+            </div>
+
+            <!-- Gantt Matrix Card -->
+            <div class="gantt-matrix-card" id="curriculum-gantt-matrix">
+              <div class="gantt-controls-bar">
+                <div class="gantt-legend">
+                  <div class="legend-item">
+                    <span class="legend-box" style="background: var(--brand-navy);"></span>
+                    <span>Aktif Hafta Göstergesi</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-box" style="background: var(--rose-600);"></span>
+                    <span>19 Haziran 2027 YKS Çizgisi</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-box" style="background: #a7f3d0; border-color: #059669;"></span>
+                    <span>Tamamlanan Ünite</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-box" style="background: var(--bg-canvas); border: 2px solid var(--brand-navy);"></span>
+                    <span>Çalışılan Ünite</span>
+                  </div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted);">
+                  Ünitenin üzerine gelerek detayları görebilir, tıklayarak videolarını aşağıda açabilirsiniz.
+                </div>
+              </div>
+
+              <!-- Scroll Area for 42-week Gantt Table -->
+              <div class="gantt-scroll-area">
+                <div class="gantt-matrix-table">
+                  <!-- Header: Weeks 1..42 -->
+                  <div class="gantt-timeline-header">
+                    <div class="gantt-col-header-subject">Ders / Branş</div>
+                    <div class="gantt-col-header-weeks" id="gantt-weeks-header">
+                      <!-- Rendered dynamically -->
+                    </div>
+                  </div>
+
+                  <!-- Guide Lines (Today & YKS) -->
+                  <div class="gantt-today-guide" id="gantt-today-line" style="display: none;">
+                    <div class="gantt-today-flag" id="gantt-today-flag">Bugün</div>
+                  </div>
+                  <div class="gantt-yks-guide" id="gantt-yks-line" style="display: none;">
+                    <div class="gantt-yks-flag">19 Haziran YKS</div>
+                  </div>
+
+                  <!-- Rows Container -->
+                  <div class="gantt-rows-container" id="gantt-rows-container">
+                    <!-- Rendered dynamically per subject -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Unit Drilldown Drawer / Card -->
+            <div class="projection-drilldown-card" id="projection-drilldown" style="display: none;">
+              <div class="drilldown-header">
+                <div class="drilldown-title-wrap">
+                  <h3 id="drilldown-unit-title">Seçili Ünite Videoları</h3>
+                  <p id="drilldown-unit-desc">Üniteye ait videoların listesi ve izlenme durumları</p>
+                </div>
+                <button class="btn-radar-secondary" onclick="closeProjectionDrilldown()">Kapat</button>
+              </div>
+              <div class="drilldown-video-grid" id="drilldown-video-grid">
+                <!-- Video items dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   </div>
@@ -2515,6 +3070,7 @@ export function generateSaaSApp() {
     const PLAYLISTS_DATA = ${JSON.stringify(playlistsData)};
     const BASELINE_CALENDAR = ${JSON.stringify(calendar)};
     const DEFAULT_BLUEPRINT = ${JSON.stringify(DEFAULT_WEEKLY_BLUEPRINT)};
+    const CURRICULUM_UNITS = ${JSON.stringify(curriculumUnits)};
 
     function getActiveBlueprint() {
       try {
@@ -2524,7 +3080,7 @@ export function generateSaaSApp() {
       return DEFAULT_BLUEPRINT;
     }
 
-    const APP_BUILD_VERSION = '2026.09.26.v4';
+    const APP_BUILD_VERSION = '2026.09.26.v5';
 
     // State
     let completedVideos = {};
@@ -2683,7 +3239,9 @@ export function generateSaaSApp() {
       const btnMap = {
         'tab-today': 'nav-btn-today',
         'tab-radar': 'nav-btn-radar',
-        'tab-curriculum': 'nav-btn-curriculum'
+        'tab-curriculum': 'nav-btn-curriculum',
+        'tab-projection': 'nav-btn-projection',
+        'view-projection': 'nav-btn-projection'
       };
       const activeBtn = document.getElementById(btnMap[tabId]);
       if (activeBtn) activeBtn.classList.add('active');
@@ -2691,7 +3249,9 @@ export function generateSaaSApp() {
       const breadcrumbMap = {
         'tab-today': 'Çalışma Stüdyosu (Bugün)',
         'tab-radar': 'Master Takvim & Radar',
-        'tab-curriculum': 'Müfredat Veri Bankası'
+        'tab-curriculum': 'Müfredat Veri Bankası',
+        'tab-projection': 'Müfredat Yol Haritası (Gelecek Projeksiyonu)',
+        'view-projection': 'Müfredat Yol Haritası (Gelecek Projeksiyonu)'
       };
       const bc = document.getElementById('topbar-breadcrumb-title');
       if (bc && breadcrumbMap[tabId]) bc.textContent = breadcrumbMap[tabId];
@@ -2700,6 +3260,8 @@ export function generateSaaSApp() {
         renderRadarView();
       } else if (tabId === 'tab-curriculum') {
         renderCurriculumView();
+      } else if (tabId === 'tab-projection' || tabId === 'view-projection') {
+        renderProjectionView();
       }
     }
 
@@ -3151,6 +3713,11 @@ export function generateSaaSApp() {
       const currTab = document.getElementById('tab-curriculum');
       if (currTab && currTab.classList.contains('active')) {
         renderCurriculumView();
+      }
+
+      const projTab = document.getElementById('view-projection');
+      if (projTab && projTab.classList.contains('active')) {
+        renderProjectionView();
       }
 
       const settingsTab = document.getElementById('tab-settings');
@@ -3888,6 +4455,453 @@ export function generateSaaSApp() {
       });
 
       tbody.innerHTML = rowsHtml;
+    }
+
+    // ----------------------------------------------------
+    // Curriculum Milestone Projection & Gantt Matrix Logic
+    // ----------------------------------------------------
+    let activeProjectionFilter = 'all';
+    let selectedProjectionUnitId = null;
+    let selectedProjectionSubject = null;
+
+    function getSubjectThemeClass(subject) {
+      if (subject.includes('Tarih')) return 'theme-tarih';
+      if (subject.includes('Türkçe')) return 'theme-turkce';
+      if (subject.includes('Matematik')) return 'theme-matematik';
+      if (subject.includes('Coğrafya')) return 'theme-cografya';
+      if (subject.includes('Fizik')) return 'theme-fizik';
+      if (subject.includes('Kimya')) return 'theme-kimya';
+      if (subject.includes('Biyoloji')) return 'theme-biyoloji';
+      if (subject.includes('Edebiyat')) return 'theme-edebiyat';
+      return 'theme-matematik';
+    }
+
+    function calculateCurriculumProjectionClient(schedule, unitsData, completedMap, curWeek) {
+      if (!Array.isArray(schedule) || schedule.length === 0 || !unitsData) {
+        return {
+          subjects: [],
+          totalUnits: 0,
+          completedUnits: 0,
+          activeUnits: [],
+          projectedCompletionDate: '',
+          completesBeforeYks: true,
+          weeksBeforeYks: 0
+        };
+      }
+
+      const scheduledBySubject = {};
+      for (const week of schedule) {
+        const wNum = week.weekNum;
+        for (const day of (week.days || [])) {
+          if (day.isRestDay || !day.blocks) continue;
+          const dateIso = day.dateIso || '';
+          const dateFormatted = day.dateFormatted || '';
+
+          for (const b of day.blocks) {
+            if (!b || !b.subject || !b.video) continue;
+            const subj = b.subject;
+            const v = b.video;
+            const vId = v.id || '';
+            const vIndex = v.index || v.order || 0;
+            if (vId.startsWith('tekrar-')) continue;
+
+            if (!scheduledBySubject[subj]) {
+              scheduledBySubject[subj] = [];
+            }
+            scheduledBySubject[subj].push({
+              weekNum: wNum,
+              dateIso,
+              dateFormatted,
+              videoIndex: vIndex,
+              videoId: vId
+            });
+          }
+        }
+      }
+
+      for (const s of Object.keys(scheduledBySubject)) {
+        scheduledBySubject[s].sort((a, b) => a.videoIndex - b.videoIndex);
+      }
+
+      const subjects = [];
+      let totalUnitsCount = 0;
+      let completedUnitsCount = 0;
+      const activeUnits = [];
+      let maxDateIso = '';
+      let maxDateFormatted = '';
+
+      for (const [subj, units] of Object.entries(unitsData)) {
+        const scheduledList = scheduledBySubject[subj] || [];
+        const unitProjections = [];
+
+        let subjTotal = 0;
+        let subjDone = 0;
+        let subjMinWeek = Infinity;
+        let subjMaxWeek = -Infinity;
+        let subjStartDate = '';
+        let subjEndDate = '';
+
+        for (const u of units) {
+          totalUnitsCount++;
+          const uTotal = u.endVideo - u.startVideo + 1;
+          subjTotal += uTotal;
+
+          const entries = scheduledList.filter(item => item.videoIndex >= u.startVideo && item.videoIndex <= u.endVideo);
+          let uDone = 0;
+          for (const entry of entries) {
+            if (completedMap[entry.videoId]) {
+              uDone++;
+            }
+          }
+          subjDone += uDone;
+
+          let startWeek = 1;
+          let endWeek = 1;
+          let startDate = '';
+          let endDate = '';
+          let startDateIso = '';
+          let endDateIso = '';
+
+          if (entries.length > 0) {
+            startWeek = entries[0].weekNum;
+            endWeek = entries[entries.length - 1].weekNum;
+            startDate = entries[0].dateFormatted;
+            endDate = entries[entries.length - 1].dateFormatted;
+            startDateIso = entries[0].dateIso;
+            endDateIso = entries[entries.length - 1].dateIso;
+
+            if (startWeek < subjMinWeek) {
+              subjMinWeek = startWeek;
+              subjStartDate = startDate;
+            }
+            if (endWeek > subjMaxWeek) {
+              subjMaxWeek = endWeek;
+              subjEndDate = endDate;
+            }
+            if (endDateIso > maxDateIso) {
+              maxDateIso = endDateIso;
+              maxDateFormatted = endDate;
+            }
+          }
+
+          const pct = uTotal > 0 ? Math.round((uDone / uTotal) * 100) : 0;
+          let status = 'upcoming';
+          if (uDone >= uTotal && uTotal > 0) {
+            status = 'completed';
+            completedUnitsCount++;
+          } else if (uDone > 0 || (curWeek >= startWeek && curWeek <= endWeek)) {
+            status = 'in_progress';
+          }
+
+          const unitProj = {
+            id: u.id,
+            title: u.title,
+            subject: subj,
+            startVideo: u.startVideo,
+            endVideo: u.endVideo,
+            totalVideos: uTotal,
+            startWeek,
+            endWeek,
+            startDate,
+            endDate,
+            startDateIso,
+            endDateIso,
+            completedVideos: uDone,
+            progressPercent: pct,
+            status
+          };
+          unitProjections.push(unitProj);
+          if (status === 'in_progress') {
+            activeUnits.push(unitProj);
+          }
+        }
+
+        const subjPct = subjTotal > 0 ? Math.round((subjDone / subjTotal) * 100) : 0;
+        subjects.push({
+          subject: subj,
+          startWeek: subjMinWeek === Infinity ? 1 : subjMinWeek,
+          endWeek: subjMaxWeek === -Infinity ? 1 : subjMaxWeek,
+          startDate: subjStartDate,
+          endDate: subjEndDate,
+          totalVideos: subjTotal,
+          completedVideos: subjDone,
+          progressPercent: subjPct,
+          units: unitProjections
+        });
+      }
+
+      const yksTargetIso = '2027-06-19';
+      const completesBeforeYks = maxDateIso ? maxDateIso <= yksTargetIso : true;
+      let weeksBeforeYks = 0;
+      if (maxDateIso) {
+        const diffMs = new Date(yksTargetIso).getTime() - new Date(maxDateIso).getTime();
+        weeksBeforeYks = Math.round(diffMs / (7 * 24 * 60 * 60 * 1000));
+      }
+
+      return {
+        subjects,
+        totalUnits: totalUnitsCount,
+        completedUnits: completedUnitsCount,
+        activeUnits,
+        projectedCompletionDate: maxDateFormatted,
+        projectedCompletionDateIso: maxDateIso,
+        completesBeforeYks,
+        weeksBeforeYks
+      };
+    }
+
+    function renderProjectionView() {
+      const container = document.getElementById('view-projection');
+      if (!container) return;
+
+      const report = calculateCurriculumProjectionClient(
+        currentSchedule,
+        CURRICULUM_UNITS,
+        completedVideos,
+        activeWeekNum
+      );
+
+      // 1. Update Top KPI Cards
+      const targetEl = document.getElementById('projection-kpi-target');
+      const targetDescEl = document.getElementById('projection-kpi-target-desc');
+      if (targetEl) {
+        if (report.completesBeforeYks && report.weeksBeforeYks > 0) {
+          targetEl.textContent = report.weeksBeforeYks + ' Hafta Erken';
+          if (targetDescEl) targetDescEl.textContent = '19 Haziran 2027 sınavından önce (' + (report.projectedCompletionDate || 'Temmuz 2027') + ' tahmini bitiş)';
+        } else {
+          targetEl.textContent = report.projectedCompletionDate ? report.projectedCompletionDate.split(',')[0] : 'Plan Tamamlandı';
+          if (targetDescEl) targetDescEl.textContent = 'Müfredatın son video projeksiyonu';
+        }
+      }
+
+      const activeEl = document.getElementById('projection-kpi-active');
+      const activeDescEl = document.getElementById('projection-kpi-active-desc');
+      if (activeEl) {
+        if (report.activeUnits.length > 0) {
+          const firstActive = report.activeUnits[0];
+          activeEl.textContent = firstActive.subject.replace('TYT-AYT ', '').replace('TYT ', '') + ': ' + firstActive.title;
+          if (activeDescEl) activeDescEl.textContent = firstActive.completedVideos + ' / ' + firstActive.totalVideos + ' video izlendi (%' + firstActive.progressPercent + ')';
+        } else {
+          activeEl.textContent = 'Müfredat Tamamlandı';
+          if (activeDescEl) activeDescEl.textContent = 'Tüm üniteler başarıyla bitirildi';
+        }
+      }
+
+      const unitsEl = document.getElementById('projection-kpi-units');
+      const unitsDescEl = document.getElementById('projection-kpi-units-desc');
+      if (unitsEl) {
+        unitsEl.textContent = report.completedUnits + ' / ' + report.totalUnits + ' Ünite';
+        const pct = report.totalUnits > 0 ? Math.round((report.completedUnits / report.totalUnits) * 100) : 0;
+        if (unitsDescEl) unitsDescEl.textContent = '%' + pct + ' tamamlandı';
+      }
+
+      // 2. Render 42 Weeks Header
+      const weeksHeaderEl = document.getElementById('gantt-weeks-header');
+      if (weeksHeaderEl) {
+        let headerHtml = '';
+        for (let w = 1; w <= 42; w++) {
+          const isActive = w === activeWeekNum;
+          headerHtml += '<div class="gantt-week-label tabular-nums ' + (isActive ? 'is-active-week' : '') + '" title="' + w + '. Hafta">H' + w + '</div>';
+        }
+        weeksHeaderEl.innerHTML = headerHtml;
+      }
+
+      // 3. Position Guide Lines
+      const todayGuide = document.getElementById('gantt-today-line');
+      const todayFlag = document.getElementById('gantt-today-flag');
+      if (todayGuide) {
+        const leftPct = 220 + ((activeWeekNum - 0.5) / 42) * (1100 - 220);
+        todayGuide.style.display = 'block';
+        todayGuide.style.left = leftPct + 'px';
+        if (todayFlag) todayFlag.textContent = 'Hafta ' + activeWeekNum;
+      }
+
+      const yksGuide = document.getElementById('gantt-yks-line');
+      if (yksGuide) {
+        const yksWeek = 38.5; // Mid June 2027
+        const leftPct = 220 + ((yksWeek - 0.5) / 42) * (1100 - 220);
+        yksGuide.style.display = 'block';
+        yksGuide.style.left = leftPct + 'px';
+      }
+
+      // 4. Render Gantt Rows for Each Course
+      const rowsContainer = document.getElementById('gantt-rows-container');
+      if (rowsContainer) {
+        let rowsHtml = '';
+        const filteredSubjects = activeProjectionFilter === 'all'
+          ? report.subjects
+          : report.subjects.filter(s => s.subject === activeProjectionFilter);
+
+        for (const subjProj of filteredSubjects) {
+          const themeClass = getSubjectThemeClass(subjProj.subject);
+
+          rowsHtml += '<div class="gantt-row">' +
+            '<div class="gantt-row-label">' +
+              '<div class="gantt-subject-title" title="' + escapeHtml(subjProj.subject) + '">' + escapeHtml(subjProj.subject) + '</div>' +
+              '<div class="gantt-subject-meta tabular-nums">' + subjProj.units.length + ' Ünite • %' + subjProj.progressPercent + '</div>' +
+            '</div>' +
+            '<div class="gantt-row-track">';
+
+          for (const u of subjProj.units) {
+            const startCol = Math.max(1, Math.min(42, u.startWeek));
+            const endCol = Math.max(startCol, Math.min(42, u.endWeek));
+            const span = Math.max(1, endCol - startCol + 1);
+
+            rowsHtml += '<div class="unit-segment ' + themeClass + ' status-' + u.status + '"' +
+              ' style="grid-column: ' + startCol + ' / span ' + span + ';"' +
+              ' data-unit-id="' + u.id + '"' +
+              ' data-subject="' + escapeHtml(subjProj.subject) + '"' +
+              ' onclick="selectUnitForDrilldown(\'' + u.id + '\', \'' + escapeHtml(subjProj.subject) + '\')"' +
+              ' onmouseenter="showGanttTooltip(event, \'' + u.id + '\', \'' + escapeHtml(subjProj.subject) + '\')"' +
+              ' onmouseleave="hideGanttTooltip()">' +
+              '<span class="unit-segment-title">' + escapeHtml(u.title) + '</span>' +
+              '<span class="unit-segment-pct tabular-nums">%' + u.progressPercent + '</span>' +
+            '</div>';
+          }
+
+          rowsHtml += '</div></div>';
+        }
+        rowsContainer.innerHTML = rowsHtml;
+      }
+
+      // If a unit is already selected in drilldown, refresh it
+      if (selectedProjectionUnitId && selectedProjectionSubject) {
+        renderDrilldownContent(selectedProjectionUnitId, selectedProjectionSubject, report);
+      }
+    }
+
+    function selectUnitForDrilldown(unitId, subject) {
+      selectedProjectionUnitId = unitId;
+      selectedProjectionSubject = subject;
+
+      const report = calculateCurriculumProjectionClient(
+        currentSchedule,
+        CURRICULUM_UNITS,
+        completedVideos,
+        activeWeekNum
+      );
+      renderDrilldownContent(unitId, subject, report);
+
+      const panel = document.getElementById('projection-drilldown');
+      if (panel) {
+        panel.style.display = 'flex';
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function renderDrilldownContent(unitId, subject, report) {
+      const subjProj = report.subjects.find(s => s.subject === subject);
+      if (!subjProj) return;
+      const unit = subjProj.units.find(u => u.id === unitId);
+      if (!unit) return;
+
+      const titleEl = document.getElementById('drilldown-unit-title');
+      const descEl = document.getElementById('drilldown-unit-desc');
+      if (titleEl) {
+        titleEl.textContent = subject + ' — ' + unit.title;
+      }
+      if (descEl) {
+        descEl.textContent = 'Hafta ' + unit.startWeek + ' - ' + unit.endWeek + ' (' + unit.startDate + ' → ' + unit.endDate + ') • ' + unit.completedVideos + '/' + unit.totalVideos + ' Video Tamamlandı (%' + unit.progressPercent + ')';
+      }
+
+      const gridEl = document.getElementById('drilldown-video-grid');
+      if (!gridEl) return;
+
+      const allVideos = (PLAYLISTS_DATA[subject] && PLAYLISTS_DATA[subject].videos) || [];
+      const unitVideos = allVideos.filter(v => (v.index || v.order || 0) >= unit.startVideo && (v.index || v.order || 0) <= unit.endVideo);
+
+      let videosHtml = '';
+      unitVideos.forEach(v => {
+        const isDone = !!completedVideos[v.id];
+        const durMin = v.duration_min ? Math.round(v.duration_min) : Math.round((v.duration_sec || 2400) / 60);
+
+        videosHtml += '<div class="drilldown-video-item ' + (isDone ? 'is-done' : '') + '">' +
+          '<div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">' +
+            '<input type="checkbox"' +
+                   ' class="saas-checkbox-input"' +
+                   (isDone ? ' checked' : '') +
+                   ' onchange="toggleVideo(\'' + v.id + '\', this.checked)"' +
+                   ' title="Tamamlandı olarak işaretle" />' +
+            '<div class="drilldown-video-info">' +
+              '<div class="drilldown-video-title" title="' + escapeHtml(v.title) + '">' + escapeHtml(v.title) + '</div>' +
+              '<div class="drilldown-video-meta tabular-nums">Video #' + (v.index || v.order || 0) + ' • ' + durMin + ' dk</div>' +
+            '</div>' +
+          '</div>' +
+          '<button class="btn-play-video-square"' +
+                  ' onclick="openInSiteVideoModal(\'' + v.id + '\', \'' + escapeHtml(v.title) + '\')">' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">' +
+              '<polygon points="5 3 19 12 5 21 5 3"/>' +
+            '</svg>' +
+          '</button>' +
+        '</div>';
+      });
+      gridEl.innerHTML = videosHtml;
+    }
+
+    function closeProjectionDrilldown() {
+      const panel = document.getElementById('projection-drilldown');
+      if (panel) panel.style.display = 'none';
+      selectedProjectionUnitId = null;
+      selectedProjectionSubject = null;
+    }
+
+    function filterProjectionView(val) {
+      activeProjectionFilter = val || 'all';
+      renderProjectionView();
+    }
+
+    function showGanttTooltip(event, unitId, subject) {
+      let tooltip = document.getElementById('gantt-floating-tooltip');
+      if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'gantt-floating-tooltip';
+        tooltip.className = 'gantt-tooltip';
+        document.body.appendChild(tooltip);
+      }
+
+      const report = calculateCurriculumProjectionClient(
+        currentSchedule,
+        CURRICULUM_UNITS,
+        completedVideos,
+        activeWeekNum
+      );
+      const subjProj = report.subjects.find(s => s.subject === subject);
+      if (!subjProj) return;
+      const unit = subjProj.units.find(u => u.id === unitId);
+      if (!unit) return;
+
+      tooltip.innerHTML = '<div class="gantt-tooltip-title">' + escapeHtml(unit.title) + '</div>' +
+        '<div class="gantt-tooltip-row">' +
+          '<span>Ders:</span>' +
+          '<strong>' + escapeHtml(subject) + '</strong>' +
+        '</div>' +
+        '<div class="gantt-tooltip-row tabular-nums">' +
+          '<span>Kapsam:</span>' +
+          '<span>Videolar #' + unit.startVideo + ' - #' + unit.endVideo + ' (' + unit.totalVideos + ' Video)</span>' +
+        '</div>' +
+        '<div class="gantt-tooltip-row tabular-nums">' +
+          '<span>Takvim:</span>' +
+          '<span>Hafta ' + unit.startWeek + ' - ' + unit.endWeek + '</span>' +
+        '</div>' +
+        '<div class="gantt-tooltip-row tabular-nums">' +
+          '<span>Bitiş Tarihi:</span>' +
+          '<span>' + (unit.endDate || 'Planlanıyor') + '</span>' +
+        '</div>' +
+        '<div class="gantt-tooltip-row tabular-nums">' +
+          '<span>İlerleme:</span>' +
+          '<span>' + unit.completedVideos + ' / ' + unit.totalVideos + ' (%' + unit.progressPercent + ')</span>' +
+        '</div>';
+
+      tooltip.style.display = 'block';
+      const x = event.clientX + 16;
+      const y = event.clientY + 16;
+      tooltip.style.left = Math.min(window.innerWidth - 340, x) + 'px';
+      tooltip.style.top = Math.min(window.innerHeight - 180, y) + 'px';
+    }
+
+    function hideGanttTooltip() {
+      const tooltip = document.getElementById('gantt-floating-tooltip');
+      if (tooltip) tooltip.style.display = 'none';
     }
 
     // Command Palette Logic (Task 5)
