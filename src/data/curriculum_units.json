@@ -1,0 +1,87 @@
+{
+  "TYT Türkçe": [
+    { "id": "tr-u1", "title": "Ses Bilgisi", "startVideo": 1, "endVideo": 8 },
+    { "id": "tr-u2", "title": "Yazım Kuralları", "startVideo": 9, "endVideo": 16 },
+    { "id": "tr-u3", "title": "Noktalama İşaretleri", "startVideo": 17, "endVideo": 22 },
+    { "id": "tr-u4", "title": "Sözcükte Yapı ve Ekler", "startVideo": 23, "endVideo": 33 },
+    { "id": "tr-u5", "title": "Sözcük Türleri (İsim, Zamir, Sıfat, Zarf, Edat/Bağlaç)", "startVideo": 34, "endVideo": 42 },
+    { "id": "tr-u6", "title": "Fiiller, Fiilimsiler ve Çatı", "startVideo": 43, "endVideo": 47 },
+    { "id": "tr-u7", "title": "Cümle Bilgisi ve Anlatım Bozuklukları", "startVideo": 48, "endVideo": 54 },
+    { "id": "tr-u8", "title": "Sözcükte ve Cümlede Anlam", "startVideo": 55, "endVideo": 60 },
+    { "id": "tr-u9", "title": "Paragrafta Anlam ve Taktikler", "startVideo": 61, "endVideo": 71 }
+  ],
+  "TYT-AYT Tarih": [
+    { "id": "tar-u1", "title": "Tarih Bilimi, İlk Çağ Medeniyetleri ve İlk Türk Devletleri", "startVideo": 1, "endVideo": 22 },
+    { "id": "tar-u2", "title": "Klasik Çağda Osmanlı Devleti (Kuruluş ve Yükselme)", "startVideo": 23, "endVideo": 45 },
+    { "id": "tar-u3", "title": "Osmanlı Kültür ve Medeniyeti", "startVideo": 46, "endVideo": 60 },
+    { "id": "tar-u4", "title": "Değişim Çağında Osmanlı (Duraklama ve Gerileme Dönemi)", "startVideo": 61, "endVideo": 78 },
+    { "id": "tar-u5", "title": "Uluslararası İlişkilerde Denge Stratejisi (Osmanlı Dağılma Dönemi ve Islahatlar)", "startVideo": 79, "endVideo": 91 },
+    { "id": "tar-u6", "title": "XX. Yüzyıl Başlarında Osmanlı ve I. Dünya Savaşı", "startVideo": 92, "endVideo": 106 },
+    { "id": "tar-u7", "title": "Milli Mücadele Hazırlık ve Kurtuluş Savaşı Cepheleri", "startVideo": 107, "endVideo": 128 },
+    { "id": "tar-u8", "title": "Atatürk İlkeleri ve İnkılap Tarihi", "startVideo": 129, "endVideo": 148 },
+    { "id": "tar-u9", "title": "Çağdaş Türk ve Dünya Tarihi", "startVideo": 149, "endVideo": 166 }
+  ],
+  "TYT Coğrafya": [
+    { "id": "cog-u1", "title": "Doğa, İnsan ve Coğrafyanın Gelişimi", "startVideo": 1, "endVideo": 6 },
+    { "id": "cog-u2", "title": "Atmosfer, Sıcaklık ve İklim Elemanları", "startVideo": 7, "endVideo": 26 },
+    { "id": "cog-u3", "title": "Yerin Şekillenmesi, İç ve Dış Kuvvetler", "startVideo": 27, "endVideo": 44 },
+    { "id": "cog-u4", "title": "Nüfus, Yerleşme ve Göç", "startVideo": 45, "endVideo": 54 },
+    { "id": "cog-u5", "title": "Coğrafi Konum ve Harita Bilgisi", "startVideo": 55, "endVideo": 60 }
+  ],
+  "AYT Coğrafya": [
+    { "id": "acog-u1", "title": "Ekosistem ve Madde Döngüleri", "startVideo": 1, "endVideo": 7 },
+    { "id": "acog-u2", "title": "Nüfus Politikaları ve Şehirlerin Fonksiyonları", "startVideo": 8, "endVideo": 20 },
+    { "id": "acog-u3", "title": "Türkiye Ekonomisi ve Sektörel Dağılım", "startVideo": 21, "endVideo": 38 },
+    { "id": "acog-u4", "title": "Küresel Ticaret, Turizm ve Bölgeler", "startVideo": 39, "endVideo": 50 },
+    { "id": "acog-u5", "title": "Çevre, Toplum ve AYT Genel Tekrar", "startVideo": 51, "endVideo": 54 }
+  ],
+  "TYT Matematik": [
+    { "id": "mat-u1", "title": "Temel Kavramlar, Sayı Basamakları ve Ardışık Sayılar", "startVideo": 1, "endVideo": 19 },
+    { "id": "mat-u2", "title": "Bölme-Bölünebilme ve EBOB-EKOK", "startVideo": 20, "endVideo": 28 },
+    { "id": "mat-u3", "title": "Rasyonel Sayılar, 1. Dereceden Denklemler ve Basit Eşitsizlikler", "startVideo": 29, "endVideo": 39 },
+    { "id": "mat-u4", "title": "Mutlak Değer, Üslü ve Köklü Sayılar", "startVideo": 40, "endVideo": 51 },
+    { "id": "mat-u5", "title": "Çarpanlara Ayırma ve Oran-Orantı", "startVideo": 52, "endVideo": 57 },
+    { "id": "mat-u6", "title": "Problemler Maratonu (Denklem, Yaş, Yüzde, Kar-Zarar, Hareket)", "startVideo": 58, "endVideo": 77 },
+    { "id": "mat-u7", "title": "Mantık ve Kümeler", "startVideo": 78, "endVideo": 86 },
+    { "id": "mat-u8", "title": "Fonksiyonlar", "startVideo": 87, "endVideo": 100 },
+    { "id": "mat-u9", "title": "Veri, İstatistik ve Grafikler", "startVideo": 101, "endVideo": 103 },
+    { "id": "mat-u10", "title": "Sayma ve Olasılık (PKOB)", "startVideo": 104, "endVideo": 118 }
+  ],
+  "TYT Biyoloji": [
+    { "id": "bio-u1", "title": "Yaşam Bilimi Biyoloji ve Canlıların Temel Bileşenleri", "startVideo": 1, "endVideo": 22 },
+    { "id": "bio-u2", "title": "Hücre Zarı, Organeller ve Madde Geçişleri", "startVideo": 23, "endVideo": 38 },
+    { "id": "bio-u3", "title": "Ekosistem Ekolojisi ve Güncel Çevre Sorunları", "startVideo": 39, "endVideo": 48 },
+    { "id": "bio-u4", "title": "Canlılar Dünyası ve Sınıflandırma", "startVideo": 49, "endVideo": 58 },
+    { "id": "bio-u5", "title": "Hücre Bölünmeleri (Mitoz ve Mayoz)", "startVideo": 59, "endVideo": 68 },
+    { "id": "bio-u6", "title": "Kalıtım, Genetik ve Genel Tekrar", "startVideo": 69, "endVideo": 80 }
+  ],
+  "TYT Fizik": [
+    { "id": "fiz-u1", "title": "Fizik Bilimine Giriş, Madde ve Özellikleri", "startVideo": 1, "endVideo": 14 },
+    { "id": "fiz-u2", "title": "Hareket ve Kuvvet", "startVideo": 15, "endVideo": 22 },
+    { "id": "fiz-u3", "title": "İş, Güç ve Enerji", "startVideo": 23, "endVideo": 30 },
+    { "id": "fiz-u4", "title": "Isı, Sıcaklık ve Genleşme", "startVideo": 31, "endVideo": 38 },
+    { "id": "fiz-u5", "title": "Elektrostatik ve Elektrik Devreleri", "startVideo": 39, "endVideo": 48 },
+    { "id": "fiz-u6", "title": "Basınç ve Kaldırma Kuvveti", "startVideo": 49, "endVideo": 56 },
+    { "id": "fiz-u7", "title": "Dalgalar (Yay, Su, Ses, Deprem)", "startVideo": 57, "endVideo": 64 },
+    { "id": "fiz-u8", "title": "Optik ve Genel Tekrar", "startVideo": 65, "endVideo": 76 }
+  ],
+  "TYT Kimya": [
+    { "id": "kim-u1", "title": "Kimya Bilimi, Simyadan Kimyaya ve Güvenlik", "startVideo": 1, "endVideo": 8 },
+    { "id": "kim-u2", "title": "Atom ve Periyodik Sistem", "startVideo": 9, "endVideo": 20 },
+    { "id": "kim-u3", "title": "Kimyasal Türler Arası Etkileşimler", "startVideo": 21, "endVideo": 30 },
+    { "id": "kim-u4", "title": "Maddenin Halleri", "startVideo": 31, "endVideo": 40 },
+    { "id": "kim-u5", "title": "Kimyanın Temel Kanunları ve Mol Hesaplamaları", "startVideo": 41, "endVideo": 56 },
+    { "id": "kim-u6", "title": "Karışımlar ve Ayrıştırma Yöntemleri", "startVideo": 57, "endVideo": 66 },
+    { "id": "kim-u7", "title": "Asitler, Bazlar ve Tuzlar", "startVideo": 67, "endVideo": 74 },
+    { "id": "kim-u8", "title": "Kimya Her Yerde ve Çevre Kimyası", "startVideo": 75, "endVideo": 79 }
+  ],
+  "AYT Edebiyat": [
+    { "id": "edb-u1", "title": "Edebiyat Bilimi, Güzel Sanatlar ve Metinlerin Sınıflandırılması", "startVideo": 1, "endVideo": 10 },
+    { "id": "edb-u2", "title": "Şiir Bilgisi ve Edebi Sanatlar", "startVideo": 11, "endVideo": 18 },
+    { "id": "edb-u3", "title": "İslamiyet Öncesi ve Halk Edebiyatı", "startVideo": 19, "endVideo": 24 },
+    { "id": "edb-u4", "title": "Divan Edebiyatı", "startVideo": 25, "endVideo": 30 },
+    { "id": "edb-u5", "title": "Tanzimat, Servet-i Fünun ve Fecr-i Ati Edebiyatı", "startVideo": 31, "endVideo": 38 },
+    { "id": "edb-u6", "title": "Milli Edebiyat Dönemi ve Sanatçıları", "startVideo": 39, "endVideo": 46 },
+    { "id": "edb-u7", "title": "Cumhuriyet Dönemi Türk Edebiyatı (Şiir, Roman, Tiyatro)", "startVideo": 47, "endVideo": 62 }
+  ]
+}
