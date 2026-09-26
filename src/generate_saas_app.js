@@ -27,13 +27,10 @@ export function generateSaaSApp() {
     if ('serviceWorker' in navigator && (location.protocol.startsWith('http') || location.hostname === 'localhost')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then((reg) => {
-          reg.update();
+          reg.update().catch(() => {});
         }).catch(err => {
           console.warn('SW registration failed:', err);
         });
-      });
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        window.location.reload();
       });
     }
   </script>

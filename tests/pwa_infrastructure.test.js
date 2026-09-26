@@ -99,7 +99,7 @@ test('www/sw.js exists, compiles cleanly, and defines core cache assets', () => 
     new vm.Script(code);
   }, 'www/sw.js must be syntactically valid JavaScript');
 
-  assert.match(code, /yks-kochu-v1/, 'must define cache name yks-kochu-v1');
+  assert.match(code, /yks-kochu-v[12]/, 'must define cache name yks-kochu-v2');
   assert.match(code, /'\.\/'/, "must include './' in core assets");
   assert.match(code, /'\.\/index\.html'/, "must include './index.html' in core assets");
   assert.match(code, /'\.\/manifest\.json'/, "must include './manifest.json' in core assets");
@@ -138,7 +138,7 @@ function createMockServiceWorkerEnv(options = {}) {
   };
 
   const cachesMap = new Map();
-  cachesMap.set('yks-kochu-v1', mockCache);
+  cachesMap.set('yks-kochu-v2', mockCache);
 
   const mockCaches = {
     open: async (name) => {
@@ -223,7 +223,7 @@ test('sw.js activate event removes obsolete caches and claims clients', async ()
   assert.ok(env.listeners['activate'], 'activate listener must be registered');
 
   // Add stale caches to verify deletion
-  env.cachesMap.set('yks-kochu-v0', {});
+  env.cachesMap.set('yks-kochu-v1', {});
   env.cachesMap.set('old-unused-cache', {});
 
   let waitPromise = null;
@@ -236,9 +236,40 @@ test('sw.js activate event removes obsolete caches and claims clients', async ()
   await waitPromise;
 
   assert.ok(env.getClientsClaimCalled(), 'self.clients.claim() must be called on activate');
-  assert.ok(!env.cachesMap.has('yks-kochu-v0'), 'old cache yks-kochu-v0 must be purged');
+  assert.ok(!env.cachesMap.has('yks-kochu-v1'), 'old cache yks-kochu-v1 must be purged');
   assert.ok(!env.cachesMap.has('old-unused-cache'), 'old-unused-cache must be purged');
-  assert.ok(env.cachesMap.has('yks-kochu-v1'), 'current cache yks-kochu-v1 must be preserved');
+  assert.ok(env.cachesMap.has('yks-kochu-v2'), 'current cache yks-kochu-v2 must be preserved');
+});
+
+test('sw.js fetch handler uses network-first for navigation requests and updates cache', async () => {
+  const freshResponse = {
+    status: 200,
+    body: '<html>fresh navigation html</html>',
+    clone: () => ({ status: 200, body: '<html>cloned fresh html</html>' })
+  };
+
+  const env = createMockServiceWorkerEnv({
+    fetch: async () => freshResponse
+  });
+
+  // Seed cache with older content
+  env.mockCacheStore.set('./index.html', { status: 200, body: '<html>old cached</html>' });
+
+  let respondedPromise = null;
+  env.listeners['fetch']({
+    request: {
+      url: 'http://localhost:3000/index.html',
+      method: 'GET',
+      mode: 'navigate'
+    },
+    respondWith: (p) => {
+      respondedPromise = p;
+    }
+  });
+
+  const response = await respondedPromise;
+  assert.equal(response, freshResponse, 'Navigation request must return fresh network response, not stale cache');
+  assert.ok(env.mockCacheStore.has('http://localhost:3000/index.html'), 'Fresh navigation response must be stored in cache');
 });
 
 test('sw.js fetch handler uses cache-first for cached assets', async () => {

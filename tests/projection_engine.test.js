@@ -72,6 +72,26 @@ test('projection_engine reacts to completed videos and updates unit progress & s
   assert.ok(report.completedUnits >= 1, 'At least 1 unit completed in report');
 });
 
+test('projection_engine dynamically adapts when schedule is shifted or modified (interconnected systems)', () => {
+  const playlists = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'playlists_data_tr.json'), 'utf8'));
+  const unitsData = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'src/data/curriculum_units.json'), 'utf8'));
+
+  // Baseline schedule starting 26 September 2026
+  const baselineWeeks = generateCalendarDays(playlists, { startDate: '2026-09-26' });
+  const baselineReport = calculateCurriculumProjection(baselineWeeks, unitsData, {});
+
+  // Shifted schedule (e.g. student shifts their schedule forward by 2 weeks to 10 October 2026)
+  const shiftedWeeks = generateCalendarDays(playlists, { startDate: '2026-10-10' });
+  const shiftedReport = calculateCurriculumProjection(shiftedWeeks, unitsData, {});
+
+  const baseTurkceU1 = baselineReport.subjects.find(s => s.subject === 'TYT Türkçe').units[0];
+  const shiftedTurkceU1 = shiftedReport.subjects.find(s => s.subject === 'TYT Türkçe').units[0];
+
+  assert.equal(baseTurkceU1.startDateIso, '2026-09-26');
+  assert.equal(shiftedTurkceU1.startDateIso, '2026-10-10', 'Roadmap unit start date must dynamically move when schedule starts on new date');
+  assert.ok(shiftedReport.projectedCompletionDateIso > baselineReport.projectedCompletionDateIso, 'Projected completion date must dynamically reflect the shifted schedule');
+});
+
 test('projection_engine and types strictly comply with zero emoji directive', () => {
   const engineCode = fs.readFileSync(path.resolve(process.cwd(), 'src/web/projection_engine.ts'), 'utf8');
   const typesCode = fs.readFileSync(path.resolve(process.cwd(), 'src/web/types.ts'), 'utf8');
