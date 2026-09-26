@@ -1,9 +1,10 @@
-// YKS 2027 Koçu — Offline-First Service Worker (v3.1.0-saas-balanced-shift)
+// YKS 2027 Koçu — Offline-First Service Worker (v3.2.0-date-anchored-blueprint)
 const CACHE_NAME = 'yks-kochu-v1';
 
 const CORE_ASSETS = [
   './',
   './index.html',
+  './admin.html',
   './manifest.json',
   './icons/icon-192.svg',
   './icons/icon-512.svg'
