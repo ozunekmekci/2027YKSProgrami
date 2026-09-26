@@ -91,9 +91,9 @@ Excel'e alternatif veya masaüstünde video izlerken yan sekmede açık tutabile
 ### Özellikler ve Kullanım
 - **Sıfır Kurulum, Çevrimdışı Çalışma:** `yks_dashboard.html` dosyasını tarayıcınıza (Chrome, Firefox, Edge, Safari) sürükleyip bırakmanız veya çift tıklamanız yeterlidir. İnternet olmadan da tüm arayüz, sayaç ve filtreler çalışır (yalnızca YouTube videolarını oynatmak için internet gerekir).
 - **Entegre 20 Dakikalık Mola Sayacı:**
-  - Her blok bitiminde "☕ 20 dk Mola Başlat" butonuna tıklayarak sayacı çalıştırabilirsiniz.
+  - Her blok bitiminde "20 dk Mola Başlat" butonuna tıklayarak sayacı çalıştırabilirsiniz.
   - Sayaç ekranın sağ alt köşesinde yüzen bir kart olarak geri sayar; istendiğinde küçültülebilir.
-  - Tarayıcı sekme başlığında anlık kalan süre gösterilir (`(18:42) ☕ Mola Devam Ediyor...`).
+  - Tarayıcı sekme başlığında anlık kalan süre gösterilir (`(18:42) Mola Devam Ediyor...`).
   - Mola bittiğinde **Web Audio API** ile sentezlenen iki tonlu hoş bir zil sesi (D5 → A5) çalarak sizi uyarır. Dışarıdan ses dosyası yüklemesi gerekmez.
 - **Kalıcı İlerleme (LocalStorage):**
   - Videoların yanındaki kutucukları işaretlediğinizde durumunuz tarayıcınızın yerel hafızasına kaydedilir. Sayfayı yenileseniz veya bilgisayarı yeniden başlatsanız dahi ilerlemeniz kaybolmaz.
@@ -215,7 +215,7 @@ Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
    ```bash
    npm test
    ```
-   *77 otomatik birim testi veri bütünlüğünü, takvim motorunu, Excel sayfalarını, HTML takip panosunu, mobil uygulamayı, PWA altyapısını ve yerel geliştirme sunucusunu doğrular.*
+   *107 otomatik birim testi veri bütünlüğünü, tarih çapalı takvim motorunu, FIFO konu ilerlemesini, SaaS çalışma stüdyosunu, admin panelini, Excel sayfalarını, HTML takip panosunu, mobil uygulamayı, PWA altyapısını ve yerel sunucuyu doğrular.*
 
 5. **Web ve Mobil Varlıklarını Derleyin:**
    ```bash
@@ -244,6 +244,45 @@ Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
 
 ---
 
+## Gelişmiş Takvim ve Müfredat Mimarisi
+
+Sistemin kalbinde, öğrencinin çalışma disiplinini korurken beklenmeyen aksamalarda psikolojik baskıyı ve program kopuşunu sıfıra indiren yenilikçi bir takvim ve kuyruk motoru yer alır:
+
+### 1. Tarih Çapalı Takvim Motoru (Date-Anchored Calendar Engine)
+- **7 Günlük Sabit Akış (Pazartesi - Pazar):** Takvim, ISO haftalık standardına sadık kalarak her haftayı Pazartesi (indeks 0) ile başlatır ve Pazar (indeks 6, Kesin Dinlenme) ile tamamlar.
+- **Gerçek Tarih Çapası:** Program başlangıcı **26 Eylül 2026 Cumartesi** gününe kilitlenmiştir. Bu tarihten önceki günler (21-25 Eylül 2026) takvimde "Plan Öncesi Gün" olarak etiketlenir ve geçmişe dönük yapay video yüklenmez.
+- **Geçmiş Günleri Sabitleme:** Tamamlanan bloklar ve geçilen günler gerçek takvim tarihlerinde sabit kalır; telafi motoru geçmişi silmez veya bozmaz.
+
+### 2. Doğal Akış ve FIFO Konu İlerlemesi (First-In, First-Out Queue)
+- Bir gün çalışılamadığında veya gün içerisindeki derslerden biri (örneğin TYT Coğrafya) aksatıldığında, diğer günlerin ders dengesi (günde 2 ders kuralı) bozulmaz.
+- Aksayan ders, haftalık plandaki bir sonraki takvim gününde (örneğin sonraki haftanın ilgili gününde) kaldığı sıradaki video numarasıyla öğrencinin karşısına gelir.
+- Böylece konular hiçbir zaman atlanmaz, kronolojik sıra korunur ve öğrenci gün aşırı farklı derslerle dengeli ilerler.
+
+### 3. Modern SaaS Çalışma Stüdyosu (`www/index.html`)
+- **Odak Modu:** 4 günlük blok, doğrudan gömülü YouTube oynatıcı ve video listesi.
+- **Akıllı Mola İstasyonu:** 20 dakikalık mola sayacı, seans başına yalnızca tek seferlik +5 dakika uzatma hakkı, anında sıfırlama ve Web Audio çift tonlu zil (D5 → A5).
+- **Hızlı Erişim Komuta Paleti:** `Cmd+K` veya `Ctrl+K` ile tüm müfredat videolarına, haftalara ve ayarlara klavyeden anında erişim.
+
+### 4. Dinamik Yönetim Paneli (`www/admin.html`)
+- Haftalık ders dağılım şablonlarını, günlük blok sayılarını ve ders sıralarını kod değiştirmeden tarayıcı üzerinden özelleştirme imkanı.
+
+---
+
+## Sürüm Yönetimi (Version 1.0.0 & V2 Geliştirme Dalı)
+
+Bu proje uzun soluklu bir maratonu desteklemek üzere sürüm izolasyonu prensibiyle yönetilir:
+
+1. **Version 1.0.0 (Kararlı ve Dondurulmuş Sürüm):**
+   - 766 videoluk müfredat, 42 haftalık plan, tarih çapalı takvim, FIFO konu ilerlemesi ve SaaS çalışma stüdyosu tamamen test edilmiş (107 birim testi) ve onaylanmıştır.
+   - Bu kararlı durum Git üzerinde `v1.0.0` sürüm etiketi (annotated tag) ve `v1-stable` dalı ile kalıcı olarak dondurulmuştur.
+   - Kararlı sürüm üzerinde kesinlikle geriye dönük uyumsuzluk veya deneysel değişiklik yapılmaz.
+
+2. **V2 Geliştirme Dalı (`v2`):**
+   - Geleceğe yönelik tüm yeni özellikler, arayüz denemeleri ve genişletmeler `v2` dalı üzerinde geliştirilir.
+   - Böylece çalışan ve onaylanan V1 sistemi daima güvenli bir referans noktası olarak korunur.
+
+---
+
 ## Dosya Yapısı
 
 ```
@@ -261,15 +300,20 @@ Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
 │   ├── app/build.gradle             # Android SDK 35, applicationId ve bağımlılıklar
 │   └── gradlew                      # Linux/macOS Gradle derleme wrapper'ı
 ├── www/                             # Mobil ve PWA web dağıtım paketi
-│   ├── index.html                   # Material 3 & Responsive Web asistanı (766 video gömülü)
+│   ├── index.html                   # Modern SaaS Çalışma Stüdyosu & PWA (766 video gömülü)
+│   ├── admin.html                   # Dinamik Haftalık Plan ve Şablon Yönetim Paneli
+│   ├── mobile.html                  # Mobil optimize arayüz
 │   ├── manifest.json                # PWA Web App Manifest yapılandırması
 │   ├── sw.js                        # Offline-first Service Worker önbellekleme motoru
 │   └── icons/                       # PWA vektörel SVG uygulama ikonları (192x192, 512x512)
 ├── src/
-│   ├── calendar_engine.js           # 42 haftalık kronolojik blok dağıtım algoritması
+│   ├── calendar_engine.js           # 42 haftalık tarih çapalı ve FIFO blok dağıtım motoru
+│   ├── default_blueprint.json       # Varsayılan haftalık ders dağıtım şablonu
 │   ├── build_excel.js               # ExcelJS tabanlı çok sayfalı XLSX üreticisi
 │   ├── generate_dashboard.js        # Standalone masaüstü HTML dashboard derleyicisi
-│   ├── generate_mobile_app.js       # Material 3 mobil/web uygulama üreticisi & derleyicisi
+│   ├── generate_saas_app.js         # SaaS çalışma stüdyosu ve PWA derleyicisi
+│   ├── generate_admin_app.js        # Dinamik yönetim paneli derleyicisi
+│   ├── generate_mobile_app.js       # Material 3 mobil uygulama üreticisi & derleyicisi
 │   ├── serve_web.js                 # Sıfır bağımlılıklı yerel statik PWA dev sunucusu
 │   └── web/                         # Modüler TypeScript Web & PWA mimarisi
 │       ├── types.ts                 # Domain arayüzleri ve veri tipi sözleşmeleri
@@ -280,16 +324,20 @@ Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
 └── tests/
     ├── test_data_integrity.test.js  # 766 video ve oynatma listesi veri doğrulama testi
     ├── calendar_engine.test.js      # Takvim mantığı, geçişler ve blok bütünlüğü testleri
+    ├── date_anchored_calendar_and_blueprint.test.js # Tarih çapası ve dinamik şablon testleri
+    ├── systematic_debug_regression.test.js # Hafta 1 Cumartesi ve FIFO ilerleme regresyon testleri
     ├── excel_generation.test.js     # Excel çalışma sayfaları, formüller ve aralık testleri
     ├── dashboard_generation.test.js # Masaüstü HTML dashboard, sayaç ve stil testleri
     ├── test_capacitor_setup.test.js # Capacitor paketleri ve konfigürasyon testi
-    ├── mobile_app.test.js           # Mobil arayüz, Shift Motoru, 3 sekme ve Impeccable testleri
+    ├── mobile_app.test.js           # Mobil arayüz, telafi motoru ve Impeccable testleri
     ├── android_project.test.js      # Android izinleri, Gradle ve varlık senkronizasyon testleri
+    ├── admin_and_emoji_directive.test.js # Yönetim paneli ve sıfır emoji kuralı testleri
     ├── ts_types_and_setup.test.js   # TypeScript kurulumu ve domain tip sözleşmeleri testi
     ├── ts_core_modules.test.js      # TypeScript motor modülleri (shift, timer, storage) testi
     ├── pwa_infrastructure.test.js   # Manifest, SVG ikonlar ve Service Worker testleri
     ├── web_responsive_app.test.js   # Masaüstü/mobil responsive düzen ve app.ts testleri
-    └── serve_web.test.js            # Yerel PWA dev sunucusu ve statik dosya sunumu testi
+    ├── serve_web.test.js            # Yerel PWA dev sunucusu ve statik dosya sunumu testi
+    └── saas_*.test.js               # SaaS Studio, takvim, komuta paleti ve telafi testleri
 ```
 
 ---
@@ -297,3 +345,4 @@ Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
 ## Başarılar!
 
 Bu program, disiplinli ve yormayan bir ritimle sizi hedefinize ulaştırmak için tasarlandı. Unutmayın: Günde 4 blok, düzenli molalar ve pazar günleri dinlenmek başarının sırrıdır. 2027 YKS yolculuğunuzda şimdiden üstün başarılar!
+
