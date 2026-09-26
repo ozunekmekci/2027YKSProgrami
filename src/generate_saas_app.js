@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 export function generateSaaSApp() {
   const dataPath = path.resolve(__dirname, '../playlists_data_tr.json');
   const playlistsData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-  const calendar = generateCalendarDays(playlistsData);
+  const calendar = generateCalendarDays(playlistsData, { startDate: '2026-09-26' });
 
   const html = `<!DOCTYPE html>
 <html lang="tr">
@@ -576,6 +576,10 @@ export function generateSaaSApp() {
     .day-tab-btn.is-rest-tab:not(.active) {
       opacity: 0.8;
       color: var(--slate-500);
+    }
+
+    .day-tab-btn.is-past-tab:not(.active) {
+      opacity: 0.55;
     }
 
     .day-tab-btn.day-done:not(.active) {
@@ -2520,11 +2524,13 @@ export function generateSaaSApp() {
       return DEFAULT_BLUEPRINT;
     }
 
+    const APP_BUILD_VERSION = '2026.09.26.v4';
+
     // State
     let completedVideos = {};
     let currentSchedule = [];
     let activeWeekNum = 1;
-    let activeDayIndex = 0; // 0: Pazartesi ... 6: Pazar
+    let activeDayIndex = 5; // 0: Pazartesi ... 5: Cumartesi (Today) ... 6: Pazar
 
     // Break Timer State
     let timerDuration = 1200; // 20 min in sec
@@ -2599,6 +2605,14 @@ export function generateSaaSApp() {
     // Storage Management
     function loadState() {
       try {
+        const savedVersion = localStorage.getItem('yks_app_build_version');
+        if (savedVersion !== APP_BUILD_VERSION) {
+          localStorage.removeItem('yks_shifted_schedule');
+          localStorage.removeItem('yks_active_week');
+          localStorage.removeItem('yks_active_day');
+          localStorage.setItem('yks_app_build_version', APP_BUILD_VERSION);
+        }
+
         const savedComp = localStorage.getItem('yks_completed_videos');
         if (savedComp) completedVideos = JSON.parse(savedComp);
 
@@ -2606,7 +2620,12 @@ export function generateSaaSApp() {
         if (savedWeek) activeWeekNum = parseInt(savedWeek, 10) || 1;
 
         const savedDay = localStorage.getItem('yks_active_day');
-        if (savedDay !== null) activeDayIndex = parseInt(savedDay, 10) || 0;
+        if (savedDay !== null) {
+          activeDayIndex = parseInt(savedDay, 10);
+        } else {
+          // Default to today's Monday-based index
+          activeDayIndex = (new Date().getDay() + 6) % 7;
+        }
 
         const savedSchedule = localStorage.getItem('yks_shifted_schedule');
         const customBlueprint = localStorage.getItem('yks_weekly_blueprint');
@@ -2615,7 +2634,7 @@ export function generateSaaSApp() {
         } else if (customBlueprint) {
           try {
             const bp = JSON.parse(customBlueprint);
-            currentSchedule = generateCalendarDays(PLAYLISTS_DATA, { blueprint: bp });
+            currentSchedule = generateCalendarDays(PLAYLISTS_DATA, { startDate: '2026-09-26', blueprint: bp });
           } catch (e) {
             currentSchedule = JSON.parse(JSON.stringify(BASELINE_CALENDAR));
           }
@@ -2753,9 +2772,10 @@ export function generateSaaSApp() {
         const isActive = (idx === activeDayIndex);
         const isToday = d.dateIso ? (d.dateIso === realIso) : (idx === realDayOfWeek);
         const isRest = Boolean(d.isRestDay);
+        const isPast = Boolean(d.isPast);
 
         let isDone = false;
-        if (!isRest && d.blocks && d.blocks.length > 0) {
+        if (!isRest && !isPast && d.blocks && d.blocks.length > 0) {
           isDone = d.blocks.every(b => {
             const vid = b.video?.id;
             return vid && !vid.startsWith('tekrar-') ? Boolean(completedVideos[vid]) : true;
@@ -2767,10 +2787,12 @@ export function generateSaaSApp() {
         if (isToday) classList.push('is-real-today');
         if (isDone) classList.push('day-done');
         if (isRest) classList.push('is-rest-tab');
+        if (isPast) classList.push('is-past-tab');
 
         const shortDate = d.dateIso ? (d.dateIso.slice(8, 10) + ' ' + (TURKISH_MONTHS[parseInt(d.dateIso.slice(5, 7), 10) - 1] || '').slice(0, 3)) : '';
         const dayLabel = d.dayName || ('Gün ' + (idx + 1));
-        const titleStr = isToday ? (dayLabel + ' (Bugün)') : (d.dateFormatted || dayLabel);
+        let titleStr = isToday ? (dayLabel + ' (Bugün)') : (d.dateFormatted || dayLabel);
+        if (isPast) titleStr += ' (Plan Öncesi Gün)';
 
         html += \`<button class="\${classList.join(' ')}" onclick="setStudioDay(\${idx})" title="\${escapeHtml(titleStr)}">
           <span class="day-tab-name">\${escapeHtml(dayLabel)}</span>
@@ -2806,6 +2828,23 @@ export function generateSaaSApp() {
       const asideColumn = document.getElementById('studio-aside-column');
       const contentArea = document.getElementById('studio-content-area');
       if (!blocksContainer) return;
+
+      // Past day state
+      if (dayData && dayData.isPast) {
+        if (asideColumn) asideColumn.style.display = 'none';
+        if (contentArea) contentArea.classList.remove('is-sunday');
+        blocksContainer.innerHTML = \`
+          <div class="sunday-rest-card" style="border-color: var(--border);">
+            <div class="sunday-rest-badge" style="background: var(--slate-100); color: var(--text-secondary);">Plan Öncesi</div>
+            <div class="sunday-rest-title" style="color: var(--text-main);">\${escapeHtml(dayData.dateFormatted || dayData.dayName)}</div>
+            <div class="sunday-rest-text">
+              Bu takvim günü, çalışma programınızın başlangıç tarihinden öncedir. Dersleriniz program başlangıcınızdan itibaren kesintisiz sıralanmıştır.
+            </div>
+            <button class="btn-preview-weekday" onclick="goToRealToday()">Bugünkü Derslere Git</button>
+          </div>
+        \`;
+        return;
+      }
 
       // Sunday rest state
       if (!dayData || dayData.isRestDay) {
@@ -3402,7 +3441,11 @@ export function generateSaaSApp() {
         return { schedule: [], nextActiveWeek: 1, nextActiveDay: 0 };
       }
 
-      let currentDate = parseIsoDate(startDateStr);
+      const startDt = parseIsoDate(startDateStr);
+      const mondayBasedIndex = (startDt.getUTCDay() + 6) % 7;
+      const week1Monday = new Date(startDt.getTime());
+      week1Monday.setUTCDate(week1Monday.getUTCDate() - mondayBasedIndex);
+
       let studyDayNumber = 1;
       let weekNum = 1;
       const maxWeeks = 52;
@@ -3417,18 +3460,32 @@ export function generateSaaSApp() {
         let hasAnyVideoThisWeek = false;
 
         for (let dIdx = 0; dIdx < 7; dIdx++) {
-          const dayOfWeek = currentDate.getUTCDay();
-          const dayName = TURKISH_DAY_NAMES[dayOfWeek];
-          const dateIso = toIsoDate(currentDate);
-          const dateFormatted = formatTurkishDate(currentDate);
+          const curDate = new Date(week1Monday.getTime());
+          curDate.setUTCDate(curDate.getUTCDate() + (weekNum - 1) * 7 + dIdx);
 
+          const dayOfWeek = curDate.getUTCDay();
+          const dayName = TURKISH_DAY_NAMES[dayOfWeek];
+          const dateIso = toIsoDate(curDate);
+          const dateFormatted = formatTurkishDate(curDate);
+
+          const isPast = dateIso < startDateStr;
           const isRestDay = (dayOfWeek === 0 || activeStudyKeys.length === 0);
 
-          if (isRestDay) {
+          if (isPast) {
             days.push({
               dayName,
               dateIso,
               dateFormatted,
+              isPast: true,
+              isRestDay: false,
+              blocks: []
+            });
+          } else if (isRestDay) {
+            days.push({
+              dayName,
+              dateIso,
+              dateFormatted,
+              isPast: false,
               isRestDay: true,
               blocks: []
             });
@@ -3476,19 +3533,18 @@ export function generateSaaSApp() {
               dateFormatted,
               studyDayNumber,
               blueprintOriginDay: studyTemplateKey,
+              isPast: false,
               isRestDay: false,
               blocks
             });
             studyDayNumber++;
           }
-
-          currentDate.setUTCDate(currentDate.getUTCDate() + 1);
         }
 
         newWeeks.push({ weekNum, days });
 
         const remainingVideos = Object.values(uncompletedQueues).reduce((sum, q) => sum + q.length, 0);
-        if (remainingVideos === 0) break;
+        if (remainingVideos === 0 && weekNum >= 40) break;
         if (!hasAnyVideoThisWeek && weekNum > 40) break;
 
         weekNum++;
@@ -3497,7 +3553,7 @@ export function generateSaaSApp() {
       return {
         schedule: newWeeks,
         nextActiveWeek: 1,
-        nextActiveDay: 0
+        nextActiveDay: mondayBasedIndex
       };
     }
 
@@ -3521,8 +3577,8 @@ export function generateSaaSApp() {
       } catch (e) {
         console.warn('Storage save error:', e);
       }
-      activeWeekNum = 1;
-      activeDayIndex = 0;
+      activeWeekNum = result.nextActiveWeek || 1;
+      activeDayIndex = typeof result.nextActiveDay === 'number' ? result.nextActiveDay : (today.getDay() + 6) % 7;
       saveState();
       updateAllUI();
       renderRadarView();
@@ -3585,6 +3641,21 @@ export function generateSaaSApp() {
       \`;
 
       targetWeek.days.forEach((d, dayIdx) => {
+        if (d.isPast) {
+          matrixHtml += \`
+            <div class="matrix-day-card rest-day" onclick="jumpToStudioDay(\${targetWeek.weekNum}, \${dayIdx})" title="\${d.dayName} gününü stüdyoda aç">
+              <div class="matrix-day-header">
+                <span class="matrix-day-name">\${escapeHtml(d.dayName)}</span>
+                <span class="subject-badge badge-genel">Plan Öncesi</span>
+              </div>
+              <p style="font-size: 13px; color: var(--text-muted); font-weight: 500; padding: 20px 0; text-align: center;">
+                Plan Başlangıcı Öncesi
+              </p>
+            </div>
+          \`;
+          return;
+        }
+
         if (d.isRestDay) {
           matrixHtml += \`
             <div class="matrix-day-card rest-day">

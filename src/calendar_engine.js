@@ -74,8 +74,12 @@ export function generateCalendarDays(playlistData, options = {}) {
   const maxWeeks = options.maxWeeks || 45;
 
   if (options.startDate) {
-    // Date-anchored rolling schedule starting from real date
-    let currentDate = parseIsoDate(options.startDate);
+    // Strictly anchor weeks to Monday-Sunday so dIdx 0 is always Pazartesi and dIdx 5 is Cumartesi
+    const startDt = parseIsoDate(options.startDate);
+    const mondayBasedIndex = (startDt.getUTCDay() + 6) % 7;
+    const week1Monday = new Date(startDt.getTime());
+    week1Monday.setUTCDate(week1Monday.getUTCDate() - mondayBasedIndex);
+
     let studyDayNumber = 1;
 
     // Ordered study templates from weekly blueprint (excluding Sunday)
@@ -87,19 +91,32 @@ export function generateCalendarDays(playlistData, options = {}) {
       let hasAnyVideoThisWeek = false;
 
       for (let dIdx = 0; dIdx < 7; dIdx++) {
-        const dayOfWeek = currentDate.getUTCDay();
-        const dayName = TURKISH_DAY_NAMES[dayOfWeek];
-        const dateIso = toIsoDate(currentDate);
-        const dateFormatted = formatTurkishDate(currentDate);
+        const curDate = new Date(week1Monday.getTime());
+        curDate.setUTCDate(curDate.getUTCDate() + (weekNum - 1) * 7 + dIdx);
 
-        // Sunday is always a non-negotiable Rest Day (or if no active study keys defined)
+        const dayOfWeek = curDate.getUTCDay();
+        const dayName = TURKISH_DAY_NAMES[dayOfWeek];
+        const dateIso = toIsoDate(curDate);
+        const dateFormatted = formatTurkishDate(curDate);
+
+        const isPast = dateIso < options.startDate;
         const isRestDay = (dayOfWeek === 0 || activeStudyKeys.length === 0);
 
-        if (isRestDay) {
+        if (isPast) {
           days.push({
             dayName,
             dateIso,
             dateFormatted,
+            isPast: true,
+            isRestDay: false,
+            blocks: []
+          });
+        } else if (isRestDay) {
+          days.push({
+            dayName,
+            dateIso,
+            dateFormatted,
+            isPast: false,
             isRestDay: true,
             blocks: []
           });
@@ -148,19 +165,18 @@ export function generateCalendarDays(playlistData, options = {}) {
             dateFormatted,
             studyDayNumber,
             blueprintOriginDay: studyTemplateKey,
+            isPast: false,
             isRestDay: false,
             blocks
           });
           studyDayNumber++;
         }
-
-        currentDate.setUTCDate(currentDate.getUTCDate() + 1);
       }
 
       weeks.push({ weekNum, days });
 
       const remainingVideos = Object.values(queues).reduce((sum, q) => sum + q.length, 0);
-      if (remainingVideos === 0) break;
+      if (remainingVideos === 0 && weekNum >= 40) break;
       if (!hasAnyVideoThisWeek && weekNum > 40) break;
 
       weekNum++;
@@ -293,11 +309,13 @@ export function shiftScheduleWithBlueprint(playlistData, completedVideos = {}, o
   }
 
   const completesBeforeYks = projectedEndDate ? (new Date(projectedEndDate) <= new Date('2027-06-19')) : true;
+  const startDt = parseIsoDate(startDateStr);
+  const mondayBasedIndex = (startDt.getUTCDay() + 6) % 7;
 
   return {
     schedule,
     nextActiveWeek: 1,
-    nextActiveDay: 0,
+    nextActiveDay: mondayBasedIndex,
     projectedEndDate,
     completesBeforeYks
   };
