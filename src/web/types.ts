@@ -102,3 +102,52 @@ export interface BreakTimer {
   getState: () => TimerState;
   playChime?: (audioContext?: AudioContext) => void;
 }
+
+export interface CurriculumUnitDef {
+  id: string;
+  title: string;
+  startVideo: number;
+  endVideo: number;
+}
+
+export interface UnitProjection {
+  id: string;
+  title: string;
+  subject: string;
+  startVideo: number;
+  endVideo: number;
+  totalVideos: number;
+  startWeek: number;
+  endWeek: number;
+  startDate: string;
+  endDate: string;
+  startDateIso: string;
+  endDateIso: string;
+  completedVideos: number;
+  progressPercent: number;
+  status: 'completed' | 'in_progress' | 'upcoming';
+}
+
+export interface SubjectProjection {
+  subject: string;
+  startWeek: number;
+  endWeek: number;
+  startDate: string;
+  endDate: string;
+  totalVideos: number;
+  completedVideos: number;
+  progressPercent: number;
+  units: UnitProjection[];
+}
+
+export interface CurriculumProjectionReport {
+  subjects: SubjectProjection[];
+  totalUnits: number;
+  completedUnits: number;
+  activeUnits: UnitProjection[];
+  projectedCompletionDate: string;
+  projectedCompletionDateIso: string;
+  completesBeforeYks: boolean;
+  weeksBeforeYks: number;
+}
+
