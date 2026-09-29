@@ -138,12 +138,38 @@ Mobil uygulamanın yanı sıra, masaüstü geniş ekranlar, dizüstü bilgisayar
 
 ---
 
+### Canlı Web ve PWA Erişimi
+
+Uygulama GitHub Pages üzerinde 7/24 kesintisiz ve güvenli HTTPS altyapısıyla yayındadır:
+- **Canlı URL:** https://ozunekmekci.github.io/2027YKSProgrami/
+
+---
+
+### Windows 10 Otomatik Başlatma ve Masaüstü Kurulumu (`kurulum_windows.bat`)
+
+Programı Windows 10 kullanan bir bilgisayara (örneğin evdeki kardeşinizin bilgisayarına) kurmak ve bilgisayar her açıldığında kaldığı yerden otomatik açılmasını sağlamak için iki yöntem sunulmuştur:
+
+- **Yöntem A (Tek Tıkla Otomatik Kurulum - Önerilen):**
+  1. Depodaki `kurulum_windows.bat` dosyasına çift tıklayın.
+  2. Betik saniyeler içinde şunları tamamlar:
+     - Masaüstüne bağımsız pencere modunda (`--app=...`) açılan "YKS 2027 Koçu" kısayolunu yerleştirir.
+     - Aynı kısayolu Windows Başlangıç klasörüne (`%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`) kaydeder.
+     - Bilgisayar her açıldığında program hiçbir şey yapmanıza gerek kalmadan otomatik başlar.
+     - İzlenen videolar ve ilerleme durumu bilgisayarın yerel diskinde (`localStorage`) kalıcı tutulur; elektrik kesilse veya bilgisayar kapansa bile asla kaybolmaz.
+
+- **Yöntem B (Tarayıcıdan Doğrudan Yükleme):**
+  1. Microsoft Edge veya Google Chrome'da `https://ozunekmekci.github.io/2027YKSProgrami/` adresini açın.
+  2. Adres çubuğundaki veya uygulama içindeki **"Uygulamayı Yükle"** butonuna tıklayın.
+  3. Tarayıcının sorduğu "Bilgisayar açıldığında bu uygulamayı otomatik başlat" kutucuğunu işaretleyin.
+
+---
+
 ### PWA Olarak Yükleme Kılavuzu
 
 Uygulamayı tarayıcı sekmelerinden bağımsız, yerel bir masaüstü veya mobil uygulama gibi penceresiz (standalone) kullanabilirsiniz:
 
 - **Masaüstü (Google Chrome & Microsoft Edge):**
-  1. `http://localhost:3000` (veya canlı sunucu) adresini tarayıcınızda açın.
+  1. `https://ozunekmekci.github.io/2027YKSProgrami/` (veya yerel `http://localhost:3000`) adresini tarayıcınızda açın.
   2. Adres çubuğunun sağ tarafındaki **"Uygulamayı Yükle"** (monitör / indirme ikonu) simgesine tıklayın (veya tarayıcı menüsünden `Diğer Araçlar` > `Uygulama olarak yükle`).
   3. Açılan onay penceresinde "Yükle" butonuna basın. Uygulama bağımsız bir pencerede açılır ve masaüstünüze kısayol eklenir.
 
@@ -215,7 +241,7 @@ Proje Node.js ve Capacitor 7 tabanlı otomasyon araçlarına sahiptir:
    ```bash
    npm test
    ```
-   *112 otomatik birim testi veri bütünlüğünü, müfredat ünitelerini, projeksiyon motorunu, tarih çapalı takvim motorunu, FIFO konu ilerlemesini, SaaS çalışma stüdyosunu, Gantt matrisini, admin panelini, Excel sayfalarını, HTML takip panosunu, mobil uygulamayı, PWA altyapısını ve yerel sunucuyu doğrular.*
+   *116 otomatik birim testi veri bütünlüğünü, müfredat ünitelerini, projeksiyon motorunu, tarih çapalı takvim motorunu, FIFO konu ilerlemesini, SaaS çalışma stüdyosunu, Gantt matrisini, admin panelini, Excel sayfalarını, HTML takip panosunu, mobil uygulamayı, PWA altyapısını ve yerel sunucuyu doğrular.*
 
 5. **Web ve Mobil Varlıklarını Derleyin:**
    ```bash
@@ -297,6 +323,7 @@ Bu proje uzun soluklu bir maratonu desteklemek üzere sürüm izolasyonu prensib
 ├── YKS_2027_Calisma_Programi.xlsx   # Üretilen 3 sayfalı hazır Excel çalışma kitabı
 ├── yks_dashboard.html               # Tek dosyalık çevrimdışı masaüstü HTML çalışma asistanı
 ├── playlists_data_tr.json           # 9 oynatma listesi ve 766 videoluk doğrulanmış veri seti
+├── kurulum_windows.bat               # Windows 10 tek tıkla masaüstü ve otomatik başlatma kurulumu
 ├── capacitor.config.json            # Capacitor 7 Android konfigürasyonu (com.yks.planner)
 ├── tsconfig.json                    # TypeScript derleyici yapılandırması (ES2022 / ESNext)
 ├── PRODUCT.md                       # Ürün tasarım ilkeleri ve pedagojik hedefler
